@@ -1,7 +1,7 @@
 import { Box, Image, Text } from "@chakra-ui/react";
 import Slider from "react-slick";
 
-const VideoList = () => {
+const Playlist = () => {
   const videos = [
     {
       id: 1,
@@ -77,18 +77,9 @@ const VideoList = () => {
   };
 
   return (
-    <Box
-      bg="transparent"
-      color="white"
-      py={8}
-      position="absolute"
-      top="80%"
-      width="100%"
-      zIndex={100}
-      px={5}
-    >
-      <Text fontSize="2xl" fontWeight="bold" mb={4}>
-        Popular on Twiceflix
+    <Box bg="transparent" color="white" py={4} width="100%" px={5}>
+      <Text fontSize="2xl" fontWeight="bold" my={4}>
+        TWICE Playlist
       </Text>
       <Slider {...settings}>
         {videos.map((video) => (
@@ -117,4 +108,4 @@ const VideoList = () => {
   );
 };
 
-export default VideoList;
+export default Playlist;

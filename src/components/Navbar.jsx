@@ -1,7 +1,15 @@
-import { Box, Flex, Text, Button, IconButton } from "@chakra-ui/react";
-import { FaSearch, FaBell, FaUser } from "react-icons/fa";
+import { useState } from "react";
+import { Box, Flex, Text, Button, IconButton, Input } from "@chakra-ui/react";
+import { FaSearch } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
+  const [showSearch, setShowSearch] = useState(false);
+
+  const toggleSearch = () => {
+    setShowSearch(!showSearch);
+  };
+
   return (
     <Box
       bg="transparent"
@@ -13,11 +21,7 @@ const Navbar = () => {
       top="0"
       zIndex="1000"
     >
-      <Flex
-        align="center"
-        justify="space-between"
-        wrap="wrap" // Wrap items on smaller screens
-      >
+      <Flex align="center" justify="space-between" wrap="wrap">
         <Text
           fontSize={{ base: "lg", md: "xl", lg: "4xl" }}
           fontWeight="bold"
@@ -25,65 +29,78 @@ const Navbar = () => {
         >
           TWICEFLIX
         </Text>
-        <Flex
-          align="center"
-          display={{ base: "none", md: "flex" }} // Hide on small screens
-          mx={4}
-        >
-          <Text mx={2} fontSize={{ base: "sm", md: "md" }}>
-            Home
-          </Text>
-          <Text mx={2} fontSize={{ base: "sm", md: "md" }}>
-            TV Shows
-          </Text>
-          <Text mx={2} fontSize={{ base: "sm", md: "md" }}>
-            Movies
-          </Text>
-          <Text mx={2} fontSize={{ base: "sm", md: "md" }}>
-            New & Popular
-          </Text>
-          <Text mx={2} fontSize={{ base: "sm", md: "md" }}>
-            My List
-          </Text>
+        <Flex align="center" display={{ base: "none", md: "flex" }} mx={4}>
+          <Link to="/">
+            <Text mx={2} fontSize={{ base: "sm", md: "md" }}>
+              Home
+            </Text>
+          </Link>
+          <Link to="/videos">
+            <Text mx={2} fontSize={{ base: "sm", md: "md" }}>
+              Videos
+            </Text>
+          </Link>
+          <Link to="/playlist">
+            <Text mx={2} fontSize={{ base: "sm", md: "md" }}>
+              Playlist
+            </Text>
+          </Link>
+          <Link to="/about">
+            <Text mx={2} fontSize={{ base: "sm", md: "md" }}>
+              About
+            </Text>
+          </Link>
         </Flex>
         <Flex align="center">
+          {showSearch && (
+            <Input
+              placeholder="Search..."
+              variant="outline"
+              bg="transparent"
+              color="white"
+              size="sm"
+              width="200px"
+              rounded="full"
+              borderColor="white"
+              colorScheme="red"
+              ml={2}
+            />
+          )}
           <IconButton
             aria-label="Search"
             icon={<FaSearch />}
             variant="unstyled"
             mx={2}
             fontSize={{ base: "sm", md: "md" }}
-          />
-
-          <IconButton
-            aria-label="Profile"
-            icon={<FaUser />}
-            variant="unstyled"
-            mx={2}
-            fontSize={{ base: "sm", md: "md" }}
+            onClick={toggleSearch}
           />
         </Flex>
         <Flex
-          display={{ base: "flex", md: "none" }} // Show on small screens
+          display={{ base: "flex", md: "none" }}
           justify="center"
           width="100%"
           mt={2}
         >
-          <Button variant="link" color="white" fontSize="sm" mx={2}>
-            Home
-          </Button>
-          <Button variant="link" color="white" fontSize="sm" mx={2}>
-            TV Shows
-          </Button>
-          <Button variant="link" color="white" fontSize="sm" mx={2}>
-            Movies
-          </Button>
-          <Button variant="link" color="white" fontSize="sm" mx={2}>
-            New & Popular
-          </Button>
-          <Button variant="link" color="white" fontSize="sm" mx={2}>
-            My List
-          </Button>
+          <Link to="/">
+            <Button variant="link" color="white" fontSize="sm" mx={2}>
+              Home
+            </Button>
+          </Link>
+          <Link to="/videos">
+            <Button variant="link" color="white" fontSize="sm" mx={2}>
+              Videos
+            </Button>
+          </Link>
+          <Link to="/playlist">
+            <Button variant="link" color="white" fontSize="sm" mx={2}>
+              Playlist
+            </Button>
+          </Link>
+          <Link to="/about">
+            <Button variant="link" color="white" fontSize="sm" mx={2}>
+              About
+            </Button>
+          </Link>
         </Flex>
       </Flex>
     </Box>

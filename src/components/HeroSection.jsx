@@ -1,4 +1,5 @@
-import { Box, Text, Button, Image } from "@chakra-ui/react";
+import { Box, Text, Button, Image, IconButton } from "@chakra-ui/react";
+import { FaPlay, FaInfoCircle } from "react-icons/fa";
 
 const HeroSection = () => {
   return (
@@ -57,10 +58,24 @@ const HeroSection = () => {
           This is a brief description of the featured movie. It's an
           action-packed thriller.
         </Text>
-        <Button colorScheme="red" mt={6}>
+        <Button
+          bgColor="white"
+          color="black"
+          width="100px"
+          rounded="none"
+          leftIcon={<FaPlay />}
+          variant="solid"
+          mt={6}
+        >
           Play
         </Button>
-        <Button variant="outline" colorScheme="white" ml={4} mt={6}>
+        <Button
+          leftIcon={<FaInfoCircle />}
+          rounded="none"
+          colorScheme="whiteAlpha"
+          ml={2}
+          mt={6}
+        >
           More Info
         </Button>
       </Box>
