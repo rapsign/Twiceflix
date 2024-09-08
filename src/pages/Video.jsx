@@ -1,43 +1,51 @@
-import LoadingSpinner from "../components/LoadingSpiner";
+import {
+  Box,
+  Heading,
+  Grid,
+  Image,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { Box, Heading, Grid, Image } from "@chakra-ui/react";
+import LoadingSpinner from "../components/LoadingSpinner";
 import VideoModal from "../components/VideoModal";
-
-const playlistData = [
-  {
-    id: 1,
-    title: "Video 1",
-    imageUrl: "https://i.ytimg.com/vi/M2fDbYeYHtE/maxresdefault.jpg",
-    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. ",
-  },
-  { id: 2, title: "Video 2", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 3, title: "Video 3", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 4, title: "Video 4", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 5, title: "Video 5", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 6, title: "Video 6", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 7, title: "Video 7", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 8, title: "Video 8", imageUrl: "https://via.placeholder.com/720x1280" },
-];
+import { collection, query, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 const Videos = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [videos, setVideos] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
+    const fetchVideos = () => {
+      const videosQuery = query(collection(db, "videos"));
+      const unsubscribe = onSnapshot(
+        videosQuery,
+        (querySnapshot) => {
+          const videosData = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setVideos(videosData);
+          setIsLoading(false);
+        },
+        (error) => {
+          console.error("Error fetching videos:", error);
+          setIsLoading(false);
+        }
+      );
+
+      return () => unsubscribe();
+    };
+
+    fetchVideos();
   }, []);
 
-  const openModal = (video) => {
+  const handleVideoClick = (video) => {
     setSelectedVideo(video);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedVideo(null);
+    onOpen();
   };
 
   if (isLoading) {
@@ -46,7 +54,11 @@ const Videos = () => {
 
   return (
     <Box p={4}>
-      <Heading mb={6} mt={20}>
+      <Heading
+        mb={3}
+        mt={{ base: "10", md: "20" }}
+        fontSize={{ base: "lg", md: "3xl" }}
+      >
         TWICE Videos
       </Heading>
       <Grid
@@ -57,35 +69,61 @@ const Videos = () => {
         }}
         gap={2}
       >
-        {playlistData.map((item) => (
+        {videos.map((video) => (
           <Box
-            key={item.id}
+            key={video.id}
             borderRadius="md"
             overflow="hidden"
-            _hover={{ bg: "gray.800", cursor: "pointer" }}
-            transition="background-color 0.3s ease"
-            border="1px solid rgba(255, 255, 255, 0.1)"
             position="relative"
             rounded="none"
             aspectRatio="16/9"
-            onClick={() => openModal(item)}
+            cursor="pointer"
+            onClick={() => handleVideoClick(video)}
+            _hover={{
+              "& .overlay": {
+                opacity: 1,
+                visibility: "visible",
+              },
+            }}
           >
             <Image
-              src={item.imageUrl}
-              alt={item.title}
+              src={video.thumbnail}
+              alt={video.title}
               objectFit="cover"
               width="100%"
               height="100%"
             />
+            <Box
+              className="overlay"
+              position="absolute"
+              bottom={0}
+              left={0}
+              width="100%"
+              p={2}
+              bg="linear-gradient(to top right, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6))"
+              color="white"
+              opacity={0}
+              visibility="hidden"
+              transition="opacity 0.3s ease, visibility 0.3s ease"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Text
+                isTruncated
+                fontSize="sm"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+                textAlign="center"
+              >
+                {video.title}
+              </Text>
+            </Box>
           </Box>
         ))}
       </Grid>
       {selectedVideo && (
-        <VideoModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          video={selectedVideo}
-        />
+        <VideoModal isOpen={isOpen} onClose={onClose} video={selectedVideo} />
       )}
     </Box>
   );

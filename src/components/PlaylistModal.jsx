@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -13,46 +14,55 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { FaPlay } from "react-icons/fa";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { useNavigate } from "react-router-dom";
 
-const PlaylistModal = ({ isOpen, onClose, video }) => {
-  const episodes = [
-    {
-      id: 1,
-      title: "Episode 1",
-      thumbnailUrl: "https://via.placeholder.com/150x85",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    },
-    {
-      id: 2,
-      title: "Episode 2",
-      thumbnailUrl: "https://via.placeholder.com/150x85",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    },
-    {
-      id: 3,
-      title: "Episode 3",
-      thumbnailUrl: "https://via.placeholder.com/150x85",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    },
-    {
-      id: 4,
-      title: "Episode 4",
-      thumbnailUrl: "https://via.placeholder.com/150x85",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    },
-    {
-      id: 5,
-      title: "Episode 5",
-      thumbnailUrl: "https://via.placeholder.com/150x85",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    },
-    {
-      id: 6,
-      title: "Episode 6",
-      thumbnailUrl: "https://via.placeholder.com/150x85",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    },
-  ];
+const PlaylistModal = ({ isOpen, onClose, playlist }) => {
+  const [episodes, setEpisodes] = useState([]);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isOpen && playlist) {
+      const fetchEpisodes = async () => {
+        try {
+          const episodesQuery = query(
+            collection(db, "videos"),
+            where("playlists", "array-contains", playlist.id),
+            orderBy("published_at", "desc")
+          );
+          const episodeSnapshot = await getDocs(episodesQuery);
+          const episodesData = episodeSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setEpisodes(episodesData);
+
+          if (episodesData.length > 0) {
+            setSelectedVideo(episodesData[0]);
+          }
+        } catch (error) {
+          console.error("Error fetching episodes:", error);
+        }
+      };
+
+      fetchEpisodes();
+    }
+  }, [isOpen, playlist]);
+
+  const handlePlayClick = () => {
+    if (selectedVideo) {
+      navigate(`/video-player`, {
+        state: { youtubeUrl: selectedVideo.youtube_url },
+      });
+    }
+  };
+
+  const handleEpisodeClick = (video) => {
+    setSelectedVideo(video);
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "full" }}>
       <ModalOverlay />
@@ -66,8 +76,8 @@ const PlaylistModal = ({ isOpen, onClose, video }) => {
         <ModalCloseButton zIndex={100} size="xl" />
         <Box position="relative" width="100%" height="400px" overflow="hidden">
           <Image
-            src={video.imageUrl}
-            alt={video.title}
+            src={selectedVideo ? selectedVideo.thumbnail : playlist.thumbnail}
+            alt={selectedVideo ? selectedVideo.title : playlist.title}
             objectFit="cover"
             width="100%"
             height="100%"
@@ -79,18 +89,21 @@ const PlaylistModal = ({ isOpen, onClose, video }) => {
             left="0"
             right="0"
             height="50%"
-            background="linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%)"
+            background="linear-gradient(180deg, rgba(51,51,51,0) 9%, rgba(51,51,51,0.742734593837535) 53%, rgba(51,51,51,1) 83%)"
           />
-          <Box position="absolute" top="70%" px={5} color="white">
-            <Heading size="lg">{video.title}</Heading>
+          <Box position="absolute" top="60%" px={5} color="white">
+            <Heading size="lg">
+              {selectedVideo ? selectedVideo.title : playlist.title}
+            </Heading>
             <Button
               bgColor="white"
               color="black"
-              width="100px"
+              size={{ base: "sm", md: "md", lg: "lg" }}
               rounded="none"
               leftIcon={<FaPlay />}
               variant="solid"
               mt={2}
+              onClick={handlePlayClick}
             >
               Play
             </Button>
@@ -100,51 +113,93 @@ const PlaylistModal = ({ isOpen, onClose, video }) => {
           p={5}
           background="linear-gradient(to bottom, rgba(51, 51, 51, 0) 0%, rgba(51, 51, 51, 0.8) 100%)"
         >
-          <Text color="white" textAlign="justify" size="sm">
-            {video.desc}
+          <Heading size="md" mb={2}>
+            {playlist.name}
+          </Heading>
+          <Text
+            color="white"
+            textAlign="justify"
+            fontSize={{ base: "xs", md: "sm" }}
+          >
+            {playlist.description}
           </Text>
           <Heading size="md" my={5}>
-            Episode
+            Videos
           </Heading>
-          <Box maxHeight="500px" overflowY="auto" className="custom-scroll">
+          <Box
+            maxHeight="600px"
+            overflowY="auto"
+            sx={{
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+              "&": {
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              },
+            }}
+          >
             <List spacing={4}>
-              {episodes.map((episode) => (
-                <ListItem key={episode.id} color="white" mb={8}>
-                  <Flex align="center">
-                    <Image
-                      src={episode.thumbnailUrl}
-                      alt={episode.title}
-                      aspectRatio="16/9"
-                      objectFit="cover"
-                      borderRadius="md"
-                      mr={4}
-                    />
-                    <Box>
-                      <Text fontWeight="bold" mb={1}>
-                        {`Episode ${episode.id}`}
-                      </Text>
-                      <Text w="500px" textAlign="justify">
-                        {episode.desc}
-                      </Text>
-                    </Box>
-                  </Flex>
-                </ListItem>
-              ))}
+              {episodes.length > 0 ? (
+                episodes.map((episode) => (
+                  <ListItem
+                    key={episode.id}
+                    color="white"
+                    mb={2}
+                    px={4}
+                    py={2}
+                    cursor="pointer"
+                    _hover={{ bg: "#6b6b6b" }}
+                    bg={
+                      selectedVideo?.id === episode.id
+                        ? "#4f4d4d"
+                        : "transparent"
+                    }
+                    onClick={() => handleEpisodeClick(episode)}
+                  >
+                    <Flex align="center">
+                      <Image
+                        src={episode.thumbnail}
+                        alt={episode.title}
+                        aspectRatio="16/9"
+                        objectFit="cover"
+                        mr={4}
+                        w={{ base: "100px", md: "200px" }}
+                      />
+                      <Box>
+                        <Text
+                          fontWeight="bold"
+                          mb={1}
+                          isTruncated
+                          textOverflow="ellipsis"
+                          fontSize={{ base: "xs", md: "sm" }}
+                          w={{ base: "200px", md: "500px" }}
+                        >
+                          {episode.title}
+                        </Text>
+                        <Text
+                          w={{ base: "auto", md: "500px" }}
+                          textAlign="justify"
+                          textOverflow="ellipsis"
+                          overflow="hidden"
+                          height={{ base: "3em", md: "auto" }}
+                          fontSize={{ base: "xs", md: "sm" }}
+                        >
+                          {episode.description}
+                        </Text>
+                      </Box>
+                    </Flex>
+                  </ListItem>
+                ))
+              ) : (
+                <Box textAlign="center">
+                  <Text color="white">No videos available.</Text>
+                </Box>
+              )}
             </List>
           </Box>
         </Box>
       </ModalContent>
-      <style jsx>{`
-        .custom-scroll {
-          /* Hide scrollbar for Chrome, Safari, and Opera */
-          scrollbar-width: none; /* Firefox */
-          -ms-overflow-style: none; /* IE and Edge */
-        }
-
-        .custom-scroll::-webkit-scrollbar {
-          display: none; /* Safari and Chrome */
-        }
-      `}</style>
     </Modal>
   );
 };

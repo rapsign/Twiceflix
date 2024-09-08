@@ -93,8 +93,7 @@ dist
 
 # Gatsby files
 .cache/
-# Comment in the public line in if your project uses Gatsby and not Next.js
-# https://nextjs.org/blog/next-9-1#public-directory-support
+# Uncomment the following line if your project uses Gatsby and not Next.js
 # public
 
 # vuepress build output
@@ -128,3 +127,35 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# macOS Finder metadata
+.DS_Store
+
+# Windows system files
+Thumbs.db
+Desktop.ini
+
+# IDE-specific files
+.idea/
+.vscode/
+
+# JetBrains Rider project files
+.idea/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*.swn
+
+# Build outputs
+/dist
+/build
+
+# Untracked generated files
+*.bak
+*.swp
+
+# Code coverage
+coverage/
+*.lcov

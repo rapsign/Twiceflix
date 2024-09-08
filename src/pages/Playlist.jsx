@@ -1,53 +1,82 @@
-// src/pages/Playlist.jsx
-import LoadingSpinner from "../components/LoadingSpiner";
 import { useState, useEffect } from "react";
-import { Box, Heading, Grid, Image } from "@chakra-ui/react";
-import VideoModal from "../components/PlaylistModal";
-
-const playlistData = [
-  {
-    id: 1,
-    title: "Video 1",
-    imageUrl: "https://i.ytimg.com/vi/M2fDbYeYHtE/maxresdefault.jpg",
-    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. ",
-  },
-  { id: 2, title: "Video 2", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 3, title: "Video 3", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 4, title: "Video 4", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 5, title: "Video 5", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 6, title: "Video 6", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 7, title: "Video 7", imageUrl: "https://via.placeholder.com/720x1280" },
-  { id: 8, title: "Video 8", imageUrl: "https://via.placeholder.com/720x1280" },
-];
+import { Box, Heading, Grid, Image, Text } from "@chakra-ui/react";
+import PlaylistModal from "../components/PlaylistModal";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const Playlist = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [playlists, setPlaylists] = useState([]);
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
+    const fetchPlaylists = async () => {
+      try {
+        const playlistSnapshot = await getDocs(collection(db, "playlists"));
+        const playlistData = playlistSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        const playlistIds = playlistData.map((playlist) => playlist.id);
+        const videoQuery = query(
+          collection(db, "videos"),
+          where("playlists", "array-contains-any", playlistIds),
+          orderBy("published_at", "desc")
+        );
+        const videoSnapshot = await getDocs(videoQuery);
+
+        const videoMap = {};
+        videoSnapshot.docs.forEach((doc) => {
+          const video = doc.data();
+          video.playlists.forEach((playlistId) => {
+            if (!videoMap[playlistId]) {
+              videoMap[playlistId] = video;
+            }
+          });
+        });
+
+        const enrichedPlaylists = playlistData.map((playlist) => ({
+          ...playlist,
+          thumbnail:
+            videoMap[playlist.id]?.thumbnail ||
+            "https://via.placeholder.com/720x1280",
+        }));
+
+        setPlaylists(enrichedPlaylists);
+      } catch (error) {
+        console.error("Error fetching playlists:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPlaylists();
   }, []);
+
+  const openModal = (playlist) => {
+    setSelectedPlaylist(playlist);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedPlaylist(null);
+    setIsModalOpen(false);
+  };
 
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
-  const openModal = (video) => {
-    setSelectedVideo(video);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedVideo(null);
-  };
-
   return (
     <Box p={4}>
-      <Heading mb={6} mt={20}>
+      <Heading
+        mb={3}
+        mt={{ base: "10", md: "20" }}
+        fontSize={{ base: "lg", md: "3xl" }}
+      >
         TWICE Playlist
       </Heading>
       <Grid
@@ -58,34 +87,66 @@ const Playlist = () => {
         }}
         gap={2}
       >
-        {playlistData.map((item) => (
+        {playlists.map((playlist) => (
           <Box
-            key={item.id}
+            key={playlist.id}
             borderRadius="md"
             overflow="hidden"
-            _hover={{ bg: "gray.800", cursor: "pointer" }}
-            transition="background-color 0.3s ease"
-            border="1px solid rgba(255, 255, 255, 0.1)"
             position="relative"
             rounded="none"
             aspectRatio="16/9"
-            onClick={() => openModal(item)}
+            _hover={{
+              "& .overlay": {
+                opacity: 1,
+                visibility: "visible",
+              },
+            }}
+            cursor="pointer"
+            transition="background-color 0.3s ease"
+            border="1px solid rgba(255, 255, 255, 0.1)"
+            onClick={() => openModal(playlist)}
           >
             <Image
-              src={item.imageUrl}
-              alt={item.title}
+              src={playlist.thumbnail}
+              alt={playlist.name}
               objectFit="cover"
               width="100%"
               height="100%"
             />
+            <Box
+              className="overlay"
+              position="absolute"
+              bottom={0}
+              left={0}
+              width="100%"
+              p={2}
+              bg="linear-gradient(to top right, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6))"
+              color="white"
+              opacity={0}
+              visibility="hidden"
+              transition="opacity 0.3s ease, visibility 0.3s ease"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Text
+                isTruncated
+                fontSize="sm"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+                textAlign="center"
+              >
+                {playlist.name}
+              </Text>
+            </Box>
           </Box>
         ))}
       </Grid>
-      {selectedVideo && (
-        <VideoModal
+      {selectedPlaylist && (
+        <PlaylistModal
           isOpen={isModalOpen}
           onClose={closeModal}
-          video={selectedVideo}
+          playlist={selectedPlaylist}
         />
       )}
     </Box>
