@@ -28,7 +28,6 @@ const VideoModal = ({ isOpen, onClose, video }) => {
   useEffect(() => {
     const fetchPlaylists = async () => {
       try {
-        // Create a query for fetching multiple playlists
         const playlistsQuery = query(
           collection(db, "playlists"),
           where("__name__", "in", video.playlists)
@@ -94,10 +93,11 @@ const VideoModal = ({ isOpen, onClose, video }) => {
             />
             <Box
               position="absolute"
-              bottom="0"
+              bottom="-10"
               left="0"
               right="0"
-              height="50%"
+              p="0"
+              height="110%"
               background="linear-gradient(180deg, rgba(51,51,51,0) 9%, rgba(51,51,51,0.742734593837535) 53%, rgba(51,51,51,1) 83%)"
             />
             <Box
@@ -124,7 +124,7 @@ const VideoModal = ({ isOpen, onClose, video }) => {
             </Box>
           </Box>
           <Grid
-            templateColumns={{ base: "1", md: "repeat(3, 1fr)" }}
+            templateColumns={{ base: "1", md: "repeat(2, 1fr)" }}
             gap={5}
             p={5}
           >

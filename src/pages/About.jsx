@@ -11,68 +11,66 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { FaInstagram } from "react-icons/fa";
-
-// TWICE Members data
 const TWICE_MEMBERS = [
   {
     name: "Twicetagram",
     instagram: "https://www.instagram.com/twicetagram/?hl=en",
     profileImage:
-      "https://cdn.inflact.com/media/453887384_1012915613901262_7075729037643510780_n.jpg?url=https%3A%2F%2Fscontent.cdninstagram.com%2Fv%2Ft51.2885-19%2F453887384_1012915613901262_7075729037643510780_n.jpg%3Fstp%3Ddst-jpg_e0_s150x150%26_nc_ht%3Dinstagram.fkul16-2.fna.fbcdn.net%26_nc_cat%3D1%26_nc_ohc%3DT0sERQr-fzsQ7kNvgETAy8_%26_nc_gid%3Dc3005635cb854128975a43ff539333df%26edm%3DAOQ1c0wBAAAA%26ccb%3D7-5%26oh%3D00_AYBk9YamxtBeK4xeRuhq_iaqrQVt1l8nTyKOQo4hZYWcwA%26oe%3D66E02778%26_nc_sid%3D8b3546&time=1725584400&key=9bdb2f947c872f74033486ed6613267d",
+      "https://lv2-cdn.azureedge.net/twice/5e1048275ed84e22abb48b8f643419e6-TW-M14-Strategy-OnlineCover(1030).jpg",
   },
   {
     name: "Nayeon",
     instagram: "https://www.instagram.com/nayeonyny/",
     profileImage:
-      "https://cdn.inflact.com/media/294357840_1056946331848193_8592951666263680523_n.jpg?url=https%3A%2F%2Fscontent.cdninstagram.com%2Fv%2Ft51.2885-19%2F294357840_1056946331848193_8592951666263680523_n.jpg%3Fstp%3Ddst-jpg_e0_s150x150%26_nc_ht%3Dinstagram.fyei1-2.fna.fbcdn.net%26_nc_cat%3D105%26_nc_ohc%3DgNIxmJUCQFkQ7kNvgHy_ijr%26edm%3DAOQ1c0wBAAAA%26ccb%3D7-5%26oh%3D00_AYBrY1Yg7QWG-lcF93R1RjltTQJ-qLH01APkgmaziMW2WA%26oe%3D66E03553%26_nc_sid%3D8b3546&time=1725584400&key=41212d13a4f3c191e498c77db5980675",
+      "https://lv2-cdn.azureedge.net/twice/8b99e15302844e749690c5ece02f7420-01_%E1%84%82%E1%85%A1%E1%84%8B%E1%85%A7%E1%86%AB_A_01.jpg",
   },
   {
     name: "Jeongyeon",
     instagram: "https://www.instagram.com/jy_piece/?hl=en",
     profileImage:
-      "https://cdn.inflact.com/media/441099314_267924176313008_8195407146454360674_n.jpg?url=https%3A%2F%2Fscontent.cdninstagram.com%2Fv%2Ft51.2885-19%2F441099314_267924176313008_8195407146454360674_n.jpg%3Fstp%3Ddst-jpg_e0_s150x150%26_nc_ht%3Dinstagram.fsof10-1.fna.fbcdn.net%26_nc_cat%3D1%26_nc_ohc%3DEnhqK33RaQ4Q7kNvgFgdPq1%26edm%3DAOQ1c0wBAAAA%26ccb%3D7-5%26oh%3D00_AYCEIVrA62T8cscPvDF0Pli-x1aX5YG95Eui7RrVUK_e9A%26oe%3D66E0295F%26_nc_sid%3D8b3546&time=1725584400&key=54b46155ed745b54803c988b7ad179f4",
+      "https://lv2-cdn.azureedge.net/twice/cdd8d7a6de27406d9767dfcc6dd0864e-02_%E1%84%8C%E1%85%A5%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%AB_A_01.jpg",
   },
   {
     name: "Momo",
     instagram: "https://www.instagram.com/momo/?hl=en",
     profileImage:
-      "https://cdn.inflact.com/media/297950117_3142317252650751_4126400313311437451_n.jpg?url=https%3A%2F%2Fscontent.cdninstagram.com%2Fv%2Ft51.2885-19%2F297950117_3142317252650751_4126400313311437451_n.jpg%3Fstp%3Ddst-jpg_e0_s150x150%26_nc_ht%3Dinstagram.fbeg4-1.fna.fbcdn.net%26_nc_cat%3D1%26_nc_ohc%3DjI59GBAB4XMQ7kNvgGwfx3Y%26edm%3DAOQ1c0wBAAAA%26ccb%3D7-5%26oh%3D00_AYATI_6K-hqIDqqjXxPT-T8DcJYx4RPyqsJaM2NKQT7Dcg%26oe%3D66E03F63%26_nc_sid%3D8b3546&time=1725584400&key=c5c7984200d5b5b71d9c1d26baef6aa6",
+      "https://lv2-cdn.azureedge.net/twice/5baae85ca0fb4bee912aea06645004b7-03_%E1%84%86%E1%85%A9%E1%84%86%E1%85%A9_A_01.jpg",
   },
   {
     name: "Sana",
     instagram: "https://www.instagram.com/m.by__sana/?hl=en",
     profileImage:
-      "https://cdn.inflact.com/media/340008369_179587014939666_6795348549267204846_n.jpg?url=https%3A%2F%2Fscontent.cdninstagram.com%2Fv%2Ft51.2885-19%2F340008369_179587014939666_6795348549267204846_n.jpg%3Fstp%3Ddst-jpg_e0_s150x150%26_nc_ht%3Dscontent-zrh1-1.cdninstagram.com%26_nc_cat%3D1%26_nc_ohc%3DEPYEdfA6wWEQ7kNvgFDW8Dh%26edm%3DAOQ1c0wBAAAA%26ccb%3D7-5%26oh%3D00_AYDjAsUbUXBJbPA2DfjIkOO4VfxV6NVcKfiFt2Bk39cbxQ%26oe%3D66E0211B%26_nc_sid%3D8b3546&time=1725584400&key=08e3e99762ca04306757f07c50a6544e",
+      "https://lv2-cdn.azureedge.net/twice/818901a752764629b6cb7802266d6003-04_%E1%84%89%E1%85%A1%E1%84%82%E1%85%A1_A_02.jpg",
   },
   {
     name: "Jihyo",
     instagram: "https://www.instagram.com/_zyozyo/?hl=en",
     profileImage:
-      "https://cdn.inflact.com/media/366200180_822311156025108_1149992104142979043_n.jpg?url=https%3A%2F%2Fscontent.cdninstagram.com%2Fv%2Ft51.2885-19%2F366200180_822311156025108_1149992104142979043_n.jpg%3Fstp%3Ddst-jpg_e0_s150x150%26_nc_ht%3Dinstagram.fleu1-2.fna.fbcdn.net%26_nc_cat%3D1%26_nc_ohc%3DP9pSTAFvGXgQ7kNvgHHk5Ta%26_nc_gid%3D8f9fe83f13624aafac96b4d0505a0ed7%26edm%3DAOQ1c0wBAAAA%26ccb%3D7-5%26oh%3D00_AYDeIwC3Rm-ggLEk5YBO7Gk-kso5elSLJbAoJLEZF3W7-w%26oe%3D66E0299A%26_nc_sid%3D8b3546&time=1725584400&key=140125392c92fa9464ffd00c87d3b45d",
+      "https://lv2-cdn.azureedge.net/twice/7f7baefec3494f1c9f5fcce4da33a082-05_%EC%A7%80%ED%9A%A8_A_01.jpg",
   },
   {
     name: "Mina",
     instagram: "https://www.instagram.com/mina_sr_my/?hl=en",
     profileImage:
-      "https://cdn.inflact.com/media/280756657_2245547305593919_9214139594332754668_n.jpg?url=https%3A%2F%2Fscontent.cdninstagram.com%2Fv%2Ft51.2885-19%2F280756657_2245547305593919_9214139594332754668_n.jpg%3Fstp%3Ddst-jpg_e0_s150x150%26_nc_ht%3Dinstagram.fsdu25-1.fna.fbcdn.net%26_nc_cat%3D1%26_nc_ohc%3DqcTqHzzKW6EQ7kNvgGMoxpW%26_nc_gid%3D62b7035c664b435f8d8f531fbf0f37c0%26edm%3DAOQ1c0wBAAAA%26ccb%3D7-5%26oh%3D00_AYAKK_KPlJluGX0nnD_0LyuNrkezRPw6la0INhhd3o8psQ%26oe%3D66E019C6%26_nc_sid%3D8b3546&time=1725584400&key=1cbfe24aa1c3f8bc4b5aa95781b0ea62",
+      "https://lv2-cdn.azureedge.net/twice/e51b87f4f2c84d80915013ede348c9d3-06_%E1%84%86%E1%85%B5%E1%84%82%E1%85%A1_A_01.jpg",
   },
   {
     name: "Dahyun",
     instagram: "https://www.instagram.com/dahhyunnee/?hl=en",
     profileImage:
-      "https://cdn.inflact.com/media/281257169_397867378887435_1070554030893405798_n.jpg?url=https%3A%2F%2Fscontent.cdninstagram.com%2Fv%2Ft51.2885-19%2F281257169_397867378887435_1070554030893405798_n.jpg%3Fstp%3Ddst-jpg_e0_s150x150%26_nc_ht%3Dscontent-ssn1-1.cdninstagram.com%26_nc_cat%3D1%26_nc_ohc%3DqfHhEY_u6Q8Q7kNvgFkFmVZ%26_nc_gid%3D881e0ec501164c67b68193935cf8bb8e%26edm%3DAOQ1c0wBAAAA%26ccb%3D7-5%26oh%3D00_AYCX69kxhx8Ry-h53MvuxUdL4uvycGNOwoSM-Ayk6mtxcQ%26oe%3D66E034A9%26_nc_sid%3D8b3546&time=1725584400&key=3ad88df42aa945ab1297ddcb85b44ec5",
+      "https://lv2-cdn.azureedge.net/twice/195e086ea2a84f1cb4d02e55215fc5a6-07_%E1%84%83%E1%85%A1%E1%84%92%E1%85%A7%E1%86%AB_A_01.jpg",
   },
   {
     name: "Chaeyoung",
     instagram: "https://www.instagram.com/chaeyo.0/?hl=en",
     profileImage:
-      "https://cdn.inflact.com/media/281224187_5221875917871372_5821407330271285140_n.jpg?url=https%3A%2F%2Fscontent.cdninstagram.com%2Fv%2Ft51.2885-19%2F281224187_5221875917871372_5821407330271285140_n.jpg%3Fstp%3Ddst-jpg_e0_s150x150%26_nc_ht%3Dscontent-ssn1-1.cdninstagram.com%26_nc_cat%3D1%26_nc_ohc%3Dja0Hi2UXcoEQ7kNvgE7ClZM%26edm%3DAOQ1c0wBAAAA%26ccb%3D7-5%26oh%3D00_AYBE53TcjyI8Kzxlg1Xz4CkIjcI7tiw86XbVblAB97HI-Q%26oe%3D66E047BA%26_nc_sid%3D8b3546&time=1725584400&key=006d134a40571c49c83a7832c3086db8",
+      "https://lv2-cdn.azureedge.net/twice/5650bb28312341e2833ac21d31cf85c9-08_%E1%84%8E%E1%85%A2%E1%84%8B%E1%85%A7%E1%86%BC_A_01.jpg",
   },
   {
     name: "Tzuyu",
     instagram: "https://www.instagram.com/thinkaboutzu/?hl=en",
     profileImage:
-      "https://cdn.inflact.com/media/281009682_536858364721466_5150834322021865551_n.jpg?url=https%3A%2F%2Fscontent.cdninstagram.com%2Fv%2Ft51.2885-19%2F281009682_536858364721466_5150834322021865551_n.jpg%3Fstp%3Ddst-jpg_e0_s150x150%26_nc_ht%3Dscontent-atl3-2.cdninstagram.com%26_nc_cat%3D1%26_nc_ohc%3D4ymT-m0mz28Q7kNvgE_0FRt%26_nc_gid%3D961b264538d146c28b125e8ba7a251d7%26edm%3DAOQ1c0wBAAAA%26ccb%3D7-5%26oh%3D00_AYCs1T2dN5m6wPjzs6P59_aGDPgxkZX8xJaCoGvqpQZekA%26oe%3D66E01F9E%26_nc_sid%3D8b3546&time=1725584400&key=7ca5a8b761f051305b7b06ee7867e052",
+      "https://lv2-cdn.azureedge.net/twice/9bf780eb00324567a24b255170949911-09_%E1%84%8D%E1%85%B3%E1%84%8B%E1%85%B1_A_02.jpg",
   },
 ];
 

@@ -138,10 +138,10 @@ const SearchPage = () => {
   const openModal = (item) => {
     if (item.type === "video") {
       setSelectedVideo(item);
-      setSelectedPlaylist(null); // Close PlaylistModal if it was open
+      setSelectedPlaylist(null);
     } else if (item.type === "playlist") {
       setSelectedPlaylist(item);
-      setSelectedVideo(null); // Close VideoModal if it was open
+      setSelectedVideo(null);
     }
   };
 

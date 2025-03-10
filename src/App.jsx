@@ -6,9 +6,9 @@ import Videos from "./pages/Video";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import VideoPlayer from "./components/VideoPlayer";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import SearchPage from "./pages/SearchPage";
 import About from "./pages/About";
+import { Route, Routes } from "react-router-dom";
 
 function App() {
   const location = useLocation();

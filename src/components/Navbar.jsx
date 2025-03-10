@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Flex,
@@ -25,34 +25,36 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolling(true);
-      } else {
-        setScrolling(false);
-      }
+      setScrolling(window.scrollY > 50);
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   const toggleSearch = () => {
-    setShowSearch(!showSearch);
+    setShowSearch((prev) => !prev);
   };
 
-  const handleSearchChange = (e) => {
-    const query = e.target.value.trim();
-    setSearchQuery(query);
+  const handleSearchChange = useCallback(
+    (e) => {
+      const query = e.target.value;
+      setSearchQuery(query);
 
-    if (query) {
-      navigate(`/search?q=${encodeURIComponent(query)}`);
-    } else {
-      navigate(`/`);
-    }
-  };
+      const timeoutId = setTimeout(() => {
+        if (query) {
+          navigate(`/search?q=${encodeURIComponent(query)}`);
+        } else {
+          navigate(`/`);
+        }
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    },
+    [navigate]
+  );
 
   return (
     <Box
@@ -75,61 +77,43 @@ const Navbar = () => {
           TWICEFLIX
         </Text>
         <Flex align="center" display={{ base: "none", md: "flex" }} mx={4}>
-          <Link to="/">
-            <Text
-              mx={2}
-              fontSize={{ base: "sm", md: "md" }}
-              _hover={{ color: "red" }}
-            >
-              Home
-            </Text>
-          </Link>
-          <Link to="/videos">
-            <Text
-              mx={2}
-              fontSize={{ base: "sm", md: "md" }}
-              _hover={{ color: "red" }}
-            >
-              Videos
-            </Text>
-          </Link>
-          <Link to="/playlist">
-            <Text
-              mx={2}
-              fontSize={{ base: "sm", md: "md" }}
-              _hover={{ color: "red" }}
-            >
-              Playlist
-            </Text>
-          </Link>
-          <Link to="/about">
-            <Text
-              mx={2}
-              fontSize={{ base: "sm", md: "md" }}
-              _hover={{ color: "red" }}
-            >
-              About
-            </Text>
-          </Link>
+          {["Home", "Videos", "Playlist", "About"].map((item) => (
+            <Link key={item} to={`/${item.toLowerCase()}`}>
+              <Text
+                mx={2}
+                fontSize={{ base: "sm", md: "md" }}
+                _hover={{ color: "red" }}
+              >
+                {item}
+              </Text>
+            </Link>
+          ))}
         </Flex>
-        <Flex align="center">
-          {showSearch && (
-            <Input
-              placeholder="Search..."
-              variant="outline"
-              bg="transparent"
-              color="white"
-              size="sm"
-              width={{ base: "150px", md: "300px" }}
-              rounded="full"
-              borderColor="white"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              ml={2}
-            />
-          )}
+        <Flex align="center" position="relative">
+          <Input
+            placeholder="Search..."
+            color="white"
+            _placeholder={{ color: "inherit" }}
+            variant="outline"
+            bg="transparent"
+            size="sm"
+            width={{ base: "150px", md: "300px" }}
+            rounded="full"
+            focusBorderColor="white"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            ml={2}
+            opacity={showSearch ? 1 : 0}
+            visibility={showSearch ? "visible" : "hidden"}
+            transition="opacity 0.3s ease, visibility 0.3s ease"
+            position="absolute"
+            right={0}
+            zIndex={1}
+            pointerEvents={showSearch ? "auto" : "none"}
+          />
           <IconButton
             aria-label="Search"
+            aria-expanded={showSearch}
             icon={<FaSearch />}
             variant="unstyled"
             fontSize={{ base: "sm", md: "md" }}
@@ -138,6 +122,8 @@ const Navbar = () => {
             _hover={{ color: "red" }}
             justifyContent="center"
             alignItems="center"
+            cursor="pointer"
+            zIndex={2}
           />
           <IconButton
             aria-label="Menu"
@@ -149,6 +135,7 @@ const Navbar = () => {
             justifyContent="center"
             alignItems="center"
             onClick={onOpen}
+            cursor="pointer"
           />
         </Flex>
       </Flex>
@@ -159,26 +146,19 @@ const Navbar = () => {
           <DrawerCloseButton color="white" />
           <DrawerBody>
             <Flex direction="column" mt={8}>
-              <ChakraLink as={Link} to="/" onClick={onClose} mb={4}>
-                <Text fontSize="lg" color="white">
-                  Home
-                </Text>
-              </ChakraLink>
-              <ChakraLink as={Link} to="/videos" onClick={onClose} mb={4}>
-                <Text fontSize="lg" color="white">
-                  Videos
-                </Text>
-              </ChakraLink>
-              <ChakraLink as={Link} to="/playlist" onClick={onClose} mb={4}>
-                <Text fontSize="lg" color="white">
-                  Playlist
-                </Text>
-              </ChakraLink>
-              <ChakraLink as={Link} to="/about" onClick={onClose} mb={4}>
-                <Text fontSize="lg" color="white">
-                  About
-                </Text>
-              </ChakraLink>
+              {["Home", "Videos", "Playlist", "About"].map((item) => (
+                <ChakraLink
+                  key={item}
+                  as={Link}
+                  to={`/${item.toLowerCase()}`}
+                  onClick={onClose}
+                  mb={4}
+                >
+                  <Text fontSize="lg" color="white">
+                    {item}
+                  </Text>
+                </ChakraLink>
+              ))}
             </Flex>
           </DrawerBody>
         </DrawerContent>
