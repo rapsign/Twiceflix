@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { useNavigate, Routes, Route } from "react-router-dom";
 import { auth, signOut, onAuthStateChanged } from "../firebase/firebase";
-import Sidebar from "../components/SideBar";
+import Sidebar from "../components/Sidebar";
 import Dashboard from "../components/Dashboard";
 import TableVideos from "../components/TableVideos";
 import TablePlaylists from "../components/TablePlaylist";
