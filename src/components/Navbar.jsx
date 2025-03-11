@@ -78,7 +78,10 @@ const Navbar = () => {
         </Text>
         <Flex align="center" display={{ base: "none", md: "flex" }} mx={4}>
           {["Home", "Videos", "Playlist", "About"].map((item) => (
-            <Link key={item} to={`/${item.toLowerCase()}`}>
+            <Link
+              key={item}
+              to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+            >
               <Text
                 mx={2}
                 fontSize={{ base: "sm", md: "md" }}
@@ -97,7 +100,7 @@ const Navbar = () => {
             variant="outline"
             bg="transparent"
             size="sm"
-            width={{ base: "150px", md: "300px" }}
+            width={{ base: "200px", xl: "300px" }}
             rounded="full"
             focusBorderColor="white"
             value={searchQuery}
@@ -150,7 +153,7 @@ const Navbar = () => {
                 <ChakraLink
                   key={item}
                   as={Link}
-                  to={`/${item.toLowerCase()}`}
+                  to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
                   onClick={onClose}
                   mb={4}
                 >

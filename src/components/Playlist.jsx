@@ -110,7 +110,6 @@ const Playlist = () => {
               overflow="hidden"
               _hover={{ bg: "gray.800", cursor: "pointer" }}
               transition="background-color 0.3s ease"
-              border="1px solid rgba(255, 255, 255, 0.1)"
               position="relative"
               aspectRatio="16/9"
               transform="translateY(-10px)"

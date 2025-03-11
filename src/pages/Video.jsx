@@ -65,7 +65,9 @@ const Videos = () => {
         templateColumns={{
           base: "repeat(2, 1fr)",
           sm: "repeat(2, 1fr)",
-          md: "repeat(auto-fill, minmax(300px, 1fr))",
+          md: "repeat(3, 1fr)",
+          lg: "repeat(4, 1fr)",
+          xl: "repeat(5, 1fr)",
         }}
         gap={2}
       >
