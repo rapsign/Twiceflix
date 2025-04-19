@@ -92,42 +92,40 @@ const Navbar = () => {
             </Link>
           ))}
         </Flex>
-        <Flex align="center" position="relative">
-          <Input
-            placeholder="Search..."
-            color="white"
-            _placeholder={{ color: "inherit" }}
-            variant="outline"
-            bg="transparent"
-            size="sm"
-            width={{ base: "200px", xl: "300px" }}
-            rounded="full"
-            focusBorderColor="white"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            ml={2}
-            opacity={showSearch ? 1 : 0}
-            visibility={showSearch ? "visible" : "hidden"}
-            transition="opacity 0.3s ease, visibility 0.3s ease"
-            position="absolute"
-            right={0}
-            zIndex={1}
-            pointerEvents={showSearch ? "auto" : "none"}
-          />
-          <IconButton
-            aria-label="Search"
-            aria-expanded={showSearch}
-            icon={<FaSearch />}
-            variant="unstyled"
-            fontSize={{ base: "sm", md: "md" }}
-            onClick={toggleSearch}
-            display="flex"
-            _hover={{ color: "red" }}
-            justifyContent="center"
-            alignItems="center"
-            cursor="pointer"
-            zIndex={2}
-          />
+        <Flex align="center" gap={2}>
+          <Box position="relative">
+            <Input
+              placeholder="Search..."
+              color="white"
+              _placeholder={{ color: "inherit" }}
+              variant="outline"
+              bg="transparent"
+              size="sm"
+              width={{ base: "200px", xl: "300px" }}
+              rounded="full"
+              focusBorderColor="white"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              opacity={showSearch ? 1 : 0}
+              visibility={showSearch ? "visible" : "hidden"}
+              transition="opacity 0.3s ease, visibility 0.3s ease"
+              pointerEvents={showSearch ? "auto" : "none"}
+            />
+            <IconButton
+              aria-label="Search"
+              aria-expanded={showSearch}
+              icon={<FaSearch />}
+              variant="unstyled"
+              fontSize={{ base: "sm", md: "md" }}
+              onClick={toggleSearch}
+              position="absolute"
+              right={{ base: "-8%", md: "-4%" }}
+              top="50%"
+              transform="translateY(-50%)"
+              zIndex={1}
+              _hover={{ color: "red" }}
+            />
+          </Box>
           <IconButton
             aria-label="Menu"
             icon={<FaBars />}

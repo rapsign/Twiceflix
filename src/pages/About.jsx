@@ -147,6 +147,7 @@ const About = () => {
               <Image
                 src={member.profileImage}
                 alt={member.name}
+                loading="lazy"
                 borderRadius="full"
                 boxSize={{ base: "100px", md: "200px" }}
                 objectFit="cover"

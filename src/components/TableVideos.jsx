@@ -40,14 +40,13 @@ const TableVideos = () => {
   const cancelRef = useRef();
   const toast = useToast();
 
-  // Fetch data with pagination and ordering
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const q = query(
         collection(db, "videos"),
         orderBy("published_at", "desc"),
-        limit(100) // Adjust the limit as needed
+        limit(100)
       );
       const querySnapshot = await getDocs(q);
       const videosData = querySnapshot.docs.map((doc) => ({
@@ -73,7 +72,6 @@ const TableVideos = () => {
     fetchData();
   }, [fetchData]);
 
-  // Efficient deletion with batch
   const handleDelete = useCallback(async () => {
     if (videoToDelete) {
       try {
@@ -111,7 +109,6 @@ const TableVideos = () => {
     setIsEditModalOpen(true);
   };
 
-  // Columns definition
   const columns = [
     {
       name: "Thumbnail",
@@ -183,11 +180,7 @@ const TableVideos = () => {
     {
       name: "Action",
       cell: (row) => (
-        <Box
-          display="flex"
-          gap={2}
-          flexDirection={{ base: "column", sm: "row" }}
-        >
+        <Box display="flex" gap={2} flexDirection={{ sm: "row" }}>
           <IconButton
             icon={<BiCog size="1.2em" />}
             rounded="none"

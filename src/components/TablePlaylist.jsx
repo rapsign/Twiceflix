@@ -123,32 +123,45 @@ const TablePlaylists = () => {
     row.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Define columns array
   const columns = [
     {
       name: "Title",
       selector: (row) => row.name,
-      sortable: true,
+      maxWidth: "400px",
     },
     {
       name: "Description",
-      selector: (row) => row.description || "",
-      sortable: true,
+      selector: (row) => row.description,
+      cell: (row) => (
+        <div
+          style={{
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {row.description}
+        </div>
+      ),
+      maxWidth: "1000px",
     },
     {
       name: "Number of Videos",
       selector: (row) => row.number_of_videos || 0,
       sortable: true,
+      maxWidth: "150px",
     },
     {
       name: "Action",
+
       cell: (row) => (
-        <Flex gap={2}>
+        <Box display="flex" gap={2} flexDirection={{ sm: "row" }}>
           <IconButton
-            icon={<BiCog size="1.5em" />}
+            icon={<BiCog size="1.2em" />}
             rounded="none"
             bg="#1f2937"
             color="white"
+            size="sm"
             onClick={() => {
               setSelectedPlaylist(row);
               onOpen();
@@ -157,8 +170,9 @@ const TablePlaylists = () => {
             Edit
           </IconButton>
           <IconButton
-            icon={<BiTrash size="1.5em" />}
+            icon={<BiTrash size="1.2em" />}
             rounded="none"
+            size="sm"
             bg="red"
             color="white"
             onClick={() => {
@@ -168,21 +182,22 @@ const TablePlaylists = () => {
           >
             Delete
           </IconButton>
-        </Flex>
+        </Box>
       ),
+      maxWidth: "150px",
     },
   ];
 
   return (
-    <Box mt={{ base: 12, md: 0 }}>
+    <Box mt={{ base: 12, md: 0 }} rounded="none">
       <Heading mb={5}>
         <Text as="span" color="red">
           TWICEFLIX
         </Text>{" "}
         PLAYLISTS
       </Heading>
-      <Box bg="#1f2937" p={2}>
-        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+      <Box bg="#1f2937" p={2} borderRadius="md" boxShadow="md">
+        <Grid templateColumns="repeat(2, 1fr)" gap={4} mb={4}>
           <GridItem>
             <PlaylistModalForm onPlaylistAdded={handlePlaylistAdded} />
           </GridItem>
@@ -192,16 +207,14 @@ const TablePlaylists = () => {
               color="white"
               mb={4}
               width={{ base: "100%", md: "400px" }}
-              maxWidth="600px"
               onChange={(e) => debouncedSearch(e.target.value)}
             />
           </GridItem>
         </Grid>
-      </Box>
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        <Box overflowX="auto">
+
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
           <DataTable
             columns={columns}
             data={filteredData}
@@ -211,10 +224,10 @@ const TablePlaylists = () => {
             customStyles={{
               rows: {
                 style: {
-                  fontSize: "16px",
+                  fontSize: "14px",
                   color: "#000000",
                   backgroundColor: "#ffffff",
-                  padding: "10px",
+                  padding: "5px 8px",
                 },
               },
               headCells: {
@@ -222,32 +235,34 @@ const TablePlaylists = () => {
                   color: "#ffffff",
                   fontWeight: "bold",
                   backgroundColor: "#1f2937",
+                  padding: "8px 8px",
                 },
               },
               cells: {
                 style: {
                   color: "#000000",
+                  padding: "5px 8px",
                 },
               },
             }}
           />
-        </Box>
-      )}
-      {selectedPlaylist && (
-        <PlaylistEditModal
-          isOpen={isOpen}
-          onClose={onClose}
-          playlist={selectedPlaylist}
-          onPlaylistUpdated={fetchData}
+        )}
+        {selectedPlaylist && (
+          <PlaylistEditModal
+            isOpen={isOpen}
+            onClose={onClose}
+            playlist={selectedPlaylist}
+            onPlaylistUpdated={fetchData}
+          />
+        )}
+        <DeleteConfirmationDialog
+          isOpen={isAlertOpen}
+          onClose={() => setIsAlertOpen(false)}
+          onConfirm={handleDelete}
+          itemName="playlist"
+          ref={cancelRef}
         />
-      )}
-      <DeleteConfirmationDialog
-        isOpen={isAlertOpen}
-        onClose={() => setIsAlertOpen(false)}
-        onConfirm={handleDelete}
-        itemName="playlist"
-        ref={cancelRef}
-      />
+      </Box>
     </Box>
   );
 };
