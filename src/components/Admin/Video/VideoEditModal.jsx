@@ -27,7 +27,7 @@ import {
   where,
   Timestamp,
 } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { db } from "../../../firebase/firebase";
 import moment from "moment";
 
 const VideoEditModal = ({ isOpen, onClose, video, onSave }) => {
@@ -64,7 +64,7 @@ const VideoEditModal = ({ isOpen, onClose, video, onSave }) => {
         const querySnapshot = await getDocs(collection(db, "playlists"));
         const playlists = querySnapshot.docs.map((doc) => ({
           value: doc.id,
-          label: doc.data().name,
+          label: doc.data().title,
         }));
         setPlaylistOptions(playlists);
       } catch (error) {
@@ -234,8 +234,8 @@ const VideoEditModal = ({ isOpen, onClose, video, onSave }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent bg="gray.800">
-        <ModalHeader>Edit Video</ModalHeader>
+      <ModalContent bg="#3F3F3F">
+        <ModalHeader fontWeight="normal">Edit Video</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <FormControl mb={4}>

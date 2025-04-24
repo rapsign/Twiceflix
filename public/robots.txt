@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://twiceflix-f10d7.web.app/sitemap.xml

@@ -1,20 +1,15 @@
-import React from "react";
-import {
-  Box,
-  Button,
-  Heading,
-  Text,
-  useToast,
-  VStack,
-  Divider,
-} from "@chakra-ui/react";
+import { Box, Button, Text, useToast, VStack, Divider } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebase/firebase";
+import { TextLogo } from "../components/Logo";
 
 const Login = () => {
   const toast = useToast();
   const navigate = useNavigate();
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   const handleLogin = async () => {
     try {
@@ -38,17 +33,24 @@ const Login = () => {
       alignItems="center"
       justifyContent="center"
     >
-      <Box maxW="lg" p={6} borderRadius="md" boxShadow="lg" bg="gray.800">
+      <Box maxW="lg" p={6} borderRadius="md" boxShadow="lg" bg="#303030">
         <VStack spacing={4} align="stretch">
-          <Heading textAlign="center" color="red.500">
-            TWICEFLIX
-          </Heading>
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            padding={6}
+          >
+            <TextLogo />
+          </Box>
           <Divider />
           <Text textAlign="center" color="white">
             Please sign in to access the admin panel.
           </Text>
           <Button
             colorScheme="red"
+            background="red"
+            color="white"
             onClick={handleLogin}
             size="lg"
             fontSize="lg"
@@ -57,6 +59,16 @@ const Login = () => {
           >
             Sign in with Google
           </Button>
+
+          <Text
+            textAlign="center"
+            color="white"
+            onClick={handleBack}
+            cursor="pointer"
+            _hover={{ textDecoration: "underline", color: "#ccc" }}
+          >
+            Back
+          </Text>
         </VStack>
       </Box>
     </Box>

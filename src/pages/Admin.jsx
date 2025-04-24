@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
 import { Box } from "@chakra-ui/react";
-import { useNavigate, Routes, Route } from "react-router-dom";
-import { auth, signOut, onAuthStateChanged } from "../firebase/firebase";
-import Sidebar from "../components/Sidebar";
-import Dashboard from "../components/Dashboard";
-import TableVideos from "../components/TableVideos";
-import TablePlaylists from "../components/TablePlaylist";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import Sidebar from "../components/Admin/Sidebar";
+import Dashboard from "./Dashboard";
+import TableVideos from "../components/Admin/Video/TableVideos";
+import TablePlaylists from "../components/Admin/Playlist/TablePlaylist";
+import { signOut, getAuth } from "firebase/auth";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const auth = getAuth();
 
   const handleLogout = async () => {
     try {
@@ -20,32 +18,22 @@ const Admin = () => {
       console.error("Logout Error:", error);
     }
   };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setLoading(false);
-      } else {
-        navigate("/login");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [navigate]);
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
   return (
-    <Box display="flex">
-      <Sidebar onLogout={handleLogout} />
-      <Box ml={{ base: "0", md: "250px" }} p={4} w="full">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="videos" element={<TableVideos />} />
-          <Route path="playlists" element={<TablePlaylists />} />
-        </Routes>
+    <Box maxW="100vw">
+      <Box display="flex">
+        <Sidebar onLogout={handleLogout} />
+        <Box
+          ml={{ base: "72px", md: "180px", lg: "250px" }}
+          w={{ base: "calc(100vw - 72px)", md: "calc(100vw - 180px)" }}
+          p={4}
+        >
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="videos" element={<TableVideos />} />
+            <Route path="playlists" element={<TablePlaylists />} />
+            <Route path="*" element={<Navigate to="/admin" replace />} />
+          </Routes>
+        </Box>
       </Box>
     </Box>
   );

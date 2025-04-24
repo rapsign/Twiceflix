@@ -19,8 +19,9 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import LoadingSpinner from "../components/LoadingSpinner";
-import VideoModal from "../components/VideoModal";
-import PlaylistModal from "../components/PlaylistModal";
+import VideoModal from "../components/Videos/VideoModal";
+import PlaylistModal from "../components/Playlist/PlaylistModal";
+import { Helmet } from "react-helmet";
 
 const SearchPage = () => {
   const location = useLocation();
@@ -104,7 +105,7 @@ const SearchPage = () => {
         { selector: (row) => row.title, accessor: "title" },
       ];
       const playlistColumns = [
-        { selector: (row) => row.name, accessor: "name" },
+        { selector: (row) => row.title, accessor: "title" },
       ];
 
       const filteredVideos = filterData(videos, videoColumns, searchQuery);
@@ -155,114 +156,130 @@ const SearchPage = () => {
   }
 
   return (
-    <Box p={5}>
-      <Heading
-        mb={3}
-        mt={{ base: "10", md: "20" }}
-        fontSize={{ base: "lg", md: "2xl" }}
-      >
-        Search Results for: "{queryTerm}"
-      </Heading>
-      {results.length > 0 ? (
-        <Grid
-          templateColumns={{
-            base: "repeat(2, 1fr)",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-            lg: "repeat(4, 1fr)",
-            xl: "repeat(5, 1fr)",
-          }}
-          gap={2}
+    <>
+      <Helmet>
+        <meta
+          name="description"
+          content="TWICEFLIX is your ultimate source for everything TWICE! Watch their latest music videos, performances, and behind-the-scenes content."
+        />
+        <meta
+          name="keywords"
+          content="TWICE, TWICEFLIX, K-pop, music, performances, videos, TWICE members"
+        />
+        <meta name="author" content="RapSign" />
+      </Helmet>
+      <Box p={5}>
+        <Heading
+          mb={3}
+          mt={{ base: "10", md: "20" }}
+          fontSize={{ base: "lg", md: "2xl" }}
+          fontWeight="extrabold"
         >
-          {results.map((result) => (
-            <Box
-              key={result.id}
-              overflow="hidden"
-              position="relative"
-              cursor="pointer"
-              transition="background-color 0.3s ease"
-              border="1px solid rgba(255, 255, 255, 0.1)"
-              onClick={() => openModal(result)}
-              aspectRatio="16/9"
-              _hover={{
-                "& .overlay": {
-                  opacity: 1,
-                  visibility: "visible",
-                },
-              }}
-            >
-              <Image
-                src={result.thumbnail}
-                alt={result.title}
-                objectFit="cover"
-                width="100%"
-                height="100%"
-              />
+          Search Results for: "{queryTerm}"
+        </Heading>
+        {results.length > 0 ? (
+          <Grid
+            templateColumns={{
+              base: "repeat(2, 1fr)",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(3, 1fr)",
+              lg: "repeat(4, 1fr)",
+              xl: "repeat(5, 1fr)",
+            }}
+            gap={2}
+          >
+            {results.map((result) => (
               <Box
-                className="overlay"
-                position="absolute"
-                bottom={0}
-                left={0}
-                width="100%"
-                p={2}
-                bg="linear-gradient(to top right, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6))"
-                color="white"
-                opacity={0}
-                visibility="hidden"
-                transition="opacity 0.3s ease, visibility 0.3s ease"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
+                key={result.id}
+                overflow="hidden"
+                borderRadius="xl"
+                position="relative"
+                cursor="pointer"
+                transition="background-color 0.3s ease"
+                border="1px solid rgba(255, 255, 255, 0.1)"
+                onClick={() => openModal(result)}
+                aspectRatio="16/9"
+                _hover={{
+                  "& .overlay": {
+                    opacity: 1,
+                    visibility: "visible",
+                  },
+                }}
               >
-                <Text
-                  isTruncated
-                  fontSize="sm"
-                  textOverflow="ellipsis"
-                  whiteSpace="nowrap"
-                  textAlign="center"
-                >
-                  {result.type === "playlist" ? result.name : result.title}
-                </Text>
-              </Box>
-              {result.type === "playlist" && (
-                <Badge
+                <Image
+                  src={result.thumbnail}
+                  alt={result.title}
+                  objectFit="cover"
+                  width="100%"
+                  height="100%"
+                />
+                <Box
+                  className="overlay"
                   position="absolute"
-                  top={0}
+                  bottom={0}
                   left={0}
-                  backgroundColor="red"
+                  width="100%"
+                  p={2}
+                  bg="linear-gradient(to top right, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6))"
                   color="white"
-                  paddingX={{ base: 2, md: 3 }}
-                  paddingY={{ base: 0, md: 1 }}
-                  fontSize={{ base: "0.5em", md: "0.7em" }}
-                  size="sm"
-                  fontWeight="bold"
+                  opacity={0}
+                  visibility="hidden"
+                  transition="opacity 0.3s ease, visibility 0.3s ease"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
                 >
-                  Playlist
-                </Badge>
-              )}
-            </Box>
-          ))}
-        </Grid>
-      ) : (
-        <Text>No results found.</Text>
-      )}
+                  <Text
+                    isTruncated
+                    fontSize="sm"
+                    textOverflow="ellipsis"
+                    whiteSpace="nowrap"
+                    textAlign="center"
+                  >
+                    {result.type === "playlist" ? result.title : result.title}
+                  </Text>
+                </Box>
+                {result.type === "playlist" && (
+                  <Badge
+                    position="absolute"
+                    borderEndRadius="lg"
+                    top={2}
+                    left={0}
+                    backgroundColor="red"
+                    color="white"
+                    px={{ base: 2, md: 3 }}
+                    py={{ base: 1, md: 1 }}
+                    fontSize={{ base: "10px", md: "sm" }}
+                    fontWeight="bold"
+                    zIndex={2}
+                  >
+                    Playlist
+                  </Badge>
+                )}
+              </Box>
+            ))}
+          </Grid>
+        ) : (
+          <Text>No results found.</Text>
+        )}
 
-      {selectedVideo && (
-        <VideoModal
-          isOpen={isVideoModalOpen}
-          onClose={onVideoModalClose}
-          video={selectedVideo}
-        />
-      )}
+        {selectedVideo && (
+          <VideoModal
+            isOpen={isVideoModalOpen}
+            onClose={onVideoModalClose}
+            video={selectedVideo}
+          />
+        )}
 
-      {selectedPlaylist && (
-        <PlaylistModal
-          isOpen={isPlaylistModalOpen}
-          onClose={closeModal}
-          playlist={selectedPlaylist}
-        />
-      )}
-    </Box>
+        {selectedPlaylist && (
+          <PlaylistModal
+            isOpen={isPlaylistModalOpen}
+            onClose={closeModal}
+            playlist={selectedPlaylist}
+          />
+        )}
+      </Box>
+    </>
   );
 };
 

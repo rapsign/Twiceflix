@@ -3,52 +3,27 @@ import {
   ModalOverlay,
   ModalContent,
   ModalCloseButton,
+  Badge,
   Button,
   Box,
   Image,
   Text,
-  Link,
   Heading,
   Flex,
   Grid,
   GridItem,
 } from "@chakra-ui/react";
 import { FaPlay } from "react-icons/fa";
-import { useState, useEffect } from "react";
-import { getDocs, collection, where, query } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PlaylistModal from "./PlaylistModal";
+import PlaylistModal from "../Playlist/PlaylistModal";
+import usePlaylistsByVideo from "../../hooks/usePlaylistsByVideo";
 
 const VideoModal = ({ isOpen, onClose, video }) => {
-  const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchPlaylists = async () => {
-      try {
-        const playlistsQuery = query(
-          collection(db, "playlists"),
-          where("__name__", "in", video.playlists)
-        );
-        const querySnapshot = await getDocs(playlistsQuery);
-
-        const fetchedPlaylists = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        setPlaylists(fetchedPlaylists);
-      } catch (error) {
-        console.error("Error fetching playlists:", error);
-      }
-    };
-
-    if (video?.playlists?.length) {
-      fetchPlaylists();
-    }
-  }, [video]);
+  const { playlists, loading } = usePlaylistsByVideo(video);
 
   const handlePlayClick = () => {
     navigate(`/video-player`, { state: { youtubeUrl: video.youtube_url } });
@@ -69,26 +44,22 @@ const VideoModal = ({ isOpen, onClose, video }) => {
       >
         <ModalOverlay />
         <ModalContent
-          bg="#333333"
+          bg="#0f0f0f"
           position="relative"
-          borderRadius="none"
           maxWidth={{ base: "auto", md: "800px" }}
           margin="auto"
         >
           <ModalCloseButton zIndex={100} size="xl" />
           <Box
             position="relative"
-            width="100%"
-            height="400px"
             overflow="hidden"
             aspectRatio="16/9"
+            borderTopRadius="10px"
           >
             <Image
               src={video.thumbnail}
               alt={video.title}
               objectFit="cover"
-              width="100%"
-              height="100%"
               rounded="none"
             />
             <Box
@@ -98,21 +69,25 @@ const VideoModal = ({ isOpen, onClose, video }) => {
               right="0"
               p="0"
               height="110%"
-              background="linear-gradient(180deg, rgba(51,51,51,0) 9%, rgba(51,51,51,0.742734593837535) 53%, rgba(51,51,51,1) 83%)"
+              background="linear-gradient(180deg, rgba(15, 15, 15, 0) 9%, rgba(15, 15, 15, 0.74) 53%, rgba(15, 15, 15, 1) 83%)"
             />
             <Box
               position="absolute"
-              top={{ base: "50%", md: "60%" }}
+              top={{ base: "60%", md: "70%" }}
               px={5}
               color="white"
             >
-              <Heading size="lg">{video.title}</Heading>
+              <Heading
+                size={{ base: "sm", md: "md", lg: "lg" }}
+                fontWeight="bold"
+              >
+                {video.title}
+              </Heading>
               <Flex align="center">
                 <Button
                   bgColor="white"
                   color="black"
-                  size={{ base: "sm", md: "md", lg: "lg" }}
-                  rounded="none"
+                  size={{ base: "xs", md: "md", lg: "lg" }}
                   leftIcon={<FaPlay />}
                   variant="solid"
                   onClick={handlePlayClick}
@@ -132,30 +107,38 @@ const VideoModal = ({ isOpen, onClose, video }) => {
               <Box>
                 <Text
                   color="white"
-                  textAlign="justify"
+                  fontFamily="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
                   fontSize={{ base: "xs", md: "sm" }}
                 >
                   {video.description}
                 </Text>
               </Box>
             </GridItem>
-            <GridItem colSpan={1}>
+            <GridItem colSpan={2}>
               <Box>
-                {playlists.length > 0 ? (
-                  <Text color="gray.500" fontSize={{ base: "xs", md: "sm" }}>
-                    Playlist :{" "}
-                    {playlists
-                      .map((playlist, index) => (
-                        <Link
-                          key={playlist.id}
-                          color="white"
-                          onClick={() => handlePlaylistClick(playlist)}
-                        >
-                          {playlist.name || "Untitled Playlist"}
-                        </Link>
-                      ))
-                      .reduce((prev, curr) => [prev, ", ", curr])}
-                  </Text>
+                {loading ? (
+                  <Text color="gray.500">Loading playlists...</Text>
+                ) : playlists.length > 0 ? (
+                  <Flex wrap="wrap" gap={2}>
+                    {playlists.map((playlist) => (
+                      <Badge
+                        key={playlist.id}
+                        variant="subtle"
+                        px={3}
+                        py={1}
+                        backgroundColor={"#40403a"}
+                        color={"white"}
+                        borderRadius="md"
+                        fontSize={{ base: "10px", md: "xs" }}
+                        fontWeight="normal"
+                        cursor="pointer"
+                        onClick={() => handlePlaylistClick(playlist)}
+                        _hover={{ bg: "gray" }}
+                      >
+                        {playlist.title || "Untitled Playlist"}
+                      </Badge>
+                    ))}
+                  </Flex>
                 ) : (
                   <Text color="gray.500"></Text>
                 )}

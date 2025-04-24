@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { auth, provider, signInWithPopup, signOut } from "../firebase/firebase";
 
-// Async thunk to handle login
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (_, { rejectWithValue }) => {
@@ -14,7 +13,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Async thunk to handle logout
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
@@ -28,7 +26,7 @@ export const logoutUser = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null, // Store only user ID or email, not the entire user object
+    user: null,
     status: "idle",
     error: null,
   },

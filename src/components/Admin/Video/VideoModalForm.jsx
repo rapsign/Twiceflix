@@ -16,6 +16,8 @@ import {
   Image,
   useDisclosure,
   useToast,
+  Text,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { BiPlus } from "react-icons/bi";
 import axios from "axios";
@@ -29,10 +31,11 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { db } from "../../../firebase/firebase";
 
 const VideoModalForm = ({ onSave }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const [formData, setFormData] = useState({
     youtube_url: "",
     title: "",
@@ -54,13 +57,13 @@ const VideoModalForm = ({ onSave }) => {
         const querySnapshot = await getDocs(collection(db, "playlists"));
         const playlistsData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          name: doc.data().name,
+          title: doc.data().title,
         }));
         setPlaylistsData(playlistsData);
         setPlaylistOptions(
           playlistsData.map((playlist) => ({
             value: playlist.id,
-            label: playlist.name,
+            label: playlist.title,
           }))
         );
       } catch (error) {
@@ -234,13 +237,27 @@ const VideoModalForm = ({ onSave }) => {
     <>
       <Button
         onClick={onOpen}
-        colorScheme="red"
-        rounded="none"
-        py={5}
-        size={{ base: "xs", md: "md" }}
-        leftIcon={<BiPlus size="2em" />}
+        colorScheme="white"
+        rounded="full"
+        variant="outline"
+        border="1px"
+        borderColor="#3F3F3F"
+        _hover={{ background: "#3f3f3f" }}
+        px={{ base: 0, md: 4 }}
+        py={{ base: 0, md: 2 }}
+        minW="unset"
+        w={{ base: "30px", md: "auto" }}
+        h={{ base: "30px", md: "auto" }}
+        fontSize={{ base: "14px", md: "15px" }}
       >
-        Add Videos
+        {isMobile ? (
+          <BiPlus />
+        ) : (
+          <>
+            <BiPlus size="1.4em" style={{ marginRight: "6px" }} />
+            <Text>Add Videos</Text>
+          </>
+        )}
       </Button>
 
       <Modal
@@ -251,7 +268,7 @@ const VideoModalForm = ({ onSave }) => {
         }}
       >
         <ModalOverlay />
-        <ModalContent bg="gray.800">
+        <ModalContent bg="#3f3f3f">
           <ModalHeader>Add New Video</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -299,7 +316,7 @@ const VideoModalForm = ({ onSave }) => {
                     }}
                     minHeight="200px"
                   />
-                  <Box textAlign="right" fontSize="sm" color="gray.400">
+                  <Box textAlign="right" fontSize="sm" color="white">
                     {formData.description.length}/300
                   </Box>
                 </FormControl>
@@ -311,7 +328,7 @@ const VideoModalForm = ({ onSave }) => {
                     options={playlistOptions}
                     value={formData.playlists.map((id) => ({
                       value: id,
-                      label: playlistsData.find((p) => p.id === id)?.name,
+                      label: playlistsData.find((p) => p.id === id)?.title,
                     }))}
                     onChange={handleSelectPlaylists}
                     styles={{

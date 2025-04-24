@@ -15,16 +15,19 @@ import {
   useDisclosure,
   useToast,
   Box,
+  Text,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { BiPlus } from "react-icons/bi";
 import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { db } from "../../../firebase/firebase";
 
 const PlaylistModalForm = ({ onPlaylistAdded }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const toast = useToast();
   const [formData, setFormData] = useState({
-    name: "",
+    title: "",
     description: "",
   });
 
@@ -36,7 +39,7 @@ const PlaylistModalForm = ({ onPlaylistAdded }) => {
   const handleSave = async () => {
     try {
       await addDoc(collection(db, "playlists"), {
-        name: formData.name,
+        title: formData.title,
         description: formData.description,
         created_at: new Date(),
       });
@@ -65,10 +68,9 @@ const PlaylistModalForm = ({ onPlaylistAdded }) => {
     }
   };
 
-  // Reset form data
   const resetFormData = () => {
     setFormData({
-      name: "",
+      title: "",
       description: "",
     });
   };
@@ -77,13 +79,27 @@ const PlaylistModalForm = ({ onPlaylistAdded }) => {
     <>
       <Button
         onClick={onOpen}
-        colorScheme="red"
-        rounded="none"
-        py={5}
-        size={{ base: "xs", md: "md" }}
-        leftIcon={<BiPlus size="2em" />}
+        colorScheme="white"
+        rounded="full"
+        variant="outline"
+        border="1px"
+        borderColor="#3F3F3F"
+        _hover={{ background: "#3f3f3f" }}
+        px={{ base: 0, md: 4 }}
+        py={{ base: 0, md: 2 }}
+        minW="unset"
+        w={{ base: "30px", md: "auto" }}
+        h={{ base: "30px", md: "auto" }}
+        fontSize={{ base: "14px", md: "15px" }}
       >
-        Add Playlist
+        {isMobile ? (
+          <BiPlus />
+        ) : (
+          <>
+            <BiPlus size="1.5em" style={{ marginRight: "6px" }} />
+            <Text>Add Playlist</Text>
+          </>
+        )}
       </Button>
 
       <Modal
@@ -94,15 +110,15 @@ const PlaylistModalForm = ({ onPlaylistAdded }) => {
         }}
       >
         <ModalOverlay />
-        <ModalContent bg="gray.800">
+        <ModalContent bg="#3f3f3f">
           <ModalHeader>Add New Playlist</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl mb={4}>
               <FormLabel>Playlist Name</FormLabel>
               <Input
-                name="name"
-                value={formData.name}
+                name="title"
+                value={formData.title}
                 onChange={handleChange}
               />
             </FormControl>

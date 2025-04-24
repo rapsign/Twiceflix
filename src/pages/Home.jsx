@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Box } from "@chakra-ui/react";
-import HeroSection from "../components/HeroSection";
-import VideoList from "../components/VideoList";
-import Playlist from "../components/Playlist";
-import PlaylistSwiper from "../components/PlaylistSwiper";
+import HeroSection from "../components/Hero/HeroSection";
+import VideoList from "../components/Videos/VideoSwiper";
+import Playlist from "../components/Playlist/Playlist";
+import PlaylistSwiper from "../components/Playlist/PlaylistSwiper";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { Helmet } from "react-helmet";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -22,22 +23,35 @@ const Home = () => {
   }
 
   return (
-    <Box position="relative">
-      <HeroSection />
-      <Box
-        position="absolute"
-        top="80%"
-        left="0"
-        width="100%"
-        zIndex="1"
-        p={4}
-        bg="transparent"
-      >
-        <VideoList />
-        <Playlist />
-        <PlaylistSwiper />
+    <>
+      <Helmet>
+        <meta
+          name="description"
+          content="TWICEFLIX is your ultimate source for everything TWICE! Watch their latest music videos, performances, and behind-the-scenes content."
+        />
+        <meta
+          name="keywords"
+          content="TWICE, TWICEFLIX, K-pop, music, performances, videos, TWICE members"
+        />
+        <meta name="author" content="RapSign" />
+      </Helmet>
+      <Box position="relative">
+        <HeroSection />
+        <Box
+          position="absolute"
+          top="80%"
+          left="0"
+          width="100%"
+          zIndex="1"
+          p={4}
+          bg="transparent"
+        >
+          <VideoList />
+          <Playlist />
+          <PlaylistSwiper />
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 

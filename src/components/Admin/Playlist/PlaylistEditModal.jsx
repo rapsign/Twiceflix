@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
+import DeleteConfirmationDialog from "../DeleteConfirmationDialog";
 import Select, { components } from "react-select";
 import {
   Modal,
@@ -33,7 +33,7 @@ import {
   arrayRemove,
   arrayUnion,
 } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { db } from "../../../firebase/firebase";
 import { CloseButton } from "@chakra-ui/react";
 
 const PlaylistEditModal = ({
@@ -42,7 +42,7 @@ const PlaylistEditModal = ({
   playlist,
   onPlaylistUpdated,
 }) => {
-  const [playlistTitle, setPlaylistTitle] = useState(playlist.name);
+  const [playlistTitle, setPlaylistTitle] = useState(playlist.title);
   const [playlistDescription, setPlaylistDescription] = useState(
     playlist.description || ""
   );
@@ -50,13 +50,13 @@ const PlaylistEditModal = ({
   const [allVideos, setAllVideos] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [videoToDelete, setVideoToDelete] = useState(null); // Store the video to delete
+  const [videoToDelete, setVideoToDelete] = useState(null);
   const cancelRef = useRef();
   const toast = useToast();
 
   useEffect(() => {
     if (isOpen) {
-      setPlaylistTitle(playlist.name);
+      setPlaylistTitle(playlist.title);
       setPlaylistDescription(playlist.description || "");
 
       const fetchPlaylistVideos = async () => {
@@ -115,11 +115,25 @@ const PlaylistEditModal = ({
         <Image
           src={props.data.thumbnail}
           alt={props.data.title}
-          boxSize="50px"
+          width="130px"
           mr={3}
           borderRadius="md"
         />
-        <Text color="black">{props.data.label}</Text>
+        <Text
+          color="black"
+          fontSize="xs"
+          style={{
+            fontSize: "12px",
+            color: "#3f3f3f",
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {props.data.label}
+        </Text>
       </Flex>
     </components.Option>
   );
@@ -130,11 +144,14 @@ const PlaylistEditModal = ({
         <Image
           src={props.data.thumbnail}
           alt={props.data.title}
-          boxSize="30px"
+          width="36px"
           mr={3}
           borderRadius="md"
+          flexShrink={0}
         />
-        <Text color="black">{props.data.label}</Text>
+        <Text color="black" fontSize="xs">
+          {props.data.label}
+        </Text>
       </Flex>
     </components.SingleValue>
   );
@@ -143,7 +160,7 @@ const PlaylistEditModal = ({
     try {
       const playlistRef = doc(db, "playlists", playlist.id);
       await updateDoc(playlistRef, {
-        name: playlistTitle,
+        title: playlistTitle,
         description: playlistDescription,
       });
 
@@ -153,7 +170,7 @@ const PlaylistEditModal = ({
           playlists: arrayUnion(playlist.id),
         });
         setVideos((prevVideos) => [...prevVideos, selectedVideo.data]);
-        setSelectedVideo(null); // Reset selected video after adding
+        setSelectedVideo(null);
       }
 
       toast({
@@ -178,7 +195,7 @@ const PlaylistEditModal = ({
   };
 
   const handleClose = () => {
-    setPlaylistTitle(playlist.name);
+    setPlaylistTitle(playlist.title);
     setPlaylistDescription(playlist.description || "");
     setVideos([]);
     setSelectedVideo(null);
@@ -201,7 +218,6 @@ const PlaylistEditModal = ({
         videos: arrayRemove(videoToDelete),
       });
 
-      // Remove the video from the local state
       setVideos((prevVideos) =>
         prevVideos.filter((video) => video.id !== videoToDelete)
       );
@@ -250,7 +266,7 @@ const PlaylistEditModal = ({
   return (
     <Modal isOpen={isOpen} size="xl" onClose={handleClose}>
       <ModalOverlay />
-      <ModalContent bg="gray.800">
+      <ModalContent bg="#3f3f3f">
         <ModalHeader>Edit Playlist</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -272,7 +288,7 @@ const PlaylistEditModal = ({
               }}
               minHeight="200px"
             />
-            <Box textAlign="right" fontSize="sm" color="gray.400">
+            <Box textAlign="right" fontSize="sm" color="#3f3f3f">
               {playlistDescription.length}/300
             </Box>
           </FormControl>
@@ -310,52 +326,69 @@ const PlaylistEditModal = ({
           </FormControl>
           <FormLabel>Videos in Playlist</FormLabel>
           <Box
-            mt={4}
+            mt={2}
             maxHeight="300px"
             overflowY="auto"
+            borderRadius="xl"
             sx={{
               "&::-webkit-scrollbar": {
-                display: "none",
+                width: "8px",
               },
-              "&": {
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#ccc",
+                borderRadius: "10px",
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#4c4c4c",
+                borderRadius: "10px",
               },
             }}
           >
-            <List spacing={5}>
+            <List spacing={2}>
               {videos.length > 0 ? (
                 videos.map((video) => (
                   <ListItem
                     key={video.id}
                     color="white"
-                    bg="gray.700"
-                    p={4}
-                    borderRadius="md"
+                    bg="#4f4d4d"
+                    width="99%"
+                    p={2}
+                    borderRadius="xl"
                   >
-                    <Flex align="center" spacing={4}>
+                    <Flex align="center">
                       <Image
                         src={video.thumbnail}
                         alt={video.title}
                         aspectRatio="16/9"
                         objectFit="cover"
-                        borderRadius="md"
-                        w="150px"
+                        borderRadius="xl"
                         mr={4}
+                        w={{ base: "100px", md: "130px" }}
                       />
                       <Box flex="1">
-                        <Text fontWeight="bold" fontSize="xs" mb={1}>
+                        <Text
+                          fontWeight="bold"
+                          fontSize="xs"
+                          mb={1}
+                          w={{ base: "98%", md: "96%" }}
+                        >
                           {video.title}
                         </Text>
                       </Box>
                       <Box>
                         <IconButton
-                          icon={<CloseButton />}
-                          size="sm"
+                          icon={<CloseButton boxSize="1" />}
+                          height="30px"
+                          width="30px"
+                          minW="unset"
                           rounded="full"
+                          p="2"
                           variant="outline"
-                          color="white"
                           onClick={() => handleRemoveVideo(video.id)}
+                          aria-label="Remove Video"
+                          color="white"
+                          borderColor="#ccc"
+                          _hover={{ background: "#ccc" }}
                         />
                       </Box>
                     </Flex>

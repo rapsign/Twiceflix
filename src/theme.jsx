@@ -6,7 +6,22 @@ const theme = extendTheme({
       "html, body": {
         height: "100%",
         margin: 0,
-        backgroundColor: "black",
+        backgroundColor: "#0f0f0f",
+        "&::-webkit-scrollbar": {
+          width: "8px",
+          height: "8px",
+        },
+        "&::-webkit-scrollbar-track": {
+          background: "#0f0f0f",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          background: "#888",
+          borderRadius: "5px",
+        },
+        "&::-webkit-scrollbar-thumb:hover": {
+          background: "#555",
+        },
+
         color: "white",
       },
       "*": {
@@ -14,6 +29,7 @@ const theme = extendTheme({
       },
     },
   },
+  fonts: {},
   components: {
     Box: {
       baseStyle: {
@@ -28,6 +44,7 @@ const theme = extendTheme({
     Button: {
       baseStyle: {
         borderRadius: "md",
+        fontFamily: "system-ui, sans-serif",
       },
     },
   },

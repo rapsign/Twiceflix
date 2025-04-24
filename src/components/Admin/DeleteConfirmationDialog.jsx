@@ -14,17 +14,22 @@ const DeleteConfirmationDialog = forwardRef(
     return (
       <AlertDialog isOpen={isOpen} leastDestructiveRef={ref} onClose={onClose}>
         <AlertDialogOverlay>
-          <AlertDialogContent bg="gray.800">
+          <AlertDialogContent bg="#3f3f3f" borderRadius="xl">
             <AlertDialogHeader>Confirm Delete</AlertDialogHeader>
             <AlertDialogBody>
               Are you sure you want to delete this {itemName}? This action
               cannot be undone.
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={ref} onClick={onClose}>
+              <Button ref={ref} onClick={onClose} borderRadius="xl">
                 Cancel
               </Button>
-              <Button colorScheme="red" ml={3} onClick={onConfirm}>
+              <Button
+                colorScheme="red"
+                ml={3}
+                onClick={onConfirm}
+                borderRadius="xl"
+              >
                 Delete
               </Button>
             </AlertDialogFooter>

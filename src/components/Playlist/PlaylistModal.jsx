@@ -14,42 +14,15 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { FaPlay } from "react-icons/fa";
-import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
-import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
+import usePlaylistEpisodes from "../../hooks/usePlaylistEpisodes";
 
 const PlaylistModal = ({ isOpen, onClose, playlist }) => {
-  const [episodes, setEpisodes] = useState([]);
-  const [selectedVideo, setSelectedVideo] = useState(null);
+  const { episodes, selectedVideo, setSelectedVideo } = usePlaylistEpisodes(
+    isOpen,
+    playlist
+  );
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isOpen && playlist) {
-      const fetchEpisodes = async () => {
-        try {
-          const episodesQuery = query(
-            collection(db, "videos"),
-            where("playlists", "array-contains", playlist.id),
-            orderBy("published_at", "desc")
-          );
-          const episodeSnapshot = await getDocs(episodesQuery);
-          const episodesData = episodeSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setEpisodes(episodesData);
-
-          if (episodesData.length > 0) {
-            setSelectedVideo(episodesData[0]);
-          }
-        } catch (error) {
-          console.error("Error fetching episodes:", error);
-        }
-      };
-
-      fetchEpisodes();
-    }
-  }, [isOpen, playlist]);
 
   const handlePlayClick = () => {
     if (selectedVideo) {
@@ -64,23 +37,26 @@ const PlaylistModal = ({ isOpen, onClose, playlist }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "full" }}>
+    <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "xl" }}>
       <ModalOverlay />
       <ModalContent
-        bg="#333333"
+        bg="#0f0f0f"
         position="relative"
-        borderRadius="none"
         maxWidth={{ base: "auto", md: "800px" }}
         margin="auto"
       >
         <ModalCloseButton zIndex={100} size="xl" />
-        <Box position="relative" width="100%" height="400px" overflow="hidden">
+        <Box
+          position="relative"
+          width="100%"
+          aspectRatio="16/9"
+          overflow="hidden"
+          borderTopRadius="xl"
+        >
           <Image
             src={selectedVideo ? selectedVideo.thumbnail : playlist.thumbnail}
             alt={selectedVideo ? selectedVideo.title : playlist.title}
             objectFit="cover"
-            width="100%"
-            height="100%"
             rounded="none"
           />
           <Box
@@ -89,17 +65,24 @@ const PlaylistModal = ({ isOpen, onClose, playlist }) => {
             left="0"
             right="0"
             height="50%"
-            background="linear-gradient(180deg, rgba(51,51,51,0) 9%, rgba(51,51,51,0.742734593837535) 53%, rgba(51,51,51,1) 83%)"
+            background="linear-gradient(180deg, rgba(15, 15, 15, 0) 9%, rgba(15, 15, 15, 0.74) 53%, rgba(15, 15, 15, 1) 83%)"
           />
-          <Box position="absolute" top="60%" px={5} color="white">
-            <Heading size="lg">
+          <Box
+            position="absolute"
+            top={{ base: "60%", md: "70%" }}
+            px={5}
+            color="white"
+          >
+            <Heading
+              size={{ base: "md", md: "md", lg: "lg" }}
+              fontWeight="bold"
+            >
               {selectedVideo ? selectedVideo.title : playlist.title}
             </Heading>
             <Button
               bgColor="white"
               color="black"
-              size={{ base: "sm", md: "md", lg: "lg" }}
-              rounded="none"
+              size={{ base: "xs", md: "md", lg: "lg" }}
               leftIcon={<FaPlay />}
               variant="solid"
               mt={2}
@@ -111,44 +94,50 @@ const PlaylistModal = ({ isOpen, onClose, playlist }) => {
         </Box>
         <Box
           p={5}
-          background="linear-gradient(to bottom, rgba(51, 51, 51, 0) 0%, rgba(51, 51, 51, 0.8) 100%)"
+          borderRadius="xl"
+          background="linear-gradient(180deg, rgba(15, 15, 15, 0) 9%, rgba(15, 15, 15, 0.74) 53%, rgba(15, 15, 15, 1) 83%)"
         >
-          <Heading size="md" mb={2}>
-            {playlist.name}
+          <Heading size={{ base: "sm", md: "lg" }} mb={2} fontWeight="bold">
+            {playlist.title}
           </Heading>
           <Text
             color="white"
-            textAlign="justify"
             fontSize={{ base: "xs", md: "sm" }}
+            fontWeight="normal"
           >
             {playlist.description}
           </Text>
-          <Heading size="md" my={5}>
+          <Heading size={{ base: "sm", md: "sm" }} my={5} fontWeight="semibold">
             Videos
           </Heading>
           <Box
-            maxHeight="600px"
+            maxHeight="300px"
             overflowY="auto"
+            borderRadius="xl"
             sx={{
               "&::-webkit-scrollbar": {
-                display: "none",
+                width: "8px",
               },
-              "&": {
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#ccc",
+                borderRadius: "10px",
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#4c4c4c",
+                borderRadius: "10px",
               },
             }}
           >
-            <List spacing={4}>
+            <List spacing={2}>
               {episodes.length > 0 ? (
                 episodes.map((episode) => (
                   <ListItem
                     key={episode.id}
                     color="white"
-                    mb={2}
-                    px={4}
-                    py={2}
+                    width="99%"
+                    p={1}
                     cursor="pointer"
+                    borderRadius="xl"
                     _hover={{ bg: "#6b6b6b" }}
                     bg={
                       selectedVideo?.id === episode.id
@@ -162,28 +151,50 @@ const PlaylistModal = ({ isOpen, onClose, playlist }) => {
                         src={episode.thumbnail}
                         alt={episode.title}
                         aspectRatio="16/9"
+                        borderRadius="xl"
                         objectFit="cover"
                         mr={4}
-                        w={{ base: "100px", md: "200px" }}
+                        w={{ base: "100px", md: "130px" }}
                       />
                       <Box>
                         <Text
-                          fontWeight="bold"
+                          fontWeight="semibold"
                           mb={1}
-                          isTruncated
-                          textOverflow="ellipsis"
+                          isTruncated={{ base: "false", md: "true" }}
                           fontSize={{ base: "xs", md: "sm" }}
-                          w={{ base: "200px", md: "500px" }}
+                          w={{ base: "200px", md: "auto" }}
+                          sx={{
+                            display: {
+                              base: "-webkit-box",
+                              md: "block",
+                            },
+                            WebkitLineClamp: {
+                              base: "4",
+                              md: "unset",
+                            },
+                            WebkitBoxOrient: {
+                              base: "vertical",
+                              md: "unset",
+                            },
+                            overflow: {
+                              base: "hidden",
+                              md: "visible",
+                            },
+                            textOverflow: {
+                              base: "ellipsis",
+                              md: "unset",
+                            },
+                          }}
                         >
                           {episode.title}
                         </Text>
                         <Text
-                          w={{ base: "auto", md: "500px" }}
-                          textAlign="justify"
+                          w={{ base: "auto", md: "auto" }}
                           textOverflow="ellipsis"
                           overflow="hidden"
-                          height={{ base: "3em", md: "auto" }}
-                          fontSize={{ base: "xs", md: "sm" }}
+                          display={{ base: "none", md: "block" }}
+                          height={"3em"}
+                          fontSize={"sm"}
                         >
                           {episode.description}
                         </Text>
