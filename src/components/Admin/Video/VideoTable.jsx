@@ -1,128 +1,69 @@
-import DataTable from "react-data-table-component";
 import moment from "moment";
-import VideoActionButtons from "./VideoActionButton";
-import { useIsMobile } from "../../../hooks/useIsMobile";
+import DataTable from "../Datatable";
+import ActionButton from "../ActionButton";
 
-const VideoTable = ({ data, onEdit, onDelete, searchTerm }) => {
+export default function VideoTable({ data, onEdit, onDelete, searchTerm }) {
   const filteredData = data.filter((row) =>
     row.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const isMobile = useIsMobile();
 
   const columns = [
     {
-      name: "Thumbnail",
-      selector: (row) => row.thumbnail,
+      header: "Video",
+      accessor: "title",
       cell: (row) => (
-        <img
-          src={row.thumbnail}
-          alt="Thumb"
-          style={{
-            width: "120px",
-            minWidth: "120px",
-            maxWidth: "120px",
-            borderRadius: "8px",
-          }}
-        />
-      ),
-      width: "130px",
-    },
-    {
-      name: "",
-      selector: (row) => row.title,
-      cell: (row) => (
-        <div>
-          <div
-            style={{
-              fontWeight: "bold",
-              marginBottom: "2px",
-              color: "#0f0f0f",
-            }}
-          >
-            {row.title}
+        <div className="flex items-center gap-3">
+          {/* Thumbnail */}
+          <div className="shrink-0">
+            <img
+              src={row.thumbnail}
+              alt={row.title}
+              className="w-20 sm:w-24 md:w-28 aspect-video rounded-md object-cover"
+            />
           </div>
-          <div
-            style={{
-              fontSize: "12px",
-              color: "#3f3f3f",
-              display: "-webkit-box",
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {row.description}
+
+          {/* Title / Description */}
+          <div className="flex flex-col">
+            <div className="font-bold mb-1 truncate max-w-50 md:max-w-75 lg:max-w-4xl">
+              {row.title}
+            </div>
+            <div className="text-sm text-white/50 line-clamp-3 truncate max-w-50 md:max-w-75 lg:max-w-4xl">
+              {row.description}
+            </div>
           </div>
         </div>
       ),
-      width: isMobile ? "350px" : "30%",
     },
+
     {
-      name: "Published At",
-      cell: (row) => moment(row.published_at.toDate()).format("DD MMM YYYY"),
-      width: isMobile ? "150px" : "35%",
-    },
-    {
-      name: "Action",
+      header: "Published At",
+      accessor: "published_at",
+      sortable: true,
       cell: (row) => (
-        <VideoActionButtons row={row} onEdit={onEdit} onDelete={onDelete} />
+        <div className="text-center">
+          {row.published_at?.toDate
+            ? moment(row.published_at.toDate()).format("DD MMM YYYY")
+            : "-"}
+        </div>
       ),
-      width: isMobile ? "100px" : "35%",
+    },
+    {
+      header: "Action",
+      accessor: "action",
+      cell: (row) => (
+        <div className="flex gap-2 items-center justify-center">
+          <ActionButton type="edit" size="sm" onClick={() => onEdit(row)} />
+          <ActionButton type="delete" size="sm" onClick={() => onDelete(row)} />
+        </div>
+      ),
     },
   ];
-
-  const customStyles = {
-    tableWrapper: {
-      style: {
-        borderTopRadius: "1rem",
-        overflow: "hidden",
-      },
-    },
-    rows: {
-      style: {
-        minHeight: "52px",
-        borderBottom: "5px solid #fff",
-      },
-    },
-    headCells: {
-      style: {
-        backgroundColor: "#fff",
-        color: "#0f0f0f",
-        fontSize: "14px",
-        fontWeight: "semibold",
-      },
-    },
-    cells: {
-      style: {
-        backgroundColor: "#fff",
-        padding: "10px",
-        color: "#0f0f0f",
-        fontSize: "14px",
-        fontWeight: "semibold",
-      },
-    },
-    pagination: {
-      style: {
-        borderTop: "1px solid #3f3f3f",
-        marginTop: "-10px",
-        backgroundColor: "#fff",
-        color: "#0f0f0f",
-        borderRadius: "0 0 1rem 1rem",
-      },
-    },
-  };
 
   return (
     <DataTable
       columns={columns}
       data={filteredData}
-      pagination
-      responsive
-      customStyles={customStyles}
-      style={{ width: "100%" }}
+      rowsPerPageOptions={[7, 10, 20]}
     />
   );
-};
-
-export default VideoTable;
+}

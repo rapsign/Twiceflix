@@ -1,54 +1,56 @@
-import { useLocation } from "react-router-dom";
-import Navbar from "./components/Navbar/Navbar";
-import Playlist from "./pages/Playlist";
+import { Routes, Route, Navigate } from "react-router-dom";
+import PublicLayout from "./layouts/PublicLayouts";
+import AdminLayout from "./layouts/AdminLayout";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
+
 import Home from "./pages/Home";
+import Playlist from "./pages/Playlist";
 import Videos from "./pages/Video";
-import Admin from "./pages/Admin";
+import About from "./pages/About";
 import Login from "./pages/Login";
 import VideoPlayer from "./pages/VideoPlayer";
 import SearchPage from "./pages/SearchPage";
-import About from "./pages/About";
-import { Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./components/Auth/ProtectedRoute";
+
+import Dashboard from "./pages/Admin/Dashboard";
+import AdminVideosPage from "./pages/Admin/Videos";
+import AdminPlaylistPage from "./pages/Admin/Playlist";
+
+import { Toaster } from "sonner";
 
 function App() {
-  const location = useLocation();
-
-  const hideNavbar =
-    location.pathname === "/login" ||
-    location.pathname.startsWith("/admin") ||
-    location.pathname === "/admin" ||
-    location.pathname === "/video-player" ||
-    ![
-      "/",
-      "/playlist",
-      "/videos",
-      "/login",
-      "/search",
-      "/about",
-      "/video-player",
-    ].includes(location.pathname);
-
   return (
     <>
-      {!hideNavbar && <Navbar />}
+      <Toaster richColors position="top-right" />
+
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/playlist" element={<Playlist />} />
-        <Route path="/videos" element={<Videos />} />
+        {/* PUBLIC LAYOUT */}
+        <Route path="/" element={<PublicLayout />}>
+          <Route index element={<Home />} />
+          <Route path="playlist" element={<Playlist />} />
+          <Route path="videos" element={<Videos />} />
+          <Route path="about" element={<About />} />
+          <Route path="search" element={<SearchPage />} />
+          <Route path="login" element={<Login />} />
+          <Route path="video-player" element={<VideoPlayer />} />
+        </Route>
+
+        {/* ADMIN LAYOUT */}
         <Route
           path="/admin/*"
           element={
             <ProtectedRoute>
-              <Admin />
+              <AdminLayout />
             </ProtectedRoute>
           }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/video-player" element={<VideoPlayer />} />
+        >
+          <Route index element={<Dashboard />} />
+          <Route path="videos" element={<AdminVideosPage />} />
+          <Route path="playlists" element={<AdminPlaylistPage />} />
+          <Route path="*" element={<Navigate to="/admin" replace />} />
+        </Route>
+
+        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

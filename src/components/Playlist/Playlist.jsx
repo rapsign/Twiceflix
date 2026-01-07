@@ -1,11 +1,13 @@
-import { Box, Text, Spinner } from "@chakra-ui/react";
+"use client";
+
 import { useState } from "react";
 import CustomSwiper from "../CustomSwiper";
-import usePlaylists from "../../hooks/usePlaylists";
 import PlaylistModal from "./PlaylistModal";
+import useDataManager from "../../hooks/useDataManager"; // hook data
+import LoadingSpinner from "../LoadingSpinner";
 
 const Playlist = () => {
-  const { playlists, loading } = usePlaylists();
+  const { data: playlists, loading } = useDataManager("playlists");
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -20,25 +22,17 @@ const Playlist = () => {
   };
 
   return (
-    <Box bg="transparent" color="white" py={2} width="100%">
-      <Text
-        fontSize={{ base: "md", md: "2xl" }}
-        fontWeight="bold"
-        mb={2}
-        px={2}
-      >
+    <div className="bg-transparent text-white py-2 w-full">
+      {/* Title */}
+      <h2 className="text-md md:text-2xl font-bold mb-2 px-2">
         TWICE Playlist
-      </Text>
+      </h2>
 
+      {/* Loading */}
       {loading ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="200px"
-        >
-          <Spinner size="xl" />
-        </Box>
+        <div className="flex justify-center items-center h-48">
+          <LoadingSpinner />
+        </div>
       ) : (
         <CustomSwiper
           items={playlists}
@@ -48,6 +42,7 @@ const Playlist = () => {
         />
       )}
 
+      {/* Modal */}
       {selectedPlaylist && (
         <PlaylistModal
           isOpen={isModalOpen}
@@ -56,7 +51,7 @@ const Playlist = () => {
           setPlaylist={setSelectedPlaylist}
         />
       )}
-    </Box>
+    </div>
   );
 };
 

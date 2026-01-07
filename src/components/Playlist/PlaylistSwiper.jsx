@@ -1,39 +1,55 @@
-import { Box, Text, useDisclosure } from "@chakra-ui/react";
-import CustomSwiper from "../CustomSwiper";
-import useListPlaylists from "../../hooks/useListPlaylist";
 import { useState } from "react";
 
+import CustomSwiper from "../CustomSwiper";
 import VideoModal from "../Videos/VideoModal";
 import LoadingSpinner from "../LoadingSpinner";
 
+import useDataManager from "@/hooks/useDataManager";
+
 const PlaylistSwiper = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { playlists, loading } = useListPlaylists();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: playlists, loading } = useDataManager("playlists");
 
   const openModal = (video) => {
     setSelectedVideo(video);
-    onOpen();
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedVideo(null);
   };
 
   if (loading) {
     return <LoadingSpinner />;
   }
+
+  const filteredPlaylists = playlists.filter(
+    (playlist) => (playlist.videos?.length || 0) >= 8
+  );
+
   return (
-    <Box bg="transparent" color="white" py={2} width="100%">
-      {playlists.map((playlist) => (
-        <Box key={playlist.id} mb={4}>
+    <div className="w-full py-2 text-white">
+      {filteredPlaylists.map((playlist) => (
+        <div key={playlist.id} className="mb-6">
           <CustomSwiper
             items={playlist.videos}
             title={playlist.title}
             onItemClick={openModal}
           />
-        </Box>
+        </div>
       ))}
+
       {selectedVideo && (
-        <VideoModal isOpen={isOpen} onClose={onClose} video={selectedVideo} />
+        <VideoModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          video={selectedVideo}
+        />
       )}
-    </Box>
+    </div>
   );
 };
 

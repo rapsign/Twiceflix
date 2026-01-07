@@ -1,41 +1,43 @@
+"use client";
+
 import { useState } from "react";
-import { Box, Heading } from "@chakra-ui/react";
-import { useDisclosure } from "@chakra-ui/react";
-import useVideos from "../hooks/useVideos";
-import LoadingSpinner from "../components/LoadingSpinner";
 import VideoModal from "../components/Videos/VideoModal";
 import VideoGrid from "../components/Videos/VideoGrid";
+import LoadingSpinner from "../components/LoadingSpinner";
+import useDataManager from "../hooks/useDataManager";
 
-const Videos = () => {
-  const { videos, isLoading } = useVideos();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export default function Videos() {
+  const { data: videos, loading } = useDataManager("videos");
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleVideoClick = (video) => {
-    setSelectedVideo(video);
-    onOpen();
+  const handleVideoClick = (videos) => {
+    setSelectedVideo(videos);
+    setIsOpen(true);
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  const handleClose = () => {
+    setSelectedVideo(null);
+    setIsOpen(false);
+  };
+
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <Box p={4}>
-      <Heading
-        mb={3}
-        mt={{ base: "10", md: "20" }}
-        fontSize={{ base: "lg", md: "3xl" }}
-        fontWeight="bold"
-      >
+    <div className="p-4">
+      <h1 className="mb-3 text-xl md:text-3xl font-bold text-white pt-16">
         TWICE Videos
-      </Heading>
-      <VideoGrid videos={videos} onVideoClick={handleVideoClick} />
-      {selectedVideo && (
-        <VideoModal isOpen={isOpen} onClose={onClose} video={selectedVideo} />
-      )}
-    </Box>
-  );
-};
+      </h1>
 
-export default Videos;
+      <VideoGrid videos={videos} onVideoClick={handleVideoClick} />
+
+      {selectedVideo && (
+        <VideoModal
+          isOpen={isOpen}
+          onClose={handleClose}
+          video={selectedVideo}
+        />
+      )}
+    </div>
+  );
+}

@@ -1,12 +1,16 @@
-import { Box, Button, Text, useToast, VStack, Divider } from "@chakra-ui/react";
+"use client";
+
 import { useNavigate } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebase/firebase";
 import { TextLogo } from "../components/Logo";
+import { Button } from "@/components/ui/button";
+import { toast, Toaster } from "sonner";
+import { Separator } from "@/components/ui/separator";
 
 const Login = () => {
-  const toast = useToast();
   const navigate = useNavigate();
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -16,62 +20,41 @@ const Login = () => {
       await signInWithPopup(auth, provider);
       navigate("/admin");
     } catch (error) {
-      toast({
-        title: "Login Failed",
-        description: error.message || "Unable to sign in. Please try again.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(error.message || "Unable to sign in. Please try again.");
     }
   };
 
   return (
-    <Box
-      height="100vh"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Box maxW="lg" p={6} borderRadius="md" boxShadow="lg" bg="#303030">
-        <VStack spacing={4} align="stretch">
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            padding={6}
-          >
-            <TextLogo />
-          </Box>
-          <Divider />
-          <Text textAlign="center" color="white">
-            Please sign in to access the admin panel.
-          </Text>
-          <Button
-            colorScheme="red"
-            background="red"
-            color="white"
-            onClick={handleLogin}
-            size="lg"
-            fontSize="lg"
-            variant="solid"
-            borderRadius="md"
-          >
-            Sign in with Google
-          </Button>
+    <div className="h-screen flex items-center justify-center bg-neutral-900">
+      {/* Toast container */}
+      <Toaster position="top-right" richColors />
 
-          <Text
-            textAlign="center"
-            color="white"
-            onClick={handleBack}
-            cursor="pointer"
-            _hover={{ textDecoration: "underline", color: "#ccc" }}
-          >
-            Back
-          </Text>
-        </VStack>
-      </Box>
-    </Box>
+      <div className="max-w-lg w-full p-6 rounded-md shadow-lg bg-neutral-800">
+        <div className="flex justify-center items-center p-6">
+          <TextLogo />
+        </div>
+
+        <Separator className="my-4 border-gray-600" />
+
+        <p className="text-center text-white mb-4">
+          Please sign in to access the admin panel.
+        </p>
+
+        <Button
+          onClick={handleLogin}
+          className="w-full bg-red-600 text-white hover:bg-red-700 mb-4 cursor-pointer"
+        >
+          Sign in with Google
+        </Button>
+
+        <p
+          onClick={handleBack}
+          className="text-center text-white cursor-pointer hover:underline hover:text-gray-300 cursor-pointer"
+        >
+          Back
+        </p>
+      </div>
+    </div>
   );
 };
 

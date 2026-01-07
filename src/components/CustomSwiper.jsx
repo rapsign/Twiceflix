@@ -1,5 +1,5 @@
-// components/CustomSwiper.js
-import { Box, Text, Image, Badge } from "@chakra-ui/react";
+"use client";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
   Navigation,
@@ -11,15 +11,17 @@ import {
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { Badge } from "@/components/ui/badge";
 
-const CustomSwiper = ({ items, title, onItemClick, badgeLabel }) => {
+export default function CustomSwiper({
+  items,
+  title,
+  onItemClick,
+  badgeLabel,
+}) {
   return (
-    <Box bg="transparent" color="white" width="100%" zIndex={100}>
-      {title && (
-        <Text fontSize={{ base: "md", md: "2xl" }} fontWeight="bold" mb={2}>
-          {title}
-        </Text>
-      )}
+    <div className="w-full text-white relative z-10">
+      {title && <h2 className="text-md md:text-2xl font-bold mb-2">{title}</h2>}
 
       <Swiper
         modules={[Navigation, Pagination, Scrollbar, A11y, Autoplay]}
@@ -35,63 +37,29 @@ const CustomSwiper = ({ items, title, onItemClick, badgeLabel }) => {
       >
         {items.map((item) => (
           <SwiperSlide key={item.id}>
-            <Box
-              overflow="hidden"
-              borderRadius="lg"
-              _hover={{ bg: "gray.800" }}
-              position="relative"
-              aspectRatio="16/9"
+            <div
+              className="relative cursor-pointer overflow-hidden rounded-lg group aspect-video"
               onClick={() => onItemClick(item)}
-              cursor="pointer"
             >
               {badgeLabel && (
-                <Badge
-                  position="absolute"
-                  borderEndRadius="lg"
-                  top={2}
-                  left={0}
-                  backgroundColor="red"
-                  color="white"
-                  px={{ base: 2, md: 3 }}
-                  py={{ base: 1, md: 1 }}
-                  fontSize={{ base: "10px", md: "sm" }}
-                  fontWeight="bold"
-                  zIndex={2}
-                >
+                <Badge className="absolute top-2 left-2 z-20 rounded-full bg-red-600 px-2 py-1 text-xs md:text-sm font-semibold">
                   {badgeLabel}
                 </Badge>
               )}
 
-              <Image
+              <img
                 src={item.thumbnail}
                 alt={item.title}
-                objectFit="cover"
-                width="100%"
-                height="100%"
+                className="w-full h-full object-cover"
               />
-              <Box
-                position="absolute"
-                bottom={0}
-                left={0}
-                width="100%"
-                bg="linear-gradient(to top right, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6))"
-                p={2}
-                color="white"
-                opacity={0}
-                visibility="hidden"
-                transition="opacity 0.3s ease, visibility 0.3s ease"
-                _groupHover={{ opacity: 1, visibility: "visible" }}
-              >
-                <Text isTruncated fontSize="sm" textAlign="center">
-                  {item.title}
-                </Text>
-              </Box>
-            </Box>
+
+              <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/95 to-black/60 p-2 text-center text-sm text-white opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
+                {item.title}
+              </div>
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>
-    </Box>
+    </div>
   );
-};
-
-export default CustomSwiper;
+}

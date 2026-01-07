@@ -1,10 +1,14 @@
-import { useState, useCallback } from "react";
-import { Box, Input, IconButton } from "@chakra-ui/react";
-import { FaSearch } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import useDebouncedSearch from "../../hooks/useDebouncedSearch";
+// components/SearchBox.jsx
+"use client";
 
-const SearchBox = () => {
+import { useState, useCallback } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { LucideSearch } from "lucide-react";
+import useDebouncedSearch from "@/hooks/useDebouncedSearch";
+import { useNavigate } from "react-router-dom";
+
+export default function SearchBox({ onSearch }) {
   const [query, setQuery] = useState("");
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
@@ -28,37 +32,22 @@ const SearchBox = () => {
   useDebouncedSearch(query, handleSearchChange, 300);
 
   return (
-    <Box position="relative">
+    <div className="relative flex items-center">
       <Input
         placeholder="Search..."
         value={query}
         onChange={handleSearchChange}
-        size="sm"
-        color="white"
-        bg="transparent"
-        rounded="full"
-        right={{ base: "-10%", xl: "0" }}
-        width={{ base: "150px", xl: "300px" }}
-        opacity={show ? 1 : 0}
-        visibility={show ? "visible" : "hidden"}
-        pointerEvents={show ? "auto" : "none"}
-        transition="all 0.3s ease"
-        _placeholder={{ color: "inherit" }}
-        focusBorderColor="white"
+        className={`transition-all duration-300 ease-in-out rounded-full text-sm
+          ${show ? "opacity-100 w-48 md:w-72 px-4" : "opacity-0 w-0 px-0"}
+        `}
       />
-      <IconButton
-        icon={<FaSearch />}
-        aria-label="Search"
+      <Button
+        variant="ghost"
+        className="absolute right-0 top-1/2 -translate-y-1/2 p-2 hover:bg-transparent hover:text-red-600"
         onClick={toggleSearch}
-        variant="unstyled"
-        position="absolute"
-        right={{ base: "-20%", xl: "-5%" }}
-        top="50%"
-        transform="translateY(-50%)"
-        _hover={{ color: "red" }}
-      />
-    </Box>
+      >
+        <LucideSearch className="w-5 h-5" />
+      </Button>
+    </div>
   );
-};
-
-export default SearchBox;
+}

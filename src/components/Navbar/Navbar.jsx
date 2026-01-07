@@ -1,77 +1,104 @@
-import {
-  Box,
-  Flex,
-  Grid,
-  GridItem,
-  IconButton,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
-import SearchBox from "./SearchBox";
-import MenuLinks from "./MenuLinks";
-import MobileDrawer from "./MobileDrawer";
-import useScrollToggle from "../../hooks/useScrollToggle";
 import { TextLogo } from "../Logo";
+import SearchBox from "./SearchBox";
+import MobileDrawer from "./MobileDrawer";
+
+import { useLocation, Link } from "react-router-dom";
+
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink,
+} from "@/components/ui/navigation-menu";
+
+const links = ["Home", "Videos", "Playlist", "About"];
 
 const Navbar = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const isScrolled = useScrollToggle();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // fungsi untuk cek apakah link aktif
+  const isActive = (link) => {
+    const path = link === "Home" ? "/" : `/${link.toLowerCase()}`;
+    return location.pathname === path;
+  };
 
   return (
-    <Box
-      bg={isScrolled ? "rgba(0, 0, 0, 0.8)" : "transparent"}
-      p={{ base: 2, md: 4 }}
-      color="white"
-      position="fixed"
-      width="100%"
-      top="0"
-      zIndex="1000"
-      transition="background-color 0.3s ease"
+    <nav
+      className={`
+    fixed top-0 w-full z-50 transition-colors duration-300
+    ${isScrolled ? "bg-black/80" : "md:bg-transparent bg-black/80"}
+  `}
     >
-      <Box
-        display={{ base: "flex", md: "none" }}
-        justifyContent="space-between"
-        width="100%"
-      >
-        <Box width="30%" height="auto" alignSelf="center">
-          <TextLogo />
-        </Box>
-        <Flex align="center" gap={2} ml="auto">
+      {/* Mobile Navbar */}
+      <div className="flex items-center justify-between p-2 lg:hidden">
+        <div className="w-1/3">
+          <TextLogo Width="120px" />
+        </div>
+
+        <div className="flex items-center gap-2 ml-auto">
           <SearchBox />
-          <IconButton
-            aria-label="Menu"
-            icon={<FaBars />}
-            variant="unstyled"
-            right="-10%"
-            fontSize="lg"
-            onClick={onOpen}
-          />
-        </Flex>
-      </Box>
+          <button
+            className="text-white text-lg p-2 rounded hover:bg-white/20 transition"
+            onClick={() => setIsOpen(true)}
+          >
+            <FaBars />
+          </button>
+        </div>
+      </div>
 
-      <Grid
-        as="nav"
-        templateColumns="1fr 3fr 1fr"
-        gap={4}
-        alignItems="center"
-        display={{ base: "none", md: "grid" }}
-      >
-        <GridItem>
-          <TextLogo Width="50%" />
-        </GridItem>
-        <GridItem display="flex" justifyContent="center" alignItems="center">
-          <MenuLinks />
-        </GridItem>
-        <GridItem display="flex" justifyContent="flex-end" alignItems="center">
-          <Flex align="center" gap={2}>
-            <SearchBox />
-          </Flex>
-        </GridItem>
-      </Grid>
+      {/* Desktop Navbar */}
+      <div className="hidden lg:flex items-center justify-between px-8 py-4">
+        {/* Logo */}
+        <div className="flex-1">
+          <TextLogo Width="120px" />
+        </div>
 
-      <MobileDrawer isOpen={isOpen} onClose={onClose} />
-    </Box>
+        {/* Navigation Links */}
+        <div className="flex-1 flex justify-center">
+          <NavigationMenu>
+            <NavigationMenuList className="flex gap-6">
+              {links.map((link) => (
+                <NavigationMenuItem key={link}>
+                  <NavigationMenuLink
+                    asChild
+                    className={`font-medium transition-colors ${
+                      isActive(link)
+                        ? "text-red-500"
+                        : "text-white hover:text-red-500"
+                    }`}
+                  >
+                    <Link to={link === "Home" ? "/" : `/${link.toLowerCase()}`}>
+                      {link}
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
+
+        {/* Search Box */}
+        <div className="flex-1 flex justify-end">
+          <SearchBox />
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
+      <MobileDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
+    </nav>
   );
 };
 

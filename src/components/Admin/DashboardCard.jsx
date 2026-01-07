@@ -1,46 +1,22 @@
-import {
-  Card,
-  CardBody,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
-  Heading,
-  Flex,
-} from "@chakra-ui/react";
+// src/components/Admin/DashboardCard.jsx
 import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 
-const DashboardCard = ({ to, icon: IconComponent, count, label }) => (
-  <Link to={to}>
-    <Card
-      bg="#3F3F3F"
-      color="white"
-      _hover={{ cursor: "pointer", bg: "#1f1f1f" }}
-    >
-      <CardBody
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Stat textAlign="center">
-          <StatLabel>
-            <Flex alignItems="center" gap={2} justify="center">
-              <IconComponent size="4em" />
-            </Flex>
-          </StatLabel>
-          <StatNumber mt={2} fontWeight="normal">
-            {count}
-          </StatNumber>
-          <StatHelpText>
-            <Heading fontSize="xl" fontWeight="normal" mt={2}>
-              {label}
-            </Heading>
-          </StatHelpText>
-        </Stat>
-      </CardBody>
-    </Card>
-  </Link>
-);
+export default function DashboardCard({ to, icon: Icon, count, label }) {
+  return (
+    <Link to={to}>
+      <Card className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 transition">
+        <CardContent className="flex items-center gap-4 p-6">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-500/10">
+            <Icon className="h-6 w-6 text-red-500" />
+          </div>
 
-export default DashboardCard;
+          <div>
+            <p className="text-2xl font-bold text-white">{count}</p>
+            <p className="text-sm text-zinc-400">{label}</p>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}

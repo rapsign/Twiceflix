@@ -1,30 +1,32 @@
-import { Box, useDisclosure, Spinner } from "@chakra-ui/react";
+"use client";
+
 import { useState } from "react";
-import useVideos from "../../hooks/useVideos";
+import useDataManager from "../../hooks/useDataManager";
 import CustomSwiper from "../CustomSwiper";
 import VideoModal from "./VideoModal";
+import LoadingSpinner from "../LoadingSpinner";
 
 const VideoSwiper = () => {
-  const { videos, loading } = useVideos("videos", 20);
+  const { data: videos, loading } = useDataManager("videos");
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleVideoClick = (video) => {
     setSelectedVideo(video);
-    onOpen();
+    setIsOpen(true);
+  };
+
+  const handleClose = () => {
+    setSelectedVideo(null);
+    setIsOpen(false);
   };
 
   return (
-    <Box bg="transparent" color="white" py={2} width="100%" zIndex={100}>
+    <div className="bg-transparent text-white py-2 w-full z-50">
       {loading ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="200px"
-        >
-          <Spinner size="xl" />
-        </Box>
+        <div className="flex justify-center items-center h-48">
+          <LoadingSpinner />
+        </div>
       ) : (
         <CustomSwiper
           items={videos}
@@ -34,9 +36,13 @@ const VideoSwiper = () => {
       )}
 
       {selectedVideo && (
-        <VideoModal isOpen={isOpen} onClose={onClose} video={selectedVideo} />
+        <VideoModal
+          isOpen={isOpen}
+          onClose={handleClose}
+          video={selectedVideo}
+        />
       )}
-    </Box>
+    </div>
   );
 };
 

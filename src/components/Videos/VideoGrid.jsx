@@ -1,70 +1,35 @@
-import { Box, Grid, Image, Text } from "@chakra-ui/react";
+import React from "react";
+import { cn } from "@/lib/utils"; // utility untuk className dinamis
 
-const VideoGrid = ({ videos, onVideoClick }) => {
+export default function VideoGrid({ videos, onVideoClick }) {
   return (
-    <Grid
-      templateColumns={{
-        base: "repeat(2, 1fr)",
-        sm: "repeat(2, 1fr)",
-        md: "repeat(3, 1fr)",
-        lg: "repeat(4, 1fr)",
-        xl: "repeat(5, 1fr)",
-      }}
-      gap={2}
-    >
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
       {videos.map((video) => (
-        <Box
+        <div
           key={video.id}
-          borderRadius="xl"
-          overflow="hidden"
-          position="relative"
-          aspectRatio="16/9"
-          cursor="pointer"
+          className="relative aspect-video w-full rounded-xl overflow-hidden cursor-pointer group"
           onClick={() => onVideoClick(video)}
-          _hover={{
-            "& .overlay": {
-              opacity: 1,
-              visibility: "visible",
-            },
-          }}
         >
-          <Image
+          <img
             src={video.thumbnail}
             alt={video.title}
-            objectFit="cover"
-            width="100%"
-            height="100%"
+            className="w-full h-full object-cover "
           />
-          <Box
-            className="overlay"
-            position="absolute"
-            bottom={0}
-            left={0}
-            width="100%"
-            p={2}
-            bg="linear-gradient(to top right, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6))"
-            color="white"
-            opacity={0}
-            visibility="hidden"
-            transition="opacity 0.3s ease, visibility 0.3s ease"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text
-              isTruncated
-              fontSize="xs"
-              textOverflow="ellipsis"
-              whiteSpace="nowrap"
-              textAlign="center"
-            >
-              {video.title}
-            </Text>
-          </Box>
-        </Box>
-      ))}
-    </Grid>
-  );
-};
 
-export default VideoGrid;
+          {/* Overlay */}
+          <div
+            className={cn(
+              "absolute bottom-0 left-0 w-full p-2 flex items-center justify-center text-white",
+              "bg-gradient-to-tr from-black/95 to-black/60",
+              "opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300"
+            )}
+          >
+            <span className="text-xs text-center truncate" title={video.title}>
+              {video.title}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

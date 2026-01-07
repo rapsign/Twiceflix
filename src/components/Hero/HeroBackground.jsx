@@ -1,32 +1,17 @@
-import React from "react";
-import { Box, Image } from "@chakra-ui/react";
+const HeroBackground = ({ thumbnail }) => {
+  return (
+    <div className="relative w-full h-full overflow-hidden bg-black">
+      {/* Background Image */}
+      <img
+        src={thumbnail}
+        alt="Hero Background"
+        className="w-full h-full object-cover opacity-50"
+      />
 
-const HeroBackground = ({ thumbnail }) => (
-  <Box
-    position="relative"
-    width="100%"
-    height="100%"
-    overflow="hidden"
-    bg="black"
-  >
-    <Image
-      src={thumbnail}
-      alt="Hero Background"
-      objectFit="cover"
-      width="100%"
-      height="100%"
-      opacity="0.5"
-    />
-    <Box
-      position="absolute"
-      top="0"
-      left="0"
-      width="100%"
-      height="100%"
-      bg="linear-gradient(180deg, rgba(0,0,0,0) 9%, rgba(0,0,0,0.38) 53%, rgba(0,0,0,1) 83%)"
-      zIndex="1"
-    />
-  </Box>
-);
+      {/* Gradient Overlay */}
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-[rgba(0,0,0,0.38)] to-black z-10" />
+    </div>
+  );
+};
 
 export default HeroBackground;

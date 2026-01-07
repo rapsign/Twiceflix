@@ -1,152 +1,111 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalCloseButton,
-  Badge,
-  Button,
-  Box,
-  Image,
-  Text,
-  Heading,
-  Flex,
-  Grid,
-  GridItem,
-} from "@chakra-ui/react";
-import { FaPlay } from "react-icons/fa";
-import { useState } from "react";
+"use client";
+
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { Play } from "lucide-react";
+
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
 import PlaylistModal from "../Playlist/PlaylistModal";
-import usePlaylistsByVideo from "../../hooks/usePlaylistsByVideo";
+import useDataManager from "@/hooks/useDataManager";
 
 const VideoModal = ({ isOpen, onClose, video }) => {
-  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const navigate = useNavigate();
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
 
-  const { playlists, loading } = usePlaylistsByVideo(video);
+  const { data: playlists = [], loading } = useDataManager("playlists");
+
+  // 🔥 Filter playlist berdasarkan field video.playlists
+  const videoPlaylists = useMemo(() => {
+    if (!video?.playlists || playlists.length === 0) return [];
+    return playlists.filter((p) => video.playlists.includes(p.id));
+  }, [playlists, video]);
 
   const handlePlayClick = () => {
-    navigate(`/video-player`, { state: { youtubeUrl: video.youtube_url } });
+    if (video?.youtube_url) {
+      navigate("/video-player", {
+        state: { youtubeUrl: video.youtube_url },
+      });
+    }
   };
 
   const handlePlaylistClick = (playlist) => {
     setSelectedPlaylist(playlist);
-    onClose();
   };
+
+  if (!video) return null;
 
   return (
     <>
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        size={{ base: "lg", md: "xl" }}
-        scrollBehavior="inside"
-      >
-        <ModalOverlay />
-        <ModalContent
-          bg="#0f0f0f"
-          position="relative"
-          maxWidth={{ base: "auto", md: "800px" }}
-          margin="auto"
-        >
-          <ModalCloseButton zIndex={100} size="xl" />
-          <Box
-            position="relative"
-            overflow="hidden"
-            aspectRatio="16/9"
-            borderTopRadius="10px"
-          >
-            <Image
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="min-w-3xl bg-neutral-900 text-white p-0 overflow-hidden">
+          {/* CLOSE BUTTON */}
+          <DialogClose className="absolute right-4 top-4 text-white z-50" />
+
+          {/* THUMBNAIL */}
+          <div className="relative aspect-video overflow-hidden">
+            <img
               src={video.thumbnail}
               alt={video.title}
-              objectFit="cover"
-              rounded="none"
+              className="w-full h-full object-cover aspect-video "
             />
-            <Box
-              position="absolute"
-              bottom="-10"
-              left="0"
-              right="0"
-              p="0"
-              height="110%"
-              background="linear-gradient(180deg, rgba(15, 15, 15, 0) 9%, rgba(15, 15, 15, 0.74) 53%, rgba(15, 15, 15, 1) 83%)"
-            />
-            <Box
-              position="absolute"
-              top={{ base: "60%", md: "70%" }}
-              px={5}
-              color="white"
-            >
-              <Heading
-                size={{ base: "sm", md: "md", lg: "lg" }}
-                fontWeight="bold"
-              >
+
+            {/* GRADIENT */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
+
+            {/* TITLE & PLAY */}
+            <div className="absolute bottom-4 left-4 right-4">
+              <h2 className="text-lg md:text-2xl font-bold line-clamp-2">
                 {video.title}
-              </Heading>
-              <Flex align="center">
-                <Button
-                  bgColor="white"
-                  color="black"
-                  size={{ base: "xs", md: "md", lg: "lg" }}
-                  leftIcon={<FaPlay />}
-                  variant="solid"
-                  onClick={handlePlayClick}
-                  mt={2}
-                >
-                  Play
-                </Button>
-              </Flex>
-            </Box>
-          </Box>
-          <Grid
-            templateColumns={{ base: "1", md: "repeat(2, 1fr)" }}
-            gap={5}
-            p={5}
-          >
-            <GridItem colSpan={2}>
-              <Box>
-                <Text
-                  color="white"
-                  fontFamily="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
-                  fontSize={{ base: "xs", md: "sm" }}
-                >
-                  {video.description}
-                </Text>
-              </Box>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <Box>
-                {loading ? (
-                  <Text color="gray.500">Loading playlists...</Text>
-                ) : playlists.length > 0 ? (
-                  <Flex wrap="wrap" gap={2}>
-                    {playlists.map((playlist) => (
-                      <Badge
-                        key={playlist.id}
-                        variant="subtle"
-                        px={3}
-                        py={1}
-                        backgroundColor={"#40403a"}
-                        color={"white"}
-                        borderRadius="md"
-                        fontSize={{ base: "10px", md: "xs" }}
-                        fontWeight="normal"
-                        cursor="pointer"
-                        onClick={() => handlePlaylistClick(playlist)}
-                        _hover={{ bg: "gray" }}
-                      >
-                        {playlist.title || "Untitled Playlist"}
-                      </Badge>
-                    ))}
-                  </Flex>
-                ) : (
-                  <Text color="gray.500"></Text>
-                )}
-              </Box>
-            </GridItem>
-          </Grid>
-        </ModalContent>
-      </Modal>
+              </h2>
+
+              <Button
+                onClick={handlePlayClick}
+                className="mt-3 bg-white text-black hover:bg-gray-200 cursor-pointer"
+                size="sm"
+              >
+                <Play className="w-4 h-4" />
+                Play
+              </Button>
+            </div>
+          </div>
+
+          {/* CONTENT */}
+          <div className="p-5 space-y-4">
+            {/* DESCRIPTION */}
+            <p className="text-sm text-neutral-300 leading-relaxed">
+              {video.description || "No description available."}
+            </p>
+
+            {/* PLAYLISTS */}
+            <div>
+              {loading ? (
+                <p className="text-xs text-neutral-500">Loading playlists...</p>
+              ) : videoPlaylists.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {videoPlaylists.map((playlist) => (
+                    <Badge
+                      key={playlist.id}
+                      className="cursor-pointer bg-neutral-700 hover:bg-neutral-600"
+                      onClick={() => handlePlaylistClick(playlist)}
+                    >
+                      {playlist.title || "Untitled Playlist"}
+                    </Badge>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-neutral-500">
+                  This video is not in any playlist
+                </p>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* PLAYLIST MODAL */}
       {selectedPlaylist && (
         <PlaylistModal
           isOpen={Boolean(selectedPlaylist)}

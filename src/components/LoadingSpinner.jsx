@@ -1,16 +1,10 @@
-import { Spinner, Center } from "@chakra-ui/react";
+import { Loader2 } from "lucide-react";
 
 const LoadingSpinner = () => {
   return (
-    <Center height="100vh">
-      <Spinner
-        thickness="4px"
-        speed="0.65s"
-        emptyColor="gray.200"
-        color="red"
-        size="xl"
-      />
-    </Center>
+    <div className="flex h-screen w-full items-center justify-center">
+      <Loader2 className="h-10 w-10 animate-spin text-red-600" />
+    </div>
   );
 };
 

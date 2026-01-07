@@ -1,140 +1,77 @@
-import { useEffect, useState } from "react";
-import {
-  Box,
-  Text,
-  Heading,
-  Grid,
-  Image,
-  Badge,
-  useDisclosure,
-} from "@chakra-ui/react";
-import { useLocation } from "react-router-dom";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit,
-} from "firebase/firestore";
-import { db } from "../firebase/firebase";
-import LoadingSpinner from "../components/LoadingSpinner";
-import VideoModal from "../components/Videos/VideoModal";
-import PlaylistModal from "../components/Playlist/PlaylistModal";
-import { Helmet } from "react-helmet";
+"use client";
 
-const SearchPage = () => {
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+
+import { Badge } from "@/components/ui/badge";
+import VideoModal from "@/components/Videos/VideoModal";
+import PlaylistModal from "@/components/Playlist/PlaylistModal";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import useDataManager from "@/hooks/useDataManager";
+import { Helmet } from "react-helmet";
+import { useDisclosure } from "@/hooks/useDisclosure";
+
+export default function SearchPage() {
   const location = useLocation();
   const [queryTerm, setQueryTerm] = useState("");
+
+  // Ambil videos dan playlists dari useDataManager
+  const { data: videos = [], loading: loadingVideos } =
+    useDataManager("videos");
+  const { data: playlists = [], loading: loadingPlaylists } =
+    useDataManager("playlists");
+
+  const [results, setResults] = useState([]);
+
+  // Modal states
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const {
     isOpen: isVideoModalOpen,
     onOpen: onVideoModalOpen,
     onClose: onVideoModalClose,
   } = useDisclosure();
-  const [results, setResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedVideo, setSelectedVideo] = useState(null);
-  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
 
+  // Ambil query dari URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const searchQuery = params.get("q") || "";
-
     setQueryTerm(searchQuery.trim().toLowerCase());
-
-    if (searchQuery) {
-      fetchPlaylistsAndVideos(searchQuery.trim().toLowerCase());
-    }
   }, [location.search]);
 
+  // Filter hasil search
   useEffect(() => {
-    if (selectedVideo) {
-      onVideoModalOpen();
-    } else {
-      onVideoModalClose();
+    if (!queryTerm) {
+      setResults([]);
+      return;
     }
+
+    const filterData = (data, type) =>
+      data
+        .filter((item) =>
+          (item.title || "").toString().toLowerCase().includes(queryTerm)
+        )
+        .map((item) => ({
+          ...item,
+          type,
+        }));
+
+    const filteredVideos = filterData(videos, "video");
+    const filteredPlaylists = filterData(playlists, "playlist");
+
+    setResults([...filteredVideos, ...filteredPlaylists]);
+  }, [queryTerm, videos, playlists]);
+
+  // Modal handling
+  useEffect(() => {
+    if (selectedVideo) onVideoModalOpen();
+    else onVideoModalClose();
   }, [selectedVideo, onVideoModalOpen, onVideoModalClose]);
 
   useEffect(() => {
-    if (selectedPlaylist) {
-      setIsPlaylistModalOpen(true);
-    } else {
-      setIsPlaylistModalOpen(false);
-    }
+    setIsPlaylistModalOpen(!!selectedPlaylist);
   }, [selectedPlaylist]);
-
-  const fetchPlaylistsAndVideos = async (searchQuery) => {
-    setIsLoading(true);
-    try {
-      const playlistSnapshot = await getDocs(collection(db, "playlists"));
-      const playlistData = await Promise.all(
-        playlistSnapshot.docs.map(async (doc) => {
-          const playlist = { id: doc.id, ...doc.data() };
-
-          const videoQuery = query(
-            collection(db, "videos"),
-            where("playlists", "array-contains", playlist.id),
-            orderBy("published_at", "desc"),
-            limit(1)
-          );
-          const videoSnapshot = await getDocs(videoQuery);
-
-          const latestVideo =
-            videoSnapshot.docs.length > 0 ? videoSnapshot.docs[0].data() : null;
-
-          return {
-            ...playlist,
-            thumbnail: latestVideo
-              ? latestVideo.thumbnail
-              : "https://via.placeholder.com/720x1280",
-            type: "playlist",
-          };
-        })
-      );
-
-      const videoCollection = collection(db, "videos");
-      const videoSnapshot = await getDocs(videoCollection);
-      const videos = videoSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        type: "video",
-        ...doc.data(),
-      }));
-
-      const videoColumns = [
-        { selector: (row) => row.title, accessor: "title" },
-      ];
-      const playlistColumns = [
-        { selector: (row) => row.title, accessor: "title" },
-      ];
-
-      const filteredVideos = filterData(videos, videoColumns, searchQuery);
-      const filteredPlaylists = filterData(
-        playlistData,
-        playlistColumns,
-        searchQuery
-      );
-
-      setResults([...filteredVideos, ...filteredPlaylists]);
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const filterData = (data, columns, search) => {
-    return data.filter((row) =>
-      columns.some((column) => {
-        const value = column.selector
-          ? column.selector(row)
-          : row[column.accessor];
-        return (
-          value && value.toString().toLowerCase().includes(search.toLowerCase())
-        );
-      })
-    );
-  };
 
   const openModal = (item) => {
     if (item.type === "video") {
@@ -151,116 +88,46 @@ const SearchPage = () => {
     setSelectedPlaylist(null);
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  if (loadingVideos || loadingPlaylists) return <LoadingSpinner />;
 
   return (
     <>
-      <Helmet>
-        <meta
-          name="description"
-          content="TWICEFLIX is your ultimate source for everything TWICE! Watch their latest music videos, performances, and behind-the-scenes content."
-        />
-        <meta
-          name="keywords"
-          content="TWICE, TWICEFLIX, K-pop, music, performances, videos, TWICE members"
-        />
-        <meta name="author" content="RapSign" />
-      </Helmet>
-      <Box p={5}>
-        <Heading
-          mb={3}
-          mt={{ base: "10", md: "20" }}
-          fontSize={{ base: "lg", md: "2xl" }}
-          fontWeight="extrabold"
-        >
+      <div className="p-4">
+        <h1 className="text-xl md:text-3xl font-bold text-white mb-3 pt-16">
           Search Results for: "{queryTerm}"
-        </Heading>
+        </h1>
+
         {results.length > 0 ? (
-          <Grid
-            templateColumns={{
-              base: "repeat(2, 1fr)",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(3, 1fr)",
-              lg: "repeat(4, 1fr)",
-              xl: "repeat(5, 1fr)",
-            }}
-            gap={2}
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
             {results.map((result) => (
-              <Box
+              <div
                 key={result.id}
-                overflow="hidden"
-                borderRadius="xl"
-                position="relative"
-                cursor="pointer"
-                transition="background-color 0.3s ease"
-                border="1px solid rgba(255, 255, 255, 0.1)"
+                className="relative rounded-xl overflow-hidden cursor-pointer border border-white/10 aspect-video"
                 onClick={() => openModal(result)}
-                aspectRatio="16/9"
-                _hover={{
-                  "& .overlay": {
-                    opacity: 1,
-                    visibility: "visible",
-                  },
-                }}
               >
-                <Image
+                <img
                   src={result.thumbnail}
                   alt={result.title}
-                  objectFit="cover"
-                  width="100%"
-                  height="100%"
+                  className="w-full h-full object-cover"
                 />
-                <Box
-                  className="overlay"
-                  position="absolute"
-                  bottom={0}
-                  left={0}
-                  width="100%"
-                  p={2}
-                  bg="linear-gradient(to top right, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6))"
-                  color="white"
-                  opacity={0}
-                  visibility="hidden"
-                  transition="opacity 0.3s ease, visibility 0.3s ease"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Text
-                    isTruncated
-                    fontSize="sm"
-                    textOverflow="ellipsis"
-                    whiteSpace="nowrap"
-                    textAlign="center"
-                  >
-                    {result.type === "playlist" ? result.title : result.title}
-                  </Text>
-                </Box>
+
+                <div className="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/90 to-black/50 text-center text-white opacity-0 hover:opacity-100 transition-opacity">
+                  <p className="truncate">{result.title}</p>
+                </div>
+
                 {result.type === "playlist" && (
                   <Badge
-                    position="absolute"
-                    borderEndRadius="lg"
-                    top={2}
-                    left={0}
-                    backgroundColor="red"
-                    color="white"
-                    px={{ base: 2, md: 3 }}
-                    py={{ base: 1, md: 1 }}
-                    fontSize={{ base: "10px", md: "sm" }}
-                    fontWeight="bold"
-                    zIndex={2}
+                    variant="secondary"
+                    className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 text-xs font-bold rounded"
                   >
                     Playlist
                   </Badge>
                 )}
-              </Box>
+              </div>
             ))}
-          </Grid>
+          </div>
         ) : (
-          <Text>No results found.</Text>
+          <p className="text-white mt-4">No results found.</p>
         )}
 
         {selectedVideo && (
@@ -278,9 +145,7 @@ const SearchPage = () => {
             playlist={selectedPlaylist}
           />
         )}
-      </Box>
+      </div>
     </>
   );
-};
-
-export default SearchPage;
+}

@@ -1,13 +1,15 @@
-import React from "react";
-import { Box, IconButton, AspectRatio } from "@chakra-ui/react";
+"use client";
+
+import { useLocation, useNavigate } from "react-router-dom";
 import { BiArrowBack } from "react-icons/bi";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const VideoPlayer = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const youtubeUrl = location.state?.youtubeUrl || "#";
 
+  // Ambil video ID dari YouTube URL
   const getYouTubeVideoId = (url) => {
     const regExp =
       /^.*(youtu\.be\/|v\/|\/v\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -23,45 +25,31 @@ const VideoPlayer = () => {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      width="100vw"
-      height="100vh"
-      bg="black"
-      color="white"
-      position="relative"
-      overflow="hidden"
-      m={0}
-      p={0}
-    >
-      <IconButton
-        icon={<BiArrowBack />}
-        aria-label="Back"
+    <div className="relative w-screen h-screen bg-black text-white flex flex-col items-center justify-center overflow-hidden">
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        className="absolute top-6 left-4 text-white text-2xl z-50 hover:bg-white/10"
         onClick={handleBack}
-        position="absolute"
-        top={14}
-        left={4}
-        colorScheme="white"
-        fontSize="30px"
-        zIndex={100}
-      />
+      >
+        <BiArrowBack />
+      </Button>
 
+      {/* Video */}
       {embedUrl ? (
-        <AspectRatio ratio={16 / 9} width="100%" maxW="100%" maxH="100%">
+        <div className="w-full max-h-screen aspect-video">
           <iframe
             src={embedUrl}
             title="YouTube video player"
+            className="w-full h-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
-        </AspectRatio>
+        </div>
       ) : (
-        <Box color="red">Invalid YouTube URL</Box>
+        <div className="text-red-500">Invalid YouTube URL</div>
       )}
-    </Box>
+    </div>
   );
 };
 

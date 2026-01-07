@@ -1,47 +1,65 @@
-import {
-  Drawer,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  DrawerBody,
-  Flex,
-  Text,
-  Link as ChakraLink,
-  Box,
-} from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+"use client";
+
+import { useLocation, Link } from "react-router-dom";
 import { TextLogo } from "../Logo";
+import { cn } from "@/lib/utils";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const links = ["Home", "Videos", "Playlist", "About"];
 
-const MobileDrawer = ({ isOpen, onClose }) => (
-  <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-    <DrawerOverlay />
-    <DrawerContent bg="#0f0f0f">
-      <Box width="40%" height="auto" p={4}>
-        <TextLogo />
-      </Box>
-      <DrawerCloseButton color="white" />
-      <DrawerBody>
-        <Flex direction="column">
+const MobileDrawer = ({ isOpen, onClose }) => {
+  const location = useLocation();
+
+  const isActive = (item) => {
+    const path = item === "Home" ? "/" : `/${item.toLowerCase()}`;
+    return location.pathname === path;
+  };
+
+  return (
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent
+        side="right"
+        className="bg-black w-64 p-6 sm:w-80 text-white"
+      >
+        <SheetHeader>
+          {/* Judul untuk screen reader */}
+          <SheetTitle>
+            <VisuallyHidden>Navigation Menu</VisuallyHidden>
+          </SheetTitle>
+        </SheetHeader>
+        <SheetDescription>
+          <VisuallyHidden>
+            This menu allows you to navigate to different sections of the site.
+          </VisuallyHidden>
+        </SheetDescription>
+        <nav className="flex flex-col gap-4 mt-4 justify-center items-center h-full">
+          <TextLogo Width="120px" />
           {links.map((item) => (
-            <ChakraLink
+            <Link
               key={item}
-              as={Link}
               to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
               onClick={onClose}
-              _hover={{ textDecoration: "none" }}
-              mb={4}
+              className={cn(
+                "text-lg font-medium transition-colors",
+                isActive(item)
+                  ? "text-red-500"
+                  : "text-white hover:text-red-500"
+              )}
             >
-              <Text fontSize="lg" color="white" _hover={{ color: "red" }}>
-                {item}
-              </Text>
-            </ChakraLink>
+              {item}
+            </Link>
           ))}
-        </Flex>
-      </DrawerBody>
-    </DrawerContent>
-  </Drawer>
-);
+        </nav>
+      </SheetContent>
+    </Sheet>
+  );
+};
 
 export default MobileDrawer;

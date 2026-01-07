@@ -1,7 +1,7 @@
+// src/components/Auth/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../firebase/firebase";
+import { useState, useEffect } from "react";
+import { onAuthStateChanged, auth } from "../../firebase/firebase";
 
 const ProtectedRoute = ({ children }) => {
   const [authChecked, setAuthChecked] = useState(false);
@@ -12,13 +12,12 @@ const ProtectedRoute = ({ children }) => {
       setIsAuthenticated(!!user);
       setAuthChecked(true);
     });
-
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
   if (!authChecked) return null;
 
-  return isAuthenticated ? children : <Navigate to="/404" />;
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

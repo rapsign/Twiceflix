@@ -1,32 +1,33 @@
-import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalCloseButton,
-  Button,
-  Box,
-  Image,
-  Text,
-  List,
-  ListItem,
-  Flex,
-  Heading,
-} from "@chakra-ui/react";
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { FaPlay } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import usePlaylistEpisodes from "../../hooks/usePlaylistEpisodes";
+import { Play } from "lucide-react";
 
 const PlaylistModal = ({ isOpen, onClose, playlist }) => {
-  const { episodes, selectedVideo, setSelectedVideo } = usePlaylistEpisodes(
-    isOpen,
-    playlist
-  );
   const navigate = useNavigate();
+  const episodes = playlist?.videos || [];
+  const latestVideo = useMemo(() => {
+    if (!episodes || episodes.length === 0) return null;
+    const sorted = [...episodes].sort(
+      (a, b) => new Date(b.published_at) - new Date(a.published_at)
+    );
+    return sorted[0];
+  }, [episodes]);
+
+  const [selectedVideo, setSelectedVideo] = useState(latestVideo);
+
+  useEffect(() => {
+    setSelectedVideo(latestVideo);
+  }, [latestVideo]);
 
   const handlePlayClick = () => {
     if (selectedVideo) {
-      navigate(`/video-player`, {
+      navigate("/video-player", {
         state: { youtubeUrl: selectedVideo.youtube_url },
       });
     }
@@ -37,181 +38,75 @@ const PlaylistModal = ({ isOpen, onClose, playlist }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size={{ base: "lg", md: "xl" }}>
-      <ModalOverlay />
-      <ModalContent
-        bg="#0f0f0f"
-        position="relative"
-        maxWidth={{ base: "auto", md: "800px" }}
-        margin="auto"
-      >
-        <ModalCloseButton zIndex={100} size="xl" />
-        <Box
-          position="relative"
-          width="100%"
-          aspectRatio="16/9"
-          overflow="hidden"
-          borderTopRadius="xl"
-        >
-          <Image
-            src={selectedVideo ? selectedVideo.thumbnail : playlist.thumbnail}
-            alt={selectedVideo ? selectedVideo.title : playlist.title}
-            objectFit="cover"
-            rounded="none"
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-neutral-900 text-white w-full min-w-3xl p-0 sm:rounded-lg overflow-hidden">
+        {/* Header dengan gambar dan play button */}
+        <div className="relative w-full h-full aspect-video">
+          <img
+            src={selectedVideo ? selectedVideo.thumbnail : playlist?.thumbnail}
+            alt={selectedVideo ? selectedVideo.title : playlist?.title}
+            className="w-full h-full object-cover"
           />
-          <Box
-            position="absolute"
-            bottom="0"
-            left="0"
-            right="0"
-            height="50%"
-            background="linear-gradient(180deg, rgba(15, 15, 15, 0) 9%, rgba(15, 15, 15, 0.74) 53%, rgba(15, 15, 15, 1) 83%)"
-          />
-          <Box
-            position="absolute"
-            top={{ base: "60%", md: "70%" }}
-            px={5}
-            color="white"
-          >
-            <Heading
-              size={{ base: "md", md: "md", lg: "lg" }}
-              fontWeight="bold"
-            >
-              {selectedVideo ? selectedVideo.title : playlist.title}
-            </Heading>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          <div className="absolute bottom-4 left-4">
+            <h2 className="text-xl sm:text-2xl font-bold line-clamp-2">
+              {selectedVideo ? selectedVideo.title : playlist?.title}
+            </h2>
             <Button
-              bgColor="white"
-              color="black"
-              size={{ base: "xs", md: "md", lg: "lg" }}
-              leftIcon={<FaPlay />}
-              variant="solid"
-              mt={2}
+              variant="default"
+              size="sm"
+              className="mt-3 bg-white text-black hover:bg-gray-200 cursor-pointer"
               onClick={handlePlayClick}
             >
-              Play
+              <Play /> Play
             </Button>
-          </Box>
-        </Box>
-        <Box
-          p={5}
-          borderRadius="xl"
-          background="linear-gradient(180deg, rgba(15, 15, 15, 0) 9%, rgba(15, 15, 15, 0.74) 53%, rgba(15, 15, 15, 1) 83%)"
-        >
-          <Heading size={{ base: "sm", md: "lg" }} mb={2} fontWeight="bold">
-            {playlist.title}
-          </Heading>
-          <Text
-            color="white"
-            fontSize={{ base: "xs", md: "sm" }}
-            fontWeight="normal"
-          >
-            {playlist.description}
-          </Text>
-          <Heading size={{ base: "sm", md: "sm" }} my={5} fontWeight="semibold">
-            Videos
-          </Heading>
-          <Box
-            maxHeight="300px"
-            overflowY="auto"
-            borderRadius="xl"
-            sx={{
-              "&::-webkit-scrollbar": {
-                width: "8px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#ccc",
-                borderRadius: "10px",
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#4c4c4c",
-                borderRadius: "10px",
-              },
-            }}
-          >
-            <List spacing={2}>
+          </div>
+        </div>
+
+        {/* Konten list video */}
+        <div className="p-4 bg-neutral-900">
+          <h3 className="text-lg font-semibold mb-2">{playlist?.title}</h3>
+          {playlist?.description && (
+            <p className="text-sm text-gray-300 mb-4">{playlist.description}</p>
+          )}
+          <h4 className="text-md font-medium mb-2">Videos</h4>
+
+          <ScrollArea className="h-72">
+            <div className="space-y-2   ">
               {episodes.length > 0 ? (
                 episodes.map((episode) => (
-                  <ListItem
+                  <div
                     key={episode.id}
-                    color="white"
-                    width="99%"
-                    p={1}
-                    cursor="pointer"
-                    borderRadius="xl"
-                    _hover={{ bg: "#6b6b6b" }}
-                    bg={
+                    className={`flex gap-3 items-center p-2 rounded-md cursor-pointer transition-colors ${
                       selectedVideo?.id === episode.id
-                        ? "#4f4d4d"
-                        : "transparent"
-                    }
+                        ? "bg-neutral-700"
+                        : "hover:bg-neutral-800"
+                    }`}
                     onClick={() => handleEpisodeClick(episode)}
                   >
-                    <Flex align="center">
-                      <Image
-                        src={episode.thumbnail}
-                        alt={episode.title}
-                        aspectRatio="16/9"
-                        borderRadius="xl"
-                        objectFit="cover"
-                        mr={4}
-                        w={{ base: "100px", md: "130px" }}
-                      />
-                      <Box>
-                        <Text
-                          fontWeight="semibold"
-                          mb={1}
-                          isTruncated={{ base: "false", md: "true" }}
-                          fontSize={{ base: "xs", md: "sm" }}
-                          w={{ base: "200px", md: "auto" }}
-                          sx={{
-                            display: {
-                              base: "-webkit-box",
-                              md: "block",
-                            },
-                            WebkitLineClamp: {
-                              base: "4",
-                              md: "unset",
-                            },
-                            WebkitBoxOrient: {
-                              base: "vertical",
-                              md: "unset",
-                            },
-                            overflow: {
-                              base: "hidden",
-                              md: "visible",
-                            },
-                            textOverflow: {
-                              base: "ellipsis",
-                              md: "unset",
-                            },
-                          }}
-                        >
-                          {episode.title}
-                        </Text>
-                        <Text
-                          w={{ base: "auto", md: "auto" }}
-                          textOverflow="ellipsis"
-                          overflow="hidden"
-                          display={{ base: "none", md: "block" }}
-                          height={"3em"}
-                          fontSize={"sm"}
-                        >
-                          {episode.description}
-                        </Text>
-                      </Box>
-                    </Flex>
-                  </ListItem>
+                    <img
+                      src={episode.thumbnail}
+                      alt={episode.title}
+                      className="w-28 h-16 object-cover rounded-md shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">{episode.title}</p>
+                      <p className="text-sm text-gray-400 line-clamp-2 max-w-140">
+                        {episode.description}
+                      </p>
+                    </div>
+                  </div>
                 ))
               ) : (
-                <Box textAlign="center">
-                  <Text color="white">No videos available.</Text>
-                </Box>
+                <p className="text-center text-gray-400">
+                  No videos available.
+                </p>
               )}
-            </List>
-          </Box>
-        </Box>
-      </ModalContent>
-    </Modal>
+            </div>
+          </ScrollArea>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
