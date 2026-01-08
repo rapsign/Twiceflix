@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { FaInstagram } from "react-icons/fa";
-import { Helmet } from "react-helmet";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import LoadingSpinner from "../components/LoadingSpinner";
+import membersData from "@/data/twiceMembers.json";
 
 const toDirectWikiaImage = (url) => {
   if (!url) return null;
@@ -17,26 +15,15 @@ const About = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const res = await fetch("/api/api/twice/members");
-        const data = await res.json();
+    const membersArray = Object.entries(membersData).map(
+      ([stageName, member]) => ({
+        stageName,
+        ...member,
+      })
+    );
 
-        const membersArray = Object.entries(data).map(
-          ([stageName, member]) => ({
-            stageName,
-            ...member,
-          })
-        );
-        setMembers(membersArray);
-      } catch (err) {
-        console.error("Fetch TWICE members failed:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchMembers();
+    setMembers(membersArray);
+    setIsLoading(false);
   }, []);
 
   if (isLoading) return <LoadingSpinner />;
