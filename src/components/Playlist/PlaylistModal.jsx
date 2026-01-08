@@ -39,71 +39,83 @@ const PlaylistModal = ({ isOpen, onClose, playlist }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-neutral-900 text-white w-full min-w-3xl p-0 sm:rounded-lg overflow-hidden">
-        {/* Header dengan gambar dan play button */}
-        <div className="relative w-full h-full aspect-video">
+      <DialogContent className="bg-neutral-900 text-white w-full max-w-3xl lg:max-w-4xl p-0 overflow-hidden rounded-lg">
+        {/* HEADER / THUMBNAIL */}
+        <div className="relative aspect-video overflow-visible">
           <img
             src={selectedVideo ? selectedVideo.thumbnail : playlist?.thumbnail}
             alt={selectedVideo ? selectedVideo.title : playlist?.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-          <div className="absolute bottom-4 left-4">
-            <h2 className="text-xl sm:text-2xl font-bold line-clamp-2">
+
+          {/* GRADIENT */}
+          <div className="absolute -bottom-1  inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/80 to-transparent" />
+
+          {/* TITLE & PLAY */}
+          <div className="absolute bottom-3 left-3 right-3">
+            <h2 className="text-base sm:text-xl font-bold line-clamp-2">
               {selectedVideo ? selectedVideo.title : playlist?.title}
             </h2>
+
             <Button
-              variant="default"
               size="sm"
-              className="mt-3 bg-white text-black hover:bg-gray-200 cursor-pointer"
+              className="mt-2 bg-white text-black hover:bg-gray-200 cursor-pointer"
               onClick={handlePlayClick}
             >
-              <Play /> Play
+              <Play className="w-4 h-4 mr-1" />
+              Play
             </Button>
           </div>
         </div>
 
-        {/* Konten list video */}
-        <div className="p-4 bg-neutral-900">
-          <h3 className="text-lg font-semibold mb-2">{playlist?.title}</h3>
-          {playlist?.description && (
-            <p className="text-sm text-gray-300 mb-4">{playlist.description}</p>
-          )}
-          <h4 className="text-md font-medium mb-2">Videos</h4>
+        {/* CONTENT */}
+        <div className="relative bg-neutral-900">
+          {/* FADE ATAS (ANTI GARIS) */}
+          <div className="p-4 space-y-4">
+            <h3 className="text-base font-semibold">{playlist?.title}</h3>
 
-          <ScrollArea className="h-72">
-            <div className="space-y-2   ">
-              {episodes.length > 0 ? (
-                episodes.map((episode) => (
+            {playlist?.description && (
+              <p className="text-sm text-neutral-300">{playlist.description}</p>
+            )}
+
+            <h4 className="text-sm font-medium">Videos</h4>
+
+            <ScrollArea className="h-60 w-full overflow-x-hidden">
+              <div className="space-y-2 pr-2 w-full">
+                {episodes.map((episode) => (
                   <div
                     key={episode.id}
-                    className={`flex gap-3 items-center p-2 rounded-md cursor-pointer transition-colors ${
-                      selectedVideo?.id === episode.id
-                        ? "bg-neutral-700"
-                        : "hover:bg-neutral-800"
-                    }`}
                     onClick={() => handleEpisodeClick(episode)}
+                    className={`w-full flex items-start gap-2 p-2 rounded-md cursor-pointer transition-colors
+                      ${
+                        selectedVideo?.id === episode.id
+                          ? "bg-neutral-700"
+                          : "hover:bg-neutral-800"
+                      }
+                    `}
                   >
+                    {/* THUMBNAIL */}
                     <img
                       src={episode.thumbnail}
                       alt={episode.title}
-                      className="w-28 h-16 object-cover rounded-md shrink-0"
+                      className="w-16 h-9 sm:w-32 sm:h-18 object-cover rounded-md shrink-0"
                     />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold truncate">{episode.title}</p>
-                      <p className="text-sm text-gray-400 line-clamp-2 max-w-140">
+
+                    {/* TEXT (INI KUNCI UTAMA) */}
+                    <div className="flex-1">
+                      <p className="text-xs sm:text-sm font-semibold ">
+                        {episode.title}
+                      </p>
+
+                      <p className="hidden sm:block text-[11px] sm:text-xs text-neutral-400 line-clamp-2 break-words">
                         {episode.description}
                       </p>
                     </div>
                   </div>
-                ))
-              ) : (
-                <p className="text-center text-gray-400">
-                  No videos available.
-                </p>
-              )}
-            </div>
-          </ScrollArea>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

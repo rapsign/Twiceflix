@@ -24,7 +24,7 @@ const Playlist = () => {
   return (
     <div className="bg-transparent text-white py-2 w-full">
       {/* Title */}
-      <h2 className="text-md md:text-2xl font-bold mb-2 px-2">
+      <h2 className="text-md md:text-xl lg:text-2xl font-bold mb-2 px-2">
         TWICE Playlist
       </h2>
 

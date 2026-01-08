@@ -35,7 +35,7 @@ const PublicLayout = ({ title, description, keywords, author }) => {
 
       <div className="min-h-screen bg-neutral-900 text-white">
         {!hideNavbar && <Navbar />}
-        <main className="-pt-16">
+        <main className="pt-13 md:pt-0">
           <Outlet />
         </main>
       </div>

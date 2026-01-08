@@ -13,21 +13,23 @@ const HeroContent = ({ title, description, youtubeUrl, onMoreInfo }) => {
   return (
     <div
       className="
-        absolute
-        bottom-[clamp(30%,50vw,10%)]
-        left-0
-        max-w-[clamp(100%,40vw,50%)]
-        z-20
-        px-4
-        rounded-md
-      "
+    absolute
+    top-1/2
+    left-0
+    -translate-y-1/2
+    max-w-[clamp(90%,50vw,45%)]
+    z-20
+    px-4
+  "
     >
       {/* Title */}
       <h1
         className="
-          text-[clamp(1rem,2vw,1.75rem)]
-          font-extrabold
-          leading-[1.2]
+          text-[1.75rem]
+  sm:text-[2.25rem]
+  md:text-[2.75rem]
+  lg:text-[3.25rem]
+  xl:text-[3.5rem] w-full xl:w-1/2 font-extrabold leading-tight
           text-shadow-md
           text-white
         "

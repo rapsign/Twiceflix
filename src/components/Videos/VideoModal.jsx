@@ -40,23 +40,23 @@ const VideoModal = ({ isOpen, onClose, video }) => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="min-w-3xl bg-neutral-900 text-white p-0 overflow-hidden">
+        <DialogContent className="w-full max-w-3xl lg:max-w-4xl bg-neutral-900 text-white p-0 overflow-hidden">
           {/* CLOSE BUTTON */}
           <DialogClose className="absolute right-4 top-4 text-white z-50" />
 
           {/* THUMBNAIL */}
-          <div className="relative aspect-video overflow-hidden">
+          <div className="relative aspect-video overflow-visible">
             <img
               src={video.thumbnail}
               alt={video.title}
-              className="w-full h-full object-cover aspect-video "
+              className="w-full h-full object-cover "
             />
 
             {/* GRADIENT */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
+            <div className="absolute -bottom-1  inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/80 to-transparent" />
 
             {/* TITLE & PLAY */}
-            <div className="absolute bottom-4 left-4 right-4">
+            <div className="absolute bottom-4 left-4 right-4 ">
               <h2 className="text-lg md:text-2xl font-bold line-clamp-2">
                 {video.title}
               </h2>
@@ -73,7 +73,7 @@ const VideoModal = ({ isOpen, onClose, video }) => {
           </div>
 
           {/* CONTENT */}
-          <div className="p-5 space-y-4">
+          <div className="p-4 space-y-4">
             {/* DESCRIPTION */}
             <p className="text-sm text-neutral-300 leading-relaxed">
               {video.description || "No description available."}

@@ -21,7 +21,11 @@ export default function CustomSwiper({
 }) {
   return (
     <div className="w-full text-white relative z-10">
-      {title && <h2 className="text-md md:text-2xl font-bold mb-2">{title}</h2>}
+      {title && (
+        <h2 className="text-md md:text-xl lg:text-2xl font-bold mb-2">
+          {title}
+        </h2>
+      )}
 
       <Swiper
         modules={[Navigation, Pagination, Scrollbar, A11y, Autoplay]}

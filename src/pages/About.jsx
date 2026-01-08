@@ -43,7 +43,7 @@ const About = () => {
 
   return (
     <>
-      <div className="bg-black text-white min-h-screen py-24">
+      <div className="bg-black text-white min-h-screen py-10 md:py-26">
         {/* Wrapper / "container" */}
         <div className="max-w-7xl mx-auto px-4 space-y-8">
           <h1 className="text-center text-red-600 font-extrabold text-2xl md:text-4xl">
@@ -91,7 +91,7 @@ const About = () => {
                   {/* Overlay di bawah */}
                   <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-black/90 via-black/90 to-transparent p-3 flex flex-col justify-between">
                     {/* Top content: Name + Position */}
-                    <div className="flex flex-col items-center gap-1 text-center mt-15">
+                    <div className="flex flex-col items-center gap-1 text-center mt-4 md:mt-15">
                       <p className="font-extrabold text-red-600 text-sm">
                         {member.stageName}
                       </p>

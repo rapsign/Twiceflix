@@ -25,7 +25,7 @@ export default function Videos() {
 
   return (
     <div className="p-4">
-      <h1 className="mb-3 text-xl md:text-3xl font-bold text-white pt-16">
+      <h1 className="mb-3 text-xl md:text-3xl font-bold text-white pt-0 md:pt-16">
         TWICE Videos
       </h1>
 
