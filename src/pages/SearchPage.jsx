@@ -93,7 +93,7 @@ export default function SearchPage() {
   return (
     <>
       <div className="p-4">
-        <h1 className="text-xl md:text-3xl font-bold text-white mb-3 pt-16">
+        <h1 className="text-xl md:text-3xl font-bold text-white mb-3 pt-0 md:pt-16">
           Search Results for: "{queryTerm}"
         </h1>
 
