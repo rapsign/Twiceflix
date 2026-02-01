@@ -8,7 +8,6 @@ import {
 import NProgress from "nprogress";
 import {
   ArrowUpDown,
-  Pointer,
   Repeat2,
   Share2,
   Shuffle,
@@ -22,7 +21,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Drawer,
   DrawerContent,
-  DrawerHeader,
   DrawerClose,
   DrawerTitle,
   DrawerTrigger,
@@ -55,61 +53,11 @@ import {
 import useDataManager from "@/hooks/useDataManager";
 import { getRelatedVideos } from "@/utils/relatedVideos";
 import { formatPublishedDistance } from "@/utils/time";
+import useYouTubeEndListener from "@/hooks/useYouTubeEndListener";
+import RelatedVideos from "@/components/Player/RelatedVideos";
 
 const FLOAT_BREAKPOINT = 1024;
 const FLOAT_OFFSET_TOP = 56;
-
-// Hook reusable untuk YouTube "video ended"
-function useYouTubeEndListener(youtubeId, onEnd) {
-  const iframeContainerRef = useRef(null);
-  const playerRef = useRef(null);
-
-  useEffect(() => {
-    if (!youtubeId) return;
-
-    if (!window.YT) {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.body.appendChild(tag);
-    }
-
-    const initPlayer = () => {
-      if (playerRef.current || !iframeContainerRef.current) return;
-      playerRef.current = new window.YT.Player(iframeContainerRef.current, {
-        height: "100%",
-        width: "100%",
-        videoId: youtubeId,
-        events: {
-          onStateChange: (event) => {
-            if (event.data === window.YT.PlayerState.ENDED) {
-              onEnd?.();
-            }
-          },
-        },
-        playerVars: {
-          rel: 0,
-          modestbranding: 1,
-          autoplay: 1,
-        },
-      });
-    };
-
-    if (window.YT && window.YT.Player) {
-      initPlayer();
-    } else {
-      window.onYouTubeIframeAPIReady = initPlayer;
-    }
-
-    return () => {
-      if (playerRef.current) {
-        playerRef.current.destroy();
-        playerRef.current = null;
-      }
-    };
-  }, [youtubeId, onEnd]);
-
-  return iframeContainerRef;
-}
 
 export default function Watch() {
   const { videoId } = useParams();
@@ -211,8 +159,16 @@ export default function Watch() {
   }, [video, videos, playedIds, activePlaylist]);
 
   useEffect(() => {
-    if (!videoId) return;
     NProgress.start();
+
+    const timeout = setTimeout(() => {
+      NProgress.done();
+    }, 400);
+
+    return () => {
+      clearTimeout(timeout);
+      NProgress.done();
+    };
   }, [videoId]);
 
   useEffect(() => {
@@ -300,6 +256,11 @@ export default function Watch() {
 
     return videos.findIndex((v) => String(v.id) === String(currentVideoId));
   }
+  useEffect(() => {
+    if (!loading) {
+      NProgress.done();
+    }
+  }, [loading]);
 
   if (loading) return null;
   if (!video) return <Navigate to="/" replace />;
@@ -325,53 +286,26 @@ export default function Watch() {
             )}
           </div>
 
-          <div className="flex items-center justify-between px-2 md:px-4 lg:px-0">
-            <h1 className="text-xl font-semibold">{video.title}</h1>
-            <Dialog open={shareOpen} onOpenChange={setShareOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-neutral-800 hover:bg-neutral-700">
-                  <Share2 className="mr-1 h-4 w-4" />
-                  Share
-                </Button>
-              </DialogTrigger>
-
-              <DialogContent className="sm:max-w-[400px]">
-                <DialogHeader>
-                  <DialogTitle>Share this video</DialogTitle>
-                  <DialogDescription>
-                    Copy the link below to share
-                  </DialogDescription>
-                </DialogHeader>
-
-                <InputGroup className="mt-2">
-                  <InputGroupInput value={url} readOnly />
-                  <InputGroupAddon align="inline-end">
-                    <InputGroupButton
-                      size="icon-xs"
-                      onClick={() => copyToClipboard(url)}
-                    >
-                      {isCopied ? <IconCheck /> : <IconCopy />}
-                    </InputGroupButton>
-                  </InputGroupAddon>
-                </InputGroup>
-              </DialogContent>
-            </Dialog>
+          <div className="px-4  lg:px-2">
+            <h1 className="text-base md:text-lg lg:text-xl font-semibold">
+              {video.title}
+            </h1>
           </div>
 
           <div className="px-2 md:px-4 lg:px-0">
             <Card className="p-0">
-              <CardContent className="space-y-1 px-4 py-4">
-                <p className="text-xs md:text-sm font-medium ">
+              <CardContent className="space-y-1 px-4 py-3 md:py-4">
+                <p className="text-[11px] md:text-sm font-medium text-muted-foreground">
                   {formatPublishedDistance(video.published_at)}
                 </p>
 
-                <p className="text-sm md:text-base ">{video.description}</p>
+                <p className="text-sm md:text-base leading-relaxed">
+                  {video.description}
+                </p>
               </CardContent>
             </Card>
           </div>
         </div>
-
-        {/* SIDEBAR */}
         <div className="lg:col-span-3 ">
           {activePlaylist && (
             <>
@@ -387,9 +321,6 @@ export default function Watch() {
                     style={{ textDecoration: "none" }}
                   >
                     <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 w-full">
-                      {/* Left: Playlist Icon */}
-
-                      {/* Middle: Next Video & Playlist Info */}
                       <div className="grid grid-rows-2 leading-none overflow-hidden">
                         <p className="text-sm truncate font-normal">
                           <span className="font-medium">Next:</span>{" "}
@@ -397,8 +328,8 @@ export default function Watch() {
                         </p>
                         <span className="text-xs text-muted-foreground font-normal truncate text-left">
                           {activePlaylist.title} •{" "}
-                          {getVideoIndex(videoId, activePlaylist) + 1}/
-                          {activePlaylist.videos.length}
+                          {getVideoIndex(videoId, displayedPlaylistVideos) + 1}/
+                          {displayedPlaylistVideos.length}
                         </span>
                       </div>
                     </div>
@@ -439,10 +370,9 @@ export default function Watch() {
                         return (
                           <div
                             key={v.id}
-                            className={`flex cursor-pointer gap-2 p-2
-        ${isLast ? "rounded-b-xl" : ""}
-        ${isActive ? "bg-red-950" : "hover:bg-neutral-800"}
-      `}
+                            className={`flex cursor-pointer gap-2 p-2 
+                            ${isLast ? "rounded-b-xl" : ""}
+                            ${isActive ? "bg-red-950" : "hover:bg-neutral-800"}`}
                             onClick={() =>
                               navigate(`/watch/${v.id}`, {
                                 state: { playlistId: activePlaylist.id },
@@ -486,14 +416,10 @@ export default function Watch() {
                 <Drawer>
                   <DrawerTrigger asChild>
                     <Button className="mx-auto flex w-[calc(100vw-2rem)] items-center justify-between bg-neutral-800 px-4 hover:bg-neutral-700 h-15">
-                      {/* Left: Playlist Icon */}
                       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 w-full">
-                        {/* Left: Playlist Icon */}
                         <ListVideo size={36} />
-
-                        {/* Middle: Next Video & Playlist Info */}
                         <div className="grid grid-rows-2 leading-none overflow-hidden">
-                          <span className="text-xs font-medium truncate">
+                          <span className="text-xs font-medium truncate text-left">
                             Next:{" "}
                             {getNextVideoTitle(
                               displayedPlaylistVideos,
@@ -502,12 +428,11 @@ export default function Watch() {
                           </span>
                           <span className="text-xs text-muted-foreground truncate text-left">
                             {activePlaylist.title} •{" "}
-                            {getVideoIndex(videoId, activePlaylist) + 1}/
-                            {activePlaylist.videos.length}
+                            {getVideoIndex(videoId, displayedPlaylistVideos) +
+                              1}
+                            /{displayedPlaylistVideos.length}
                           </span>
                         </div>
-
-                        {/* Right: Chevron Up */}
                         <ChevronUp size={20} />
                       </div>
                     </Button>
@@ -515,23 +440,20 @@ export default function Watch() {
 
                   <DrawerContent
                     side="bottom"
-                    className="h-[calc(100vh-(100vw*9/16)-3.15rem)] "
+                    className="h-[calc(100vh-(100vw*9/16)-3.2rem)] "
                   >
                     <div className="flex items-center justify-between px-4 py-1">
                       <DrawerTitle className="text-xl font-semibold">
                         {activePlaylist.title}{" "}
                         <span className="text-xs text-muted-foreground truncate ">
-                          {getVideoIndex(videoId, activePlaylist) + 1} /{" "}
-                          {activePlaylist.videos.length}
+                          {getVideoIndex(videoId, displayedPlaylistVideos) + 1}/
+                          {displayedPlaylistVideos.length}
                         </span>
                       </DrawerTitle>
                       <DrawerClose>
                         <X />
                       </DrawerClose>
                     </div>
-
-                    <div className="grid grid-rows-2 px-4"></div>
-
                     <div className="flex gap-2 px-2 border-b ">
                       <Button
                         variant="ghost"
@@ -561,7 +483,7 @@ export default function Watch() {
                       </Button>
                     </div>
 
-                    <ScrollArea className="h-[calc(100vh-26rem)]">
+                    <ScrollArea className="h-[calc(100vh-22.7rem)]">
                       {displayedPlaylistVideos.map((v) => {
                         const isActive = String(v.id) === String(videoId);
                         return (
@@ -597,26 +519,7 @@ export default function Watch() {
               </div>
             </>
           )}
-          <div className="grid grid-cols-1 gap-3 px-0 md:grid-cols-3 md:px-4 lg:grid-cols-1 lg:px-0 pb-1">
-            {relatedVideos.map((v) => (
-              <div
-                key={v.id}
-                className="flex cursor-pointer flex-col gap-2 lg:flex-row"
-                onClick={() => navigate(`/watch/${v.id}`)}
-              >
-                <img
-                  src={v.thumbnail}
-                  className="w-full aspect-video rounded-none object-cover md:rounded-lg lg:w-42"
-                />
-                <div className="flex flex-col gap-1 px-2 md:px-0">
-                  <p className="line-clamp-2 text-sm font-medium">{v.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatPublishedDistance(v.published_at)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <RelatedVideos relatedVideos={relatedVideos} />
         </div>
       </div>
     </div>
