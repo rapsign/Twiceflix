@@ -37,12 +37,8 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`
-    fixed top-0 w-full z-50 transition-colors duration-300
-    ${isScrolled ? "bg-black/80" : "md:bg-transparent bg-black/80"}
-  `}
+      className={`fixed top-0 w-full z-50 transition-colors duration-300 bg-black`}
     >
-      {/* Mobile Navbar */}
       <div className="flex items-center justify-between p-2 lg:hidden">
         <div className="w-1/3">
           <TextLogo Width="120px" />
@@ -51,22 +47,17 @@ const Navbar = () => {
         <div className="flex items-center gap-2 ml-auto">
           <SearchBox />
           <button
-            className="text-white text-lg p-2 rounded hover:bg-white/20 transition"
+            className="text-white text-lg p-2 rounded hover:bg-white/20 transition "
             onClick={() => setIsOpen(true)}
           >
             <FaBars />
           </button>
         </div>
       </div>
-
-      {/* Desktop Navbar */}
       <div className="hidden lg:flex items-center justify-between px-8 py-4">
-        {/* Logo */}
         <div className="flex-1">
           <TextLogo Width="120px" />
         </div>
-
-        {/* Navigation Links */}
         <div className="flex-1 flex justify-center">
           <NavigationMenu>
             <NavigationMenuList className="flex gap-6">
@@ -89,14 +80,10 @@ const Navbar = () => {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-
-        {/* Search Box */}
         <div className="flex-1 flex justify-end">
           <SearchBox />
         </div>
       </div>
-
-      {/* Mobile Drawer */}
       <MobileDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </nav>
   );

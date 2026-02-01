@@ -2,18 +2,17 @@
 
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
+import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet";
 
 const PublicLayout = ({ title, description, keywords, author }) => {
   const location = useLocation();
 
-  // hide navbar di halaman tertentu
   const hideNavbar =
     location.pathname === "/login" || location.pathname === "/video-player";
 
   return (
     <>
-      {/* Meta Data */}
       <Helmet>
         <title>{title || "TWICEFLIX"}</title>
         <meta
@@ -30,14 +29,17 @@ const PublicLayout = ({ title, description, keywords, author }) => {
             "TWICE, TWICEFLIX, K-pop, music, performances, videos, TWICE members"
           }
         />
-        <meta name="author" content={author || "RapSign"} />
+        <meta name="author" content={author || "Rinaldi Prayuda"} />
       </Helmet>
 
-      <div className="min-h-screen bg-neutral-900 text-white">
+      <div className="min-h-screen flex flex-col text-white">
         {!hideNavbar && <Navbar />}
-        <main className="pt-13 md:pt-0">
+
+        <main className="flex-1 pt-13 md:pt-0">
           <Outlet />
         </main>
+
+        <Footer />
       </div>
     </>
   );

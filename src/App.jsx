@@ -17,6 +17,7 @@ import AdminVideosPage from "./pages/Admin/Videos";
 import AdminPlaylistPage from "./pages/Admin/Playlist";
 
 import { Toaster } from "sonner";
+import Watch from "./pages/Watch";
 
 function App() {
   return (
@@ -32,7 +33,7 @@ function App() {
           <Route path="about" element={<About />} />
           <Route path="search" element={<SearchPage />} />
           <Route path="login" element={<Login />} />
-          <Route path="video-player" element={<VideoPlayer />} />
+          <Route path="/watch/:videoId" element={<Watch />} />
         </Route>
 
         {/* ADMIN LAYOUT */}

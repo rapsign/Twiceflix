@@ -29,7 +29,6 @@ const MobileDrawer = ({ isOpen, onClose }) => {
         className="bg-black w-64 p-6 sm:w-80 text-white"
       >
         <SheetHeader>
-          {/* Judul untuk screen reader */}
           <SheetTitle>
             <VisuallyHidden>Navigation Menu</VisuallyHidden>
           </SheetTitle>
@@ -50,7 +49,7 @@ const MobileDrawer = ({ isOpen, onClose }) => {
                 "text-lg font-medium transition-colors",
                 isActive(item)
                   ? "text-red-500"
-                  : "text-white hover:text-red-500"
+                  : "text-white hover:text-red-500",
               )}
             >
               {item}

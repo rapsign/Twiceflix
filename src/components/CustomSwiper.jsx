@@ -1,66 +1,72 @@
-"use client";
-
+import { useRef, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import {
-  Navigation,
-  Pagination,
-  Scrollbar,
-  A11y,
-  Autoplay,
-} from "swiper/modules";
+import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { Badge } from "@/components/ui/badge";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import PlaylistCard from "./Playlist/PlaylistCard";
+import VideoCard from "./Videos/VideoCard";
 
 export default function CustomSwiper({
   items,
   title,
   onItemClick,
-  badgeLabel,
+  type = "video",
 }) {
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
+  const [swiperInstance, setSwiperInstance] = useState(null);
+
+  useEffect(() => {
+    if (swiperInstance && prevRef.current && nextRef.current) {
+      swiperInstance.params.navigation.prevEl = prevRef.current;
+      swiperInstance.params.navigation.nextEl = nextRef.current;
+      swiperInstance.navigation.init();
+      swiperInstance.navigation.update();
+    }
+  }, [swiperInstance]);
+
   return (
-    <div className="w-full text-white relative z-10">
+    <div className="w-full text-white relative group">
       {title && (
-        <h2 className="text-md md:text-xl lg:text-2xl font-bold mb-2">
-          {title}
-        </h2>
+        <div className="flex items-center justify-between mb-2 px-2">
+          <h2 className="text-md md:text-xl lg:text-2xl font-bold">{title}</h2>
+
+          <div className="flex gap-2">
+            <div
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 cursor-pointer"
+              ref={prevRef}
+            >
+              <ChevronLeft className="w-5 h-5 text-white" />
+            </div>
+            <div
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 cursor-pointer"
+              ref={nextRef}
+            >
+              <ChevronRight className="w-5 h-5 text-white" />
+            </div>
+          </div>
+        </div>
       )}
 
       <Swiper
-        modules={[Navigation, Pagination, Scrollbar, A11y, Autoplay]}
+        modules={[Navigation, Pagination, Scrollbar, A11y]}
         spaceBetween={10}
-        centeredSlides={true}
-        loop={true}
         slidesPerView={1}
+        onSwiper={setSwiperInstance}
+        navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
         breakpoints={{
           768: { slidesPerView: 3 },
-          1024: { slidesPerView: 4 },
-          1440: { slidesPerView: 5 },
+          1024: { slidesPerView: 3 },
+          1440: { slidesPerView: 3 },
         }}
       >
         {items.map((item) => (
           <SwiperSlide key={item.id}>
-            <div
-              className="relative cursor-pointer overflow-hidden rounded-lg group aspect-video"
-              onClick={() => onItemClick(item)}
-            >
-              {badgeLabel && (
-                <Badge className="absolute top-2 left-2 z-20 rounded-full bg-red-600 px-2 py-1 text-xs md:text-sm font-semibold">
-                  {badgeLabel}
-                </Badge>
-              )}
-
-              <img
-                src={item.thumbnail}
-                alt={item.title}
-                className="w-full h-full object-cover"
-              />
-
-              <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/95 to-black/60 p-2 text-center text-sm text-white opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
-                {item.title}
-              </div>
-            </div>
+            {type === "playlist" ? (
+              <PlaylistCard playlist={item} onClick={onItemClick} />
+            ) : (
+              <VideoCard video={item} onClick={onItemClick} />
+            )}
           </SwiperSlide>
         ))}
       </Swiper>

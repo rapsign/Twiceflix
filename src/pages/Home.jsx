@@ -22,11 +22,9 @@ const Home = () => {
   return (
     <>
       <div className="relative">
-        {/* Hero Section */}
         <HeroSection />
 
-        {/* Konten video dan playlist */}
-        <div className="absolute top-[80%] left-0 w-full z-10 p-4 bg-transparent">
+        <div className="-mt-24 md:-mt-48 px-0 md:px-4 relative z-10">
           <VideoSwiper />
           <Playlist />
           <PlaylistSwiper />

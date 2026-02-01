@@ -6,7 +6,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AdminSidebar from "../components/Admin/AdminSidebar";
 import Dashboard from "./Admin/Dashboard";
 import TableVideos from "@/components/Admin/Video/TableVideos";
-import TablePlaylists from "@/components/Admin/Playlist/TablePlaylist";
+import TablePlaylists from "@/components/Admin/Playlist/PlaylistTable";
 
 export default function Admin() {
   const navigate = useNavigate();

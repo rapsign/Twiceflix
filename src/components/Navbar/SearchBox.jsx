@@ -26,7 +26,7 @@ export default function SearchBox({ onSearch }) {
         navigate("videos");
       }
     },
-    [navigate]
+    [navigate],
   );
 
   useDebouncedSearch(query, handleSearchChange, 300);
@@ -43,7 +43,7 @@ export default function SearchBox({ onSearch }) {
       />
       <Button
         variant="ghost"
-        className="absolute right-0 top-1/2 -translate-y-1/2 p-2 hover:bg-transparent hover:text-red-600"
+        className="absolute right-0 top-1/2 -translate-y-1/2 p-2 hover:bg-transparent hover:text-red-600 cursor-pointer"
         onClick={toggleSearch}
       >
         <LucideSearch className="w-5 h-5" />
