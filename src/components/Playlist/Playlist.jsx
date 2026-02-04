@@ -2,7 +2,7 @@ import CustomSwiper from "../CustomSwiper";
 import useDataManager from "../../hooks/useDataManager";
 
 const Playlist = () => {
-  const { data: playlists } = useDataManager("playlists");
+  const { data: playlists } = useDataManager("youtube_playlist");
 
   return (
     <div className="bg-transparent text-white py-2 w-full">

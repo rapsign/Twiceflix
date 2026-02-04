@@ -14,9 +14,9 @@ export default function SearchPage() {
   const [queryTerm, setQueryTerm] = useState("");
 
   const { data: videos = [], loading: loadingVideos } =
-    useDataManager("videos");
+    useDataManager("youtube_video");
   const { data: playlists = [], loading: loadingPlaylists } =
-    useDataManager("playlists");
+    useDataManager("youtube_playlist");
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -46,7 +46,7 @@ export default function SearchPage() {
   return (
     <>
       <Helmet>
-        <title>{queryTerm ? `Search: ${queryTerm}` : "Search"}</title>
+        <title>{queryTerm ? `${queryTerm} - TWICEFLIX` : "TWICEFLIX"}</title>
       </Helmet>
 
       <div className="p-0 md:p-4">

@@ -2,20 +2,18 @@
 
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { ListVideo } from "lucide-react";
+import useDataManager from "@/hooks/useDataManager";
 
 export default function PlaylistCard({ playlist }) {
   const navigate = useNavigate();
+  const { data: videos = [] } = useDataManager("youtube_video");
 
   const handleClick = () => {
-    if (!playlist?.videos?.length) return;
+    const firstVideo = videos.find((v) => v.playlists?.includes(playlist.id));
+    if (!firstVideo) return;
 
-    const firstVideo = playlist.videos[0];
-
-    navigate(`/watch/${firstVideo.id}`, {
-      state: {
-        playlistId: playlist.id,
-      },
-    });
+    navigate(`/watch/${firstVideo.id}`, { state: { playlistId: playlist.id } });
   };
 
   return (
@@ -35,9 +33,10 @@ export default function PlaylistCard({ playlist }) {
           <Badge className="absolute top-2 right-2 text-sm px-2 py-0.5 bg-red-500">
             Playlist
           </Badge>
-          {playlist.count && (
-            <span className="absolute bottom-1 right-1 text-[10px] px-1.5 py-0.5 bg-black/80 text-white rounded">
-              {playlist.count} videos
+          {playlist.itemCount && (
+            <span className="absolute bottom-2 right-2 flex items-center gap-1 text-xs px-2 py-1 bg-black/80 text-white rounded">
+              <ListVideo className="w-4 h-4" />
+              {playlist.itemCount} videos
             </span>
           )}
         </div>
@@ -49,6 +48,9 @@ export default function PlaylistCard({ playlist }) {
           title={playlist.title}
         >
           {playlist.title}
+        </p>
+        <p className="text-xs  leading-snug line-clamp-2 text-muted-foreground">
+          View full playlist
         </p>
       </div>
     </div>

@@ -8,7 +8,6 @@ import Playlist from "./pages/Playlist";
 import Videos from "./pages/Video";
 import About from "./pages/About";
 import Login from "./pages/Login";
-import VideoPlayer from "./pages/VideoPlayer";
 import SearchPage from "./pages/SearchPage";
 import NotFound from "./pages/NotFound";
 

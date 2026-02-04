@@ -3,7 +3,6 @@ import {
   collection,
   getDocs,
   query,
-  where,
   orderBy,
   addDoc,
   updateDoc,
@@ -13,18 +12,9 @@ import {
 import { db } from "../firebase/firebase";
 
 /* ===============================
-   GLOBAL CACHE (PER COLLECTION)
+   GLOBAL CACHE
 ================================ */
-const cache = {
-  videos: {
-    data: null,
-    promise: null,
-  },
-  playlists: {
-    data: null,
-    promise: null,
-  },
-};
+const cache = {};
 
 /* ===============================
    HOOK
@@ -39,8 +29,10 @@ const useDataManager = (collectionName) => {
     const load = async () => {
       setLoading(true);
 
-      // 1. return cache if exists
-      if (cache[collectionName]?.data) {
+      if (!cache[collectionName])
+        cache[collectionName] = { data: null, promise: null };
+
+      if (cache[collectionName].data) {
         if (mounted) {
           setData(cache[collectionName].data);
           setLoading(false);
@@ -48,8 +40,7 @@ const useDataManager = (collectionName) => {
         return;
       }
 
-      // 2. wait ongoing request (anti double-fetch)
-      if (cache[collectionName]?.promise) {
+      if (cache[collectionName].promise) {
         const result = await cache[collectionName].promise;
         if (mounted) {
           setData(result);
@@ -58,9 +49,7 @@ const useDataManager = (collectionName) => {
         return;
       }
 
-      // 3. create single request
       cache[collectionName].promise = fetchCollection(collectionName);
-
       const result = await cache[collectionName].promise;
       cache[collectionName].data = result;
       cache[collectionName].promise = null;
@@ -103,44 +92,17 @@ const useDataManager = (collectionName) => {
    FETCH IMPLEMENTATION
 ================================ */
 const fetchCollection = async (name) => {
-  if (name === "videos") {
-    const q = query(collection(db, "videos"), orderBy("published_at", "desc"));
+  if (name === "youtube_video" || name === "youtube_shorts") {
+    const q = query(collection(db, name), orderBy("published_at", "desc"));
     const snap = await getDocs(q);
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
-  if (name === "playlists") {
-    const playlistSnap = await getDocs(collection(db, "playlists"));
-    const playlists = playlistSnap.docs.map((d) => ({
+  if (name === "youtube_playlist") {
+    const playlistSnap = await getDocs(collection(db, "youtube_playlist"));
+    return playlistSnap.docs.map((d) => ({
       id: d.id,
       ...d.data(),
-    }));
-
-    const ids = playlists.map((p) => p.id);
-    if (!ids.length) return playlists;
-
-    const videoQuery = query(
-      collection(db, "videos"),
-      where("playlists", "array-contains-any", ids),
-      orderBy("published_at", "desc"),
-    );
-
-    const videoSnap = await getDocs(videoQuery);
-    const map = {};
-
-    videoSnap.docs.forEach((doc) => {
-      const v = { id: doc.id, ...doc.data() };
-      v.playlists?.forEach((pid) => {
-        if (!map[pid]) map[pid] = [];
-        map[pid].push(v);
-      });
-    });
-
-    return playlists.map((p) => ({
-      ...p,
-      videos: map[p.id] || [],
-      videoCount: map[p.id]?.length || 0,
-      thumbnail: map[p.id]?.[0]?.thumbnail || null,
     }));
   }
 

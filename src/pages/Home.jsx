@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from "react";
 import HeroSection from "../components/Hero/HeroSection";
-import VideoList from "../components/Videos/VideoSwiper";
 import Playlist from "../components/Playlist/Playlist";
 import PlaylistSwiper from "../components/Playlist/PlaylistSwiper";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { Helmet } from "react-helmet";
 import VideoSwiper from "../components/Videos/VideoSwiper";
 
 const Home = () => {

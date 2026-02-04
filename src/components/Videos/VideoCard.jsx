@@ -3,33 +3,38 @@
 import { formatDistanceStrict } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
+import { parseDuration } from "../../utils/videoHelpers";
 
 export default function VideoCard({ video }) {
   const navigate = useNavigate();
 
   const publishedDate = video?.published_at?.seconds
     ? new Date(video.published_at.seconds * 1000)
-    : null;
+    : video?.published_at
+      ? new Date(video.published_at)
+      : null;
 
   const handleClick = () => {
     navigate(`/watch/${video.id}`);
   };
+
+  const durationFormatted = parseDuration(video.duration);
 
   return (
     <div
       className="w-full cursor-pointer select-none rounded-xl p-0 md:p-2 transition-colors duration-200 hover:bg-neutral-700"
       onClick={handleClick}
     >
-      <div className="relative aspect-video w-full   rounded-none md:rounded-xl overflow-hidden bg-black">
+      <div className="relative aspect-video w-full rounded-none md:rounded-xl overflow-hidden bg-black">
         <img
           src={video.thumbnail}
           alt={video.title}
           className="w-full h-full object-cover"
         />
 
-        {video.duration && (
-          <span className="absolute bottom-1 right-1 text-[10px] px-1.5 py-0.5 bg-black/80 text-white rounded">
-            {video.duration}
+        {durationFormatted && (
+          <span className="absolute bottom-2 right-2 flex items-center gap-1 text-xs px-2 py-1 bg-black/80 text-white rounded">
+            {durationFormatted}
           </span>
         )}
       </div>
@@ -42,14 +47,16 @@ export default function VideoCard({ video }) {
           {video.title}
         </h3>
 
-        {publishedDate && (
-          <p className="text-xs text-neutral-400 mt-0.5">
-            {formatDistanceStrict(publishedDate, new Date(), {
-              addSuffix: true,
-              locale: enUS,
-            })}
-          </p>
-        )}
+        <div className="text-xs text-neutral-400 mt-0.5 flex flex-wrap items-center gap-1">
+          {publishedDate && (
+            <span>
+              {formatDistanceStrict(publishedDate, new Date(), {
+                addSuffix: true,
+                locale: enUS,
+              })}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

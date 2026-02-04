@@ -19,7 +19,7 @@ const About = () => {
       ([stageName, member]) => ({
         stageName,
         ...member,
-      })
+      }),
     );
 
     setMembers(membersArray);
@@ -31,7 +31,6 @@ const About = () => {
   return (
     <>
       <div className="bg-black text-white min-h-screen py-10 md:py-26">
-        {/* Wrapper / "container" */}
         <div className="max-w-7xl mx-auto px-4 space-y-8">
           <h1 className="text-center text-red-600 font-extrabold text-2xl md:text-4xl">
             About TWICEFLIX

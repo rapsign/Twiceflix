@@ -4,7 +4,7 @@ import HeroBackground from "./HeroBackground";
 import HeroContent from "./HeroContent";
 
 const HeroSection = () => {
-  const { data: videos = [] } = useDataManager("videos");
+  const { data: videos = [] } = useDataManager("youtube_video");
 
   const latestVideo = useMemo(() => {
     if (videos.length === 0) return null;
