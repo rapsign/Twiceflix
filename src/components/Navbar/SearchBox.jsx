@@ -1,52 +1,57 @@
-// components/SearchBox.jsx
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { LucideSearch } from "lucide-react";
-import useDebouncedSearch from "@/hooks/useDebouncedSearch";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 
-export default function SearchBox({ onSearch }) {
+export default function SearchBox() {
   const [query, setQuery] = useState("");
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
+  const isUserTyping = useRef(false);
 
   const toggleSearch = () => setShow((prev) => !prev);
 
-  const handleSearchChange = useCallback(
-    (e) => {
-      const query = e.target.value;
-      setQuery(query);
+  const handleChange = (e) => {
+    isUserTyping.current = true;
+    setQuery(e.target.value);
+  };
 
-      if (query.trim() !== "") {
-        navigate(`/search?q=${encodeURIComponent(query)}`);
+  useEffect(() => {
+    // Hanya navigate jika perubahan berasal dari user mengetik
+    if (!isUserTyping.current) return;
+
+    const handler = setTimeout(() => {
+      isUserTyping.current = false;
+      if (!query.trim()) {
+        navigate("/videos");
       } else {
-        navigate("videos");
+        navigate(`/search?q=${encodeURIComponent(query)}`);
       }
-    },
-    [navigate],
-  );
+    }, 300);
 
-  useDebouncedSearch(query, handleSearchChange, 300);
+    return () => clearTimeout(handler);
+  }, [query]);
 
   return (
-    <div className="relative flex items-center">
+    <div className="relative flex items-center h-12">
       <Input
         placeholder="Search..."
         value={query}
-        onChange={handleSearchChange}
-        className={`transition-all duration-300 ease-in-out rounded-full text-sm
+        onChange={handleChange}
+        className={`h-8 transition-all duration-300 ease-in-out rounded-full text-sm border-neutral-700 bg-neutral-700
           ${show ? "opacity-100 w-48 md:w-72 px-4" : "opacity-0 w-0 px-0"}
         `}
       />
+
       <Button
-        variant="ghost"
-        className="absolute right-0 top-1/2 -translate-y-1/2 p-2 hover:bg-transparent hover:text-red-600 cursor-pointer"
+        variant="icon"
         onClick={toggleSearch}
+        className="w-12 h-12 flex items-center justify-center"
       >
-        <LucideSearch className="w-5 h-5" />
+        <LucideSearch className="w-12 h-12" />
       </Button>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { FaInstagram } from "react-icons/fa";
 import LoadingSpinner from "../components/LoadingSpinner";
 import membersData from "@/data/twiceMembers.json";
@@ -26,10 +27,39 @@ const About = () => {
     setIsLoading(false);
   }, []);
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) {
+    return (
+      <>
+        <Helmet>
+          <title>Loading About - TWICEFLIX</title>
+          <meta name="description" content="Loading TWICE information..." />
+        </Helmet>
+        <LoadingSpinner />
+      </>
+    );
+  }
 
   return (
     <>
+      <Helmet>
+        <title>About - TWICEFLIX</title>
+        <meta
+          name="description"
+          content="Learn about TWICE, the sensational K-pop girl group. Explore member profiles, Instagram accounts, and stay updated with their latest content on TWICEFLIX."
+        />
+        <meta
+          name="keywords"
+          content="TWICE, K-pop, girl group, members, Instagram, Nayeon, Jeongyeon, Momo, Sana, Jihyo, Mina, Dahyun, Chaeyoung, Tzuyu"
+        />
+        <meta property="og:title" content="About TWICE - TWICEFLIX" />
+        <meta
+          property="og:description"
+          content="Your ultimate source for TWICE content. Meet the members and follow them on Instagram."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://twiceflix.com/about" />
+      </Helmet>
+
       <div className="bg-black text-white min-h-screen py-10 md:py-26">
         <div className="max-w-7xl mx-auto px-4 space-y-8">
           <h1 className="text-center text-red-600 font-extrabold text-2xl md:text-4xl">

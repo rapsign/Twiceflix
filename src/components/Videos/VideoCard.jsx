@@ -5,7 +5,7 @@ import { enUS } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
 import { parseDuration } from "../../utils/videoHelpers";
 
-export default function VideoCard({ video }) {
+export default function VideoCard({ video, playlistId }) {
   const navigate = useNavigate();
 
   const publishedDate = video?.published_at?.seconds
@@ -15,7 +15,9 @@ export default function VideoCard({ video }) {
       : null;
 
   const handleClick = () => {
-    navigate(`/watch/${video.id}`);
+    navigate(`/watch/${video.id}`, {
+      state: { playlistId: playlistId ?? null },
+    });
   };
 
   const durationFormatted = parseDuration(video.duration);
@@ -39,7 +41,7 @@ export default function VideoCard({ video }) {
         )}
       </div>
 
-      <div className="px-2 mt-2 min-h-20 md:min-h-12 flex flex-col">
+      <div className="px-2 mt-2 min-h-18 md:min-h-12 flex flex-col">
         <h3
           className="text-sm font-medium leading-snug line-clamp-2"
           title={video.title}
@@ -47,7 +49,7 @@ export default function VideoCard({ video }) {
           {video.title}
         </h3>
 
-        <div className="text-xs text-neutral-400 mt-0.5 flex flex-wrap items-center gap-1">
+        <div className="text-xs text-neutral-400 mt-1 flex flex-wrap items-center gap-1">
           {publishedDate && (
             <span>
               {formatDistanceStrict(publishedDate, new Date(), {

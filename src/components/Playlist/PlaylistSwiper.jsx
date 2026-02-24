@@ -1,98 +1,132 @@
 "use client";
 
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import CustomSwiper from "../CustomSwiper";
-import LoadingSpinner from "../LoadingSpinner";
-import useDataManager from "@/hooks/useDataManager";
+import useDataManager from "../../../hooks/useDataManager";
 
 const PlaylistSwiper = () => {
-  const { data: playlists, loading: loadingPlaylists } =
+  const { data: playlists = [], loading: playlistsLoading } =
     useDataManager("youtube_playlist");
-  const { data: videos, loading: loadingVideos } =
+
+  const { data: videos = [], loading: videosLoading } =
     useDataManager("youtube_video");
+
   const [visibleCount, setVisibleCount] = useState(3);
   const loadMoreRef = useRef(null);
 
-  const loading = loadingPlaylists || loadingVideos;
-
-  // Map videos ke setiap playlist
   const playlistsWithVideos = useMemo(() => {
-    if (!playlists || !videos) return [];
+    if (playlists.length === 0 || videos.length === 0) return [];
 
     return playlists.map((playlist) => ({
       ...playlist,
-      videos: videos.filter((video) => video.playlists?.includes(playlist.id)),
+      // Videos diurutkan paling lama duluan
+      videos: videos
+        .filter(
+          (video) =>
+            video.is_short === false &&
+            Array.isArray(video.playlists) &&
+            video.playlists.includes(playlist.id),
+        )
+        .sort((a, b) => {
+          const dateA = a.published_at ? new Date(a.published_at).getTime() : 0;
+          const dateB = b.published_at ? new Date(b.published_at).getTime() : 0;
+          return dateA - dateB;
+        }),
     }));
   }, [playlists, videos]);
 
-  // Filter playlist dengan minimal 8 videos
   const filteredPlaylists = useMemo(() => {
     return playlistsWithVideos.filter(
       (playlist) => playlist.videos.length >= 8,
     );
   }, [playlistsWithVideos]);
 
-  // Intersection Observer untuk lazy load
+  // Shuffle playlist sekali saat data siap, tidak berubah selama di halaman
+  const shuffledPlaylists = useMemo(() => {
+    if (filteredPlaylists.length === 0) return [];
+    return [...filteredPlaylists].sort(() => Math.random() - 0.5);
+  }, [filteredPlaylists]);
+
+  const visiblePlaylists = useMemo(() => {
+    return shuffledPlaylists.slice(0, visibleCount);
+  }, [shuffledPlaylists, visibleCount]);
+
+  const handleIntersect = useCallback(
+    (entries) => {
+      if (!entries[0].isIntersecting) return;
+      if (visibleCount >= shuffledPlaylists.length) return;
+      setVisibleCount((prev) => Math.min(prev + 3, shuffledPlaylists.length));
+    },
+    [visibleCount, shuffledPlaylists.length],
+  );
+
   useEffect(() => {
     const currentRef = loadMoreRef.current;
-    if (!currentRef || visibleCount >= filteredPlaylists.length) return;
+    if (!currentRef || visibleCount >= shuffledPlaylists.length) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setVisibleCount((prev) =>
-            Math.min(prev + 3, filteredPlaylists.length),
-          );
-        }
-      },
-      {
-        threshold: 0.1,
-        rootMargin: "100px", // Mulai load sebelum sampai ke bawah
-      },
-    );
+    const observer = new IntersectionObserver(handleIntersect, {
+      threshold: 0.1,
+      rootMargin: "200px",
+    });
 
     observer.observe(currentRef);
-
     return () => {
       if (currentRef) observer.unobserve(currentRef);
     };
-  }, [visibleCount, filteredPlaylists.length]);
+  }, [handleIntersect, visibleCount, shuffledPlaylists.length]);
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  if (!playlistsWithVideos || playlistsWithVideos.length === 0) {
+  if (playlistsLoading || videosLoading) {
     return (
-      <div className="w-full py-8 text-center text-gray-400">
-        No playlists available
+      <div className="bg-transparent text-white py-2 w-full z-50">
+        <div className="px-2 mb-4 flex justify-between">
+          <div className="h-6 w-48 bg-neutral-800 rounded animate-pulse" />
+          <div className="h-6 w-12 bg-neutral-800 rounded animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 lg:px-4 px-0">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className={`space-y-2 ${i > 0 ? "hidden sm:block" : ""}`}
+            >
+              <div className="aspect-video bg-neutral-800 lg:rounded-lg rounded-none animate-pulse" />
+              <div className="h-4 w-2/3 bg-neutral-800 rounded animate-pulse" />
+              <div className="h-3 w-1/4 bg-neutral-800 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
-  if (filteredPlaylists.length === 0) {
-    return (
-      <div className="w-full py-8 text-center text-gray-400">
-        No playlists with 8+ videos found
-      </div>
-    );
-  }
-
-  const visiblePlaylists = filteredPlaylists.slice(0, visibleCount);
+  if (shuffledPlaylists.length === 0) return null;
 
   return (
     <div className="w-full py-2 text-white">
       {visiblePlaylists.map((playlist) => (
         <div key={playlist.id} className="mb-6">
-          <CustomSwiper items={playlist.videos} title={playlist.title} />
+          <CustomSwiper
+            items={playlist.videos}
+            title={playlist.title}
+            playlistId={playlist.id}
+          />
         </div>
       ))}
 
-      {visibleCount < filteredPlaylists.length && (
+      {visibleCount < shuffledPlaylists.length && (
         <div ref={loadMoreRef} className="w-full py-8 flex justify-center">
-          <LoadingSpinner />
+          <div className="flex items-center gap-2 text-neutral-500 text-sm">
+            <div className="w-4 h-4 border-2 border-neutral-500 border-t-transparent rounded-full animate-spin" />
+            Loading more playlists...
+          </div>
         </div>
       )}
+
+      {visibleCount >= shuffledPlaylists.length &&
+        shuffledPlaylists.length > 3 && (
+          <div className="w-full py-8 text-center text-neutral-600 text-sm">
+            You've reached the end
+          </div>
+        )}
     </div>
   );
 };

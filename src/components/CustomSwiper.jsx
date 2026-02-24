@@ -9,20 +9,22 @@ import VideoCard from "./Videos/VideoCard";
 export default function CustomSwiper({
   items,
   title,
-  onItemClick,
   type = "video",
+  playlistId,
 }) {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const [swiperInstance, setSwiperInstance] = useState(null);
 
   useEffect(() => {
-    if (swiperInstance && prevRef.current && nextRef.current) {
-      swiperInstance.params.navigation.prevEl = prevRef.current;
-      swiperInstance.params.navigation.nextEl = nextRef.current;
-      swiperInstance.navigation.init();
-      swiperInstance.navigation.update();
-    }
+    if (!swiperInstance) return;
+    if (!prevRef.current || !nextRef.current) return;
+
+    swiperInstance.params.navigation.prevEl = prevRef.current;
+    swiperInstance.params.navigation.nextEl = nextRef.current;
+    swiperInstance.navigation.destroy();
+    swiperInstance.navigation.init();
+    swiperInstance.navigation.update();
   }, [swiperInstance]);
 
   return (
@@ -30,17 +32,16 @@ export default function CustomSwiper({
       {title && (
         <div className="flex items-center justify-between mb-2 px-2">
           <h2 className="text-md md:text-xl lg:text-2xl font-bold">{title}</h2>
-
           <div className="flex gap-2">
             <div
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 cursor-pointer"
               ref={prevRef}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 cursor-pointer"
             >
               <ChevronLeft className="w-5 h-5 text-white" />
             </div>
             <div
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 cursor-pointer"
               ref={nextRef}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-800 hover:bg-neutral-700 cursor-pointer"
             >
               <ChevronRight className="w-5 h-5 text-white" />
             </div>
@@ -50,7 +51,7 @@ export default function CustomSwiper({
 
       <Swiper
         modules={[Navigation, Pagination, Scrollbar, A11y]}
-        spaceBetween={10}
+        spaceBetween={0}
         slidesPerView={1}
         onSwiper={setSwiperInstance}
         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
@@ -63,9 +64,9 @@ export default function CustomSwiper({
         {items.map((item) => (
           <SwiperSlide key={item.id}>
             {type === "playlist" ? (
-              <PlaylistCard playlist={item} onClick={onItemClick} />
+              <PlaylistCard playlist={item} />
             ) : (
-              <VideoCard video={item} onClick={onItemClick} />
+              <VideoCard video={item} playlistId={playlistId} />
             )}
           </SwiperSlide>
         ))}

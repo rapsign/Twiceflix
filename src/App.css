@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  background-color: black;
 }
 
 .logo {
@@ -35,6 +36,9 @@
 
 .card {
   padding: 2em;
+}
+Button {
+  cursor: pointer;
 }
 
 .read-the-docs {

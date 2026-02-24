@@ -131,6 +131,9 @@ body {
   ::-webkit-scrollbar {
     width: 8px; /* Atur ketipisan di sini */
   }
+  Button {
+    cursor: pointer;
+  }
 
   /* 2. Mengatur track (jalur scroll) */
   ::-webkit-scrollbar-track {

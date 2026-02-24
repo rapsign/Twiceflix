@@ -1,81 +1,127 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Helmet } from "react-helmet";
 import PlaylistCard from "@/components/Playlist/PlaylistCard";
-import useDataManager from "@/hooks/useDataManager";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import useDataManager from "../../hooks/useDataManager";
+
+const PLAYLISTS_PER_PAGE = 30;
 
 const Playlist = () => {
-  const {
-    data: playlists = [],
-    loading,
-    error,
-  } = useDataManager("youtube_playlist");
-  const [visibleCount, setVisibleCount] = useState(30);
-  const bottomRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Intersection Observer - trigger pas mentok bawah
+  const { data: playlists = [], loading: playlistsLoading } =
+    useDataManager("youtube_playlist");
+
+  const displayedPlaylists = useMemo(
+    () => playlists.slice(0, currentPage * PLAYLISTS_PER_PAGE),
+    [playlists, currentPage],
+  );
+
+  const hasMore = displayedPlaylists.length < playlists.length;
+
+  const handleScroll = useCallback(() => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = window.innerHeight;
+    const distanceToBottom = scrollHeight - (scrollTop + clientHeight);
+
+    if (distanceToBottom < 500 && hasMore && !playlistsLoading) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  }, [hasMore, playlistsLoading]);
+
   useEffect(() => {
-    const currentRef = bottomRef.current;
-    if (!currentRef || !playlists || visibleCount >= playlists.length) return;
+    let timeoutId = null;
+    let lastExecuted = 0;
+    const THROTTLE_DELAY = 300;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setVisibleCount((prev) => Math.min(prev + 30, playlists.length));
-        }
-      },
-      {
-        threshold: 0,
-        rootMargin: "0px",
-      },
-    );
+    const throttledScroll = () => {
+      const now = Date.now();
+      if (timeoutId) clearTimeout(timeoutId);
 
-    observer.observe(currentRef);
-
-    return () => {
-      if (currentRef) observer.unobserve(currentRef);
+      if (now - lastExecuted < THROTTLE_DELAY) {
+        timeoutId = setTimeout(() => {
+          lastExecuted = Date.now();
+          handleScroll();
+        }, THROTTLE_DELAY);
+      } else {
+        lastExecuted = now;
+        handleScroll();
+      }
     };
-  }, [visibleCount, playlists]);
 
-  if (loading) return <LoadingSpinner />;
+    window.addEventListener("scroll", throttledScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", throttledScroll);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [handleScroll]);
 
-  if (error) {
+  useEffect(() => {
+    return () => setCurrentPage(1);
+  }, []);
+
+  const metaData = useMemo(
+    () => ({
+      title: `Playlists - TWICEFLIX`,
+      description: `Explore ${playlists.length} curated TWICE playlists.`,
+    }),
+    [playlists.length],
+  );
+
+  if (playlistsLoading && playlists.length === 0) {
     return (
-      <div className="px-4 pt-4 md:pt-18 min-h-screen flex items-center justify-center">
-        <div className="text-center text-red-400">
-          <p className="text-xl mb-2">Failed to load playlists</p>
-          <p className="text-sm text-gray-400">{error.message}</p>
+      <>
+        <Helmet>
+          <title>Loading Playlists - TWICEFLIX</title>
+        </Helmet>
+        <div className="pt-0 md:pt-18 bg-black min-h-screen px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-2 ">
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="space-y-3">
+                <div className="aspect-video bg-neutral-800 rounded-lg animate-pulse" />
+                <div className="h-5 w-2/3 bg-neutral-800 rounded animate-pulse" />
+                <div className="h-3 w-1/4 bg-neutral-800 rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
-  if (playlists.length === 0) {
+  if (!playlistsLoading && playlists.length === 0) {
     return (
-      <div className="px-4 pt-4 md:pt-18 min-h-screen flex items-center justify-center">
+      <div className="px-4 pt-4 md:pt-18 min-h-screen flex items-center justify-center bg-black">
         <p className="text-gray-400 text-xl">No playlists available</p>
       </div>
     );
   }
 
-  const visiblePlaylists = playlists.slice(0, visibleCount);
-
   return (
-    <div className="px-4 pt-4 md:pt-18 min-h-screen">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3">
-        {visiblePlaylists.map((playlist) => (
-          <PlaylistCard key={playlist.id} playlist={playlist} />
-        ))}
-      </div>
+    <>
+      <Helmet>
+        <title>{metaData.title}</title>
+        <meta name="description" content={metaData.description} />
+      </Helmet>
 
-      {/* Trigger di paling bawah */}
-      {visibleCount < playlists.length && (
-        <div ref={bottomRef} className="w-full py-12 flex justify-center">
-          <LoadingSpinner />
+      <div className="pt-0 md:pt-18 bg-black min-h-screen">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-2">
+          {displayedPlaylists.map((playlist, index) => (
+            <PlaylistCard key={`${playlist.id}-${index}`} id={playlist.id} />
+          ))}
         </div>
-      )}
-    </div>
+
+        {!hasMore && playlists.length > 0 && (
+          <div className="w-full py-12 text-center bg-black">
+            <p className="text-neutral-600 text-sm">
+              You&#39;ve reached the end • {playlists.length} playlists
+            </p>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

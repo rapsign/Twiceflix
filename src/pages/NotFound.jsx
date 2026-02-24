@@ -1,22 +1,35 @@
-import { Box, Button, Heading, Text, Center } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { Button } from "@/components/ui/button";
 
 const NotFound = () => {
   const navigate = useNavigate();
 
-  const handleGoHome = () => {
-    navigate("/");
-  };
-
   return (
-    <Center height="100vh" flexDirection="column" textAlign="center">
-      <DotLottieReact
-        src="https://lottie.host/776c0faa-12f1-42e8-aa3c-c45341e3bbfc/9Grv2iIUry.lottie"
+    <div className="relative flex flex-col items-center justify-end min-h-screen text-center overflow-hidden">
+      <video
+        src="/mina-sad.mp4"
+        autoPlay
         loop
-        autoplay
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
       />
-    </Center>
+      <div className="relative z-10 flex flex-col items-center gap-4 px-8 py-10 rounded-xl">
+        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-white drop-shadow-lg">
+          404
+        </h1>
+        <p className="text-xl md:text-3xl lg:text-5xl font-bold text-white drop-shadow-lg">
+          Page Not Found
+        </p>
+        <Button
+          onClick={() => navigate("/")}
+          variant="outline"
+          className="cursor-pointer rounded-full mt-2 text-sm md:text-base"
+        >
+          Go Home
+        </Button>
+      </div>
+    </div>
   );
 };
 

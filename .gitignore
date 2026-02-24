@@ -9,6 +9,7 @@ lerna-debug.log*
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+twiceflix-f10d7-firebase-adminsdk-4ttgn-a5c73d5ebf.json
 
 # Runtime data
 pids

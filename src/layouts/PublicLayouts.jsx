@@ -3,6 +3,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "@/components/Footer";
+import BottomNav from "@/components/Navbar/BottomNav";
 import { Helmet } from "react-helmet";
 
 const PublicLayout = ({ title, description, keywords, author }) => {
@@ -35,11 +36,12 @@ const PublicLayout = ({ title, description, keywords, author }) => {
       <div className="min-h-screen flex flex-col text-white">
         {!hideNavbar && <Navbar />}
 
-        <main className="flex-1 pt-13 md:pt-0">
+        <main className="flex-1 pt-12 py-0  lg:pt-0 lg:pb-0 ">
           <Outlet />
         </main>
 
-        <Footer />
+        <Footer className="hidden lg:block" />
+        <BottomNav />
       </div>
     </>
   );

@@ -1,22 +1,31 @@
 import { useMemo } from "react";
-import useDataManager from "@/hooks/useDataManager";
+import useDataManager from "../../../hooks/useDataManager";
 import HeroBackground from "./HeroBackground";
 import HeroContent from "./HeroContent";
 
 const HeroSection = () => {
-  const { data: videos = [] } = useDataManager("youtube_video");
+  const { data: videos = [], loading } = useDataManager("youtube_video");
 
   const latestVideo = useMemo(() => {
     if (videos.length === 0) return null;
-
-    return videos.reduce((latest, current) =>
-      new Date(current.published_at) > new Date(latest.published_at)
-        ? current
-        : latest,
-    );
+    return videos.find((v) => v.is_short === false) ?? null;
   }, [videos]);
 
-  if (!latestVideo) return null;
+  if (loading) {
+    return (
+      <section className="relative w-full bg-black text-white overflow-hidden aspect-video min-h-125 md:min-h-screen">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/70 to-black animate-pulse" />
+      </section>
+    );
+  }
+
+  if (!latestVideo) {
+    return (
+      <section className="relative w-full bg-black text-white overflow-hidden aspect-video min-h-125 md:min-h-screen">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/70 to-black" />
+      </section>
+    );
+  }
 
   return (
     <section className="relative w-full bg-black text-white overflow-hidden aspect-video min-h-125 md:min-h-screen">

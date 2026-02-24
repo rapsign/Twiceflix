@@ -6,13 +6,13 @@ const theme = extendTheme({
       "html, body": {
         height: "100%",
         margin: 0,
-        backgroundColor: "#0f0f0f",
+        backgroundColor: "#000",
         "&::-webkit-scrollbar": {
           width: "8px",
           height: "8px",
         },
         "&::-webkit-scrollbar-track": {
-          background: "#0f0f0f",
+          background: "#000",
         },
         "&::-webkit-scrollbar-thumb": {
           background: "#888",
