@@ -22,7 +22,6 @@ const About = () => {
         ...member,
       }),
     );
-
     setMembers(membersArray);
     setIsLoading(false);
   }, []);
@@ -39,6 +38,48 @@ const About = () => {
     );
   }
 
+  const firstRow = members.slice(0, 5);
+  const secondRow = members.slice(5);
+
+  const MemberCard = ({ member }) => {
+    const imageUrl = toDirectWikiaImage(member.images?.[0]);
+    return (
+      <div className="relative w-full lg:w-[200px] aspect-[5/7] rounded-xl overflow-hidden cursor-pointer transition-transform hover:scale-105 hover:shadow-lg flex-shrink-0">
+        <img
+          src={imageUrl || "/placeholder-avatar.png"}
+          alt={member.stageName}
+          className="w-full h-full object-cover"
+        />
+        {/* Gradient background */}
+        <div className="absolute bottom-0 left-0 w-full h-36 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none" />
+
+        {/* Instagram: selalu fixed di bottom */}
+        {member.instagram?.length > 0 && (
+          <a
+            href={member.instagram[0]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute bottom-2 left-0 w-full flex items-center gap-2 text-white hover:text-red-600 text-xs justify-center"
+          >
+            <FaInstagram className="w-4 h-4" /> Instagram
+          </a>
+        )}
+
+        {/* Nama + Posisi: selalu tepat di atas Instagram */}
+        <div className="absolute bottom-8 left-0 w-full flex flex-col items-center gap-0.5 text-center px-2">
+          <p className="font-extrabold text-red-600 text-sm leading-tight">
+            {member.stageName}
+          </p>
+          {member.position?.length > 0 && (
+            <p className="text-xs text-white/80 leading-tight">
+              {member.position.join(", ")}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <Helmet>
@@ -47,20 +88,9 @@ const About = () => {
           name="description"
           content="Learn about TWICE, the sensational K-pop girl group. Explore member profiles, Instagram accounts, and stay updated with their latest content on TWICEFLIX."
         />
-        <meta
-          name="keywords"
-          content="TWICE, K-pop, girl group, members, Instagram, Nayeon, Jeongyeon, Momo, Sana, Jihyo, Mina, Dahyun, Chaeyoung, Tzuyu"
-        />
-        <meta property="og:title" content="About TWICE - TWICEFLIX" />
-        <meta
-          property="og:description"
-          content="Your ultimate source for TWICE content. Meet the members and follow them on Instagram."
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://twiceflix.com/about" />
       </Helmet>
 
-      <div className="bg-black text-white min-h-screen py-10 md:py-26">
+      <div className="bg-black text-white min-h-screen py-10 md:py-24">
         <div className="max-w-7xl mx-auto px-4 space-y-8">
           <h1 className="text-center text-red-600 font-extrabold text-2xl md:text-4xl">
             About TWICEFLIX
@@ -75,64 +105,57 @@ const About = () => {
             of their incredible performances and activities.
           </p>
 
-          <a
-            href="https://www.youtube.com/c/TWICE"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block text-center text-red-600 font-extrabold text-lg hover:underline"
-          >
-            TWICE Official YouTube Channel
-          </a>
+          <div>
+            <a
+              href="https://www.youtube.com/c/TWICE"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-center text-red-600 font-extrabold text-lg hover:underline"
+            >
+              TWICE Official YouTube Channel
+            </a>
+            <a
+              href="https://www.youtube.com/@twicejapan_official"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-center text-red-600 font-extrabold text-lg hover:underline"
+            >
+              TWICE Japan Official YouTube Channel
+            </a>
+          </div>
 
           <h2 className="text-center text-white font-extrabold text-xl md:text-2xl">
             Follow TWICE Members on Instagram
           </h2>
 
-          <div className="grid  grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5">
-            {members.map((member) => {
-              const imageUrl = toDirectWikiaImage(member.images?.[0]);
+          {/* Mobile: 1 kolom */}
+          <div className="grid grid-cols-2 gap-4 md:hidden">
+            {members.map((member) => (
+              <MemberCard key={member.stageName} member={member} />
+            ))}
+          </div>
 
-              return (
-                <div
-                  key={member.stageName}
-                  className="relative w-50 sm:w-44 md:w-59 lg:w-60 aspect-5/7 rounded-xl overflow-hidden cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
-                >
-                  {/* Gambar full card */}
-                  <img
-                    src={imageUrl || "/placeholder-avatar.png"}
-                    alt={member.stageName}
-                    className="w-full h-full object-cover"
-                  />
+          {/* Tablet: 3 kolom, card w-full mengisi kolom */}
+          <div className="hidden md:grid md:grid-cols-3 gap-4 lg:hidden">
+            {members.map((member) => (
+              <MemberCard key={member.stageName} member={member} />
+            ))}
+          </div>
 
-                  {/* Overlay di bawah */}
-                  <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-black/90 via-black/90 to-transparent p-3 flex flex-col justify-between">
-                    {/* Top content: Name + Position */}
-                    <div className="flex flex-col items-center gap-1 text-center mt-4 md:mt-15">
-                      <p className="font-extrabold text-red-600 text-sm">
-                        {member.stageName}
-                      </p>
-
-                      {member.position?.length > 0 && (
-                        <p className="text-xs text-white/80">
-                          {member.position.join(", ")}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Bottom content: Instagram */}
-                    {member.instagram?.length > 0 && (
-                      <a
-                        href={member.instagram[0]}
-                        target="_blank"
-                        className="flex items-center gap-2 text-white hover:text-red-600 text-xs justify-center"
-                      >
-                        <FaInstagram className="w-4 h-4" /> Instagram
-                      </a>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+          {/* Desktop: baris 5 + baris 4 center */}
+          <div className="hidden lg:flex flex-col items-center gap-4">
+            <div className="flex justify-center gap-4">
+              {firstRow.map((member) => (
+                <MemberCard key={member.stageName} member={member} />
+              ))}
+            </div>
+            {secondRow.length > 0 && (
+              <div className="flex justify-center gap-4">
+                {secondRow.map((member) => (
+                  <MemberCard key={member.stageName} member={member} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

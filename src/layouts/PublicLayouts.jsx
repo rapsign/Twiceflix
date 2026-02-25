@@ -69,6 +69,41 @@ const PublicLayout = ({ title, description, keywords, author }) => {
           }
         />
         <meta name="author" content={author || "Rinaldi A Prayuda"} />
+        <meta name="robots" content="index, follow" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+          rel="canonical"
+          href={typeof window !== "undefined" ? window.location.href : ""}
+        />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="TWICEFLIX" />
+        <meta property="og:title" content={title || "TWICEFLIX"} />
+        <meta
+          property="og:description"
+          content={
+            description ||
+            "TWICEFLIX is your ultimate source for everything TWICE! Watch their latest music videos, performances, and behind-the-scenes content."
+          }
+        />
+        <meta
+          property="og:url"
+          content={typeof window !== "undefined" ? window.location.href : ""}
+        />
+        <meta property="og:image" content="/og-image.png" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title || "TWICEFLIX"} />
+        <meta
+          name="twitter:description"
+          content={
+            description ||
+            "TWICEFLIX is your ultimate source for everything TWICE! Watch their latest music videos, performances, and behind-the-scenes content."
+          }
+        />
+        <meta name="twitter:image" content="/og-image.webp" />
       </Helmet>
 
       <div className="min-h-screen flex flex-col text-white bg-black">
