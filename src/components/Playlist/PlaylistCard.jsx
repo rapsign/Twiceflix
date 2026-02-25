@@ -1,40 +1,26 @@
+// PlaylistCard.jsx
 "use client";
 
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ListVideo } from "lucide-react";
-import useDataManager from "../../../hooks/useDataManager";
 
-export default function PlaylistCard({ id }) {
+export default function PlaylistCard({ playlist, fetchPlaylist }) {
   const navigate = useNavigate();
-  const [playlist, setPlaylist] = useState(null);
   const [clicking, setClicking] = useState(false);
 
-  const { fetchById, fetchPlaylist } = useDataManager("youtube_playlist");
-
-  // Fetch data playlist dari cache atau API
-  useEffect(() => {
-    if (!id) return;
-    fetchById(id).then((data) => {
-      if (data) setPlaylist(data);
-    });
-  }, [id]);
+  if (!playlist) return null;
 
   const handleClick = async () => {
-    if (clicking || !playlist) return;
-
+    if (clicking) return;
     try {
       setClicking(true);
-
-      // fetchPlaylist sudah include videos[]
-      const full = await fetchPlaylist(id);
+      const full = await fetchPlaylist(playlist.id);
       const firstVideoId = full?.videos?.[0]?.id;
-
       if (!firstVideoId) return;
-
       navigate(`/watch/${firstVideoId}`, {
-        state: { playlistId: id },
+        state: { playlistId: playlist.id },
       });
     } catch (err) {
       console.error(err);
@@ -43,23 +29,14 @@ export default function PlaylistCard({ id }) {
     }
   };
 
-  // Skeleton saat data belum ada
-  if (!playlist) {
-    return (
-      <div className="w-full rounded-xl p-2 space-y-3">
-        <div className="aspect-video w-full bg-neutral-800 rounded-xl animate-pulse " />
-        <div className="h-5 w-2/3 bg-neutral-800 rounded animate-pulse" />
-        <div className="h-3 w-1/4 bg-neutral-800 rounded animate-pulse" />
-      </div>
-    );
-  }
-
   return (
     <div
-      className="w-full select-none rounded-xl p-2 pt-6 cursor-pointer hover:bg-neutral-700 transition-colors"
+      className={`w-full select-none rounded-xl p-2 pt-6 cursor-pointer hover:bg-neutral-900 transition-colors ${
+        clicking ? "opacity-70 pointer-events-none" : ""
+      }`}
       onClick={handleClick}
     >
-      <div className="relative aspect-video w-full ">
+      <div className="relative aspect-video w-full">
         <div className="absolute -top-2 left-2 right-2 h-full rounded-xl bg-gray-500 z-0" />
         <div className="absolute -top-1 left-1 right-1 h-full rounded-xl bg-neutral-800/60 z-0" />
 

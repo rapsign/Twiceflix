@@ -1,10 +1,65 @@
+import { useMemo, useState, useEffect } from "react";
 import VideoCard from "./VideoCard";
+import ShortsGrid from "../Short/ShortsGrid";
 
-export default function VideoGrid({ videos, onVideoClick }) {
+const CHUNK_SIZE = 6;
+
+function useResponsiveCount() {
+  const [count, setCount] = useState(6);
+
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      if (w >= 1024) setCount(6);
+      else if (w >= 768) setCount(5);
+      else if (w >= 640) setCount(4);
+      else setCount(6);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  return count;
+}
+
+export default function VideoGrid({
+  videos,
+  onVideoClick,
+  shorts = [],
+  shortsLoading = false,
+}) {
+  const shortsCount = useResponsiveCount();
+
+  const chunks = useMemo(() => {
+    const result = [];
+    for (let i = 0; i < videos.length; i += CHUNK_SIZE) {
+      result.push(videos.slice(i, i + CHUNK_SIZE));
+    }
+    return result;
+  }, [videos]);
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3">
-      {videos.map((video) => (
-        <VideoCard key={video.id} video={video} onClick={onVideoClick} />
+    <div>
+      {chunks.map((chunk, chunkIndex) => (
+        <div key={chunkIndex}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3">
+            {chunk.map((video) => (
+              <VideoCard key={video.id} video={video} onClick={onVideoClick} />
+            ))}
+          </div>
+
+          {chunk.length === CHUNK_SIZE && (
+            <div className="py-4">
+              <ShortsGrid
+                shorts={shorts}
+                seed={chunkIndex}
+                count={shortsCount}
+                loading={shortsLoading}
+              />
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );

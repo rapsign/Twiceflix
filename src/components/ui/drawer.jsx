@@ -12,8 +12,7 @@ function DrawerTrigger({ ...props }) {
 }
 
 function DrawerPortal({ ...props }) {
-  // FIX: hapus data-slot — Portal tidak forward props ke DOM
-  return <DrawerPrimitive.Portal {...props} />;
+  return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />;
 }
 
 function DrawerClose({ ...props }) {
@@ -25,7 +24,7 @@ function DrawerOverlay({ className, ...props }) {
     <DrawerPrimitive.Overlay
       data-slot="drawer-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 ",
         className,
       )}
       {...props}
@@ -35,12 +34,10 @@ function DrawerOverlay({ className, ...props }) {
 
 function DrawerContent({ className, children, ...props }) {
   return (
-    <DrawerPortal>
+    <DrawerPortal data-slot="drawer-portal">
       <DrawerOverlay />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
-        // FIX: suppress aria-describedby warning
-        aria-describedby={undefined}
         className={cn(
           "group/drawer-content bg-background fixed z-50 flex h-auto flex-col",
           "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-lg data-[vaul-drawer-direction=top]:border-b",
@@ -51,7 +48,7 @@ function DrawerContent({ className, children, ...props }) {
         )}
         {...props}
       >
-        <div className="bg-muted mx-auto mt-4 hidden h-1.5 w-[50px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+        <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>

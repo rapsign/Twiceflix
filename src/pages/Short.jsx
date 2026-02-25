@@ -11,22 +11,10 @@ import {
   Pause,
 } from "lucide-react";
 import { Helmet } from "react-helmet";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import YouTube from "react-youtube";
-import {
-  IconHome,
-  IconHomeFilled,
-  IconBrandYoutube,
-  IconBrandYoutubeFilled,
-  IconPlaylist,
-  IconListDetails,
-  IconInfoCircle,
-  IconInfoCircleFilled,
-  IconLetterS,
-} from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { formatPublishedDistance } from "@/utils/time";
-import { TextLogo } from "@/components/Logo";
 import useDataManager from "../../hooks/useDataManager";
 import NProgress from "nprogress";
 import Linkify from "linkify-react";
@@ -101,22 +89,10 @@ const MobileSkeletonLoader = () => (
   </div>
 );
 
+// ✅ Skeleton desktop tanpa sidebar lokal — sidebar sudah dari PublicLayout
 const DesktopSkeletonLoader = () => (
-  <div className="flex h-screen bg-black text-white overflow-hidden">
+  <div className="flex h-dvh bg-black text-white overflow-hidden pt-12">
     <style>{shimmerStyle}</style>
-    <div className="flex flex-col w-12 lg:w-42 h-screen bg-black border-r border-neutral-800 px-2 lg:px-3 py-4 shrink-0">
-      <div className="px-3 mb-6 hidden lg:block">
-        <SkeletonPulse className="h-7 w-28 rounded" />
-      </div>
-      <nav className="flex flex-col gap-1 flex-1">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex items-center gap-3 px-2 lg:px-3 py-2.5">
-            <SkeletonPulse className="w-5 h-5 rounded shrink-0" />
-            <SkeletonPulse className="hidden lg:block h-4 w-20 rounded" />
-          </div>
-        ))}
-      </nav>
-    </div>
     <div className="flex flex-1 justify-center items-center">
       <div className="relative h-full py-2">
         <div className="relative rounded-2xl overflow-hidden bg-neutral-900 h-full aspect-9/16">
@@ -154,30 +130,47 @@ class LazyShuffler {
   }
 }
 
-function useLazyShuffledShorts(shorts) {
+/* ─── useLazyShuffledShorts ──────────────────────────────────────────────── */
+function useLazyShuffledShorts(shorts, initialId) {
   const shufflerRef = useRef(null);
   const prevLengthRef = useRef(0);
-
-  // FIX: Hanya simpan id + field minimal, bukan full object
   const minimalShorts = useRef([]);
+  const pinnedShortRef = useRef(null);
 
   if (shorts?.length && shorts.length !== prevLengthRef.current) {
-    shufflerRef.current = new LazyShuffler(shorts.length);
-    prevLengthRef.current = shorts.length;
-    // Simpan hanya field yang dibutuhkan
-    minimalShorts.current = shorts.map((s) => ({
+    const arr = shorts.map((s) => ({
       id: s.id,
       title: s.title,
       thumbnail: s.thumbnail,
       published_at: s.published_at,
     }));
+
+    if (initialId) {
+      const targetIdx = arr.findIndex((s) => s.id === initialId);
+      if (targetIdx >= 0) {
+        pinnedShortRef.current = arr[targetIdx];
+        arr.splice(targetIdx, 1);
+      }
+    } else {
+      pinnedShortRef.current = null;
+    }
+
+    minimalShorts.current = arr;
+    shufflerRef.current = new LazyShuffler(arr.length);
+    prevLengthRef.current = shorts.length;
   }
 
   const getShort = useCallback(
     (index) => {
-      if (!minimalShorts.current.length || !shufflerRef.current) return null;
-      if (index < 0 || index >= minimalShorts.current.length) return null;
-      return minimalShorts.current[shufflerRef.current.get(index)] ?? null;
+      if (!shufflerRef.current) return null;
+      if (index === 0 && pinnedShortRef.current) return pinnedShortRef.current;
+      const adjustedIndex = pinnedShortRef.current ? index - 1 : index;
+      if (adjustedIndex < 0 || adjustedIndex >= minimalShorts.current.length)
+        return null;
+      if (!minimalShorts.current.length) return null;
+      return (
+        minimalShorts.current[shufflerRef.current.get(adjustedIndex)] ?? null
+      );
     },
     [shorts?.length],
   );
@@ -198,11 +191,9 @@ function useVirtualSlots(total, onNavigate) {
       if (isAnimating.current) return;
       const nextIndex = indexRef.current + direction;
       if (nextIndex < 0 || nextIndex >= total) return;
-
       isAnimating.current = true;
       setIsNoAnim(false);
       setVisualOffset(direction > 0 ? "-100%" : "100%");
-
       setTimeout(() => {
         indexRef.current = nextIndex;
         setCurrentIndex(nextIndex);
@@ -265,79 +256,6 @@ function useSlotPool(getShort, total, onNavigate, isMobile) {
   return { slotData, ...slots };
 }
 
-/* ─── Sidebar ─────────────────────────────────────────────────────────────── */
-const navLinks = [
-  { name: "Home", path: "/", icon: IconHome, iconFilled: IconHomeFilled },
-  {
-    name: "Videos",
-    path: "/videos",
-    icon: IconBrandYoutube,
-    iconFilled: IconBrandYoutubeFilled,
-  },
-  {
-    name: "Shorts",
-    path: "/shorts",
-    icon: IconLetterS,
-    iconFilled: IconLetterS,
-  },
-  {
-    name: "Playlist",
-    path: "/playlist",
-    icon: IconPlaylist,
-    iconFilled: IconListDetails,
-  },
-  {
-    name: "About",
-    path: "/about",
-    icon: IconInfoCircle,
-    iconFilled: IconInfoCircleFilled,
-  },
-];
-
-const Sidebar = () => {
-  const location = useLocation();
-  const isActive = (path) => location.pathname === path;
-  return (
-    <div className="flex flex-col w-12 lg:w-42 h-screen bg-black border-r border-neutral-800 px-2 pt-3.5 shrink-0">
-      <div className="px-2 mb-6 hidden lg:block">
-        <TextLogo Width="100px" />
-      </div>
-      <nav className="flex flex-col gap-1 flex-1">
-        {navLinks.map((item) => {
-          const active = isActive(item.path);
-          const Icon = active ? item.iconFilled : item.icon;
-          return (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={cn(
-                "flex items-center justify-center lg:justify-start gap-3 px-2 lg:px-3 py-2.5 rounded-xl text-sm font-medium transition-colors",
-                active
-                  ? "bg-neutral-800 text-white"
-                  : "text-white/50 hover:bg-neutral-900 hover:text-white/90",
-              )}
-            >
-              <Icon size={20} />
-              <span className="hidden lg:block">{item.name}</span>
-            </Link>
-          );
-        })}
-      </nav>
-      <div className="hidden lg:block border-t border-neutral-800 pt-4 mt-2 pb-2 text-center">
-        <p className="text-xs text-neutral-400">Developed With ❤️ by</p>
-        <a
-          href="https://rinaldi-a-prayuda.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-white font-medium hover:underline text-xs"
-        >
-          RapSign
-        </a>
-      </div>
-    </div>
-  );
-};
-
 /* ─── ShortPlayer ─────────────────────────────────────────────────────────── */
 const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
   const [muted, setMuted] = useState(false);
@@ -346,7 +264,7 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
   const [resolvedThumb, setResolvedThumb] = useState(null);
   const playerRef = useRef(null);
   const isReadyRef = useRef(false);
-  const imgRef = useRef(null); // FIX: track Image object untuk cleanup
+  const imgRef = useRef(null);
 
   useEffect(() => {
     if (!short?.id) return;
@@ -361,7 +279,6 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
 
     const img = new Image();
     imgRef.current = img;
-
     img.onload = () => {
       if (imgRef.current === img) {
         setResolvedThumb(primarySrc);
@@ -386,8 +303,6 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
       fb.src = fallbackSrc;
     };
     img.src = primarySrc;
-
-    // FIX: cleanup Image object saat unmount / short berubah
     return () => {
       imgRef.current = null;
     };
@@ -408,7 +323,6 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
     }
   }, [isActive]);
 
-  // FIX: destroy player saat unmount untuk free memory
   useEffect(() => {
     return () => {
       try {
@@ -423,7 +337,6 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
     playerRef.current = e.target;
     isReadyRef.current = true;
     onPlayerReady?.(e.target);
-
     if (isActive) {
       e.target.mute();
       e.target.playVideo();
@@ -436,7 +349,6 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
         }
       }, 500);
     } else if (!isMobile) {
-      // Desktop: pre-buffer singkat
       e.target.mute();
       e.target.playVideo();
       setTimeout(() => {
@@ -625,7 +537,6 @@ const PersistentSlotContainer = ({
               : `transform ${ANIM_DURATION}ms cubic-bezier(0.4,0,0.2,1)`,
             willChange: slot.role === "active" ? "transform" : "auto",
             pointerEvents: slot.role === "active" ? "auto" : "none",
-            // FIX: visibility hidden untuk slot jauh dari layar → browser skip paint
             visibility: slot.role === "hidden" ? "hidden" : "visible",
           }}
         >
@@ -790,8 +701,8 @@ const DesktopShorts = ({ getShort, total }) => {
   };
 
   return (
-    <div className="flex h-screen bg-black text-white overflow-hidden">
-      <Sidebar />
+    // ✅ Tidak ada Sidebar lokal — sudah dihandle PublicLayout
+    <div className="flex h-dvh bg-black text-white overflow-hidden pt-12 ">
       <div className="flex flex-1 justify-center items-center">
         <div className="relative h-full py-2">
           <div className="relative rounded-2xl overflow-hidden bg-black h-full aspect-9/16">
@@ -838,11 +749,14 @@ const DesktopShorts = ({ getShort, total }) => {
 
 /* ─── Main Page ───────────────────────────────────────────────────────────── */
 export default function Short() {
+  const location = useLocation();
+  const id = location.state?.id ?? null;
+
   const [isMobile, setIsMobile] = useState(
     () => window.innerWidth < MOBILE_BREAKPOINT,
   );
   const { data: shorts, loading } = useDataManager("youtube_short");
-  const { getShort, total } = useLazyShuffledShorts(shorts);
+  const { getShort, total } = useLazyShuffledShorts(shorts, id);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);

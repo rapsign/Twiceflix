@@ -1,4 +1,3 @@
-// api/youtube.js
 import { API_BASE, defaultHeaders } from "./config";
 
 async function fetchCache(url) {
@@ -39,12 +38,3 @@ export const searchAll = (query, type = "", limit = 50) => {
   if (type) params.set("type", type);
   return fetchCache(`${API_BASE}/search?${params.toString()}`);
 };
-
-/* ===============================
-   CACHE MANAGEMENT
-================================ */
-export const clearCache = () =>
-  fetch(`${API_BASE}/admin/clear-cache`, {
-    method: "POST",
-    headers: defaultHeaders,
-  }).then((r) => r.json());

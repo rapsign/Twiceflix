@@ -18,14 +18,13 @@ function App() {
       <Toaster richColors position="top-right" />
 
       <Routes>
-        <Route path="shorts" element={<Short />} />
         <Route path="/" element={<PublicLayout />}>
           <Route index element={<Home />} />
           <Route path="playlists" element={<Playlist />} />
           <Route path="videos" element={<Videos />} />
           <Route path="about" element={<About />} />
+          <Route path="shorts" element={<Short />} />
           <Route path="search" element={<SearchPage />} />
-
           <Route path="watch/:videoId" element={<Watch />} />
         </Route>
 

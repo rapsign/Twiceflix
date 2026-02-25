@@ -78,9 +78,12 @@ const PlaylistSwiper = () => {
   if (playlistsLoading || videosLoading) {
     return (
       <div className="bg-transparent text-white py-2 w-full z-50">
-        <div className="px-2 mb-4 flex justify-between">
+        <div className="px-4 mb-4 flex justify-between">
           <div className="h-6 w-48 bg-neutral-800 rounded animate-pulse" />
-          <div className="h-6 w-12 bg-neutral-800 rounded animate-pulse" />
+          <div className="flex gap-2">
+            <div className="h-8 w-8 bg-neutral-800 rounded-full animate-pulse" />
+            <div className="h-8 w-8 bg-neutral-800 rounded-full animate-pulse" />
+          </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 lg:px-4 px-0">
           {[...Array(3)].map((_, i) => (

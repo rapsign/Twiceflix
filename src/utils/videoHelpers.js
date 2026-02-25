@@ -29,11 +29,3 @@ export function parseDuration(iso) {
  * @param {number|string} count
  * @returns {string} formatted views
  */
-export function formatViews(count) {
-  if (!count) return "0 views";
-
-  const num = parseInt(count, 10);
-  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M views";
-  if (num >= 1_000) return (num / 1_000).toFixed(0) + "K views";
-  return num + " views";
-}

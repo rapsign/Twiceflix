@@ -12,16 +12,3 @@ export const TextLogo = ({ Width }) => {
     </Link>
   );
 };
-
-export const Logo = ({ Width }) => {
-  return (
-    <Link to="/" className="flex items-center h-full leading-none">
-      <img
-        src="/twice.svg"
-        alt="logo"
-        className="block object-contain cursor-pointer"
-        style={{ width: Width }}
-      />
-    </Link>
-  );
-};

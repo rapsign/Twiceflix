@@ -2,6 +2,10 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import VideoGrid from "../components/Videos/VideoGrid";
+import VideoFilterBar, {
+  TAGS,
+  matchesTag,
+} from "../components/Videos/VideoFilterBar";
 import useDataManager from "../../hooks/useDataManager";
 import { Helmet } from "react-helmet";
 import { Loader2 } from "lucide-react";
@@ -9,21 +13,69 @@ import { Loader2 } from "lucide-react";
 const VIDEOS_PER_PAGE = 30;
 
 export default function Videos() {
-  const { data: allData = [], loading } = useDataManager("youtube_video");
+  const { data: videoData = [], loading: loadingVideos } =
+    useDataManager("youtube_video");
+  const { data: shortData = [], loading: loadingShorts } =
+    useDataManager("youtube_short");
 
+  const loading = loadingVideos || loadingShorts;
+
+  const [activeTag, setActiveTag] = useState("All");
   const [visibleCount, setVisibleCount] = useState(VIDEOS_PER_PAGE);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(false); // FIX
 
   const videos = useMemo(() => {
-    return allData.filter((v) => v.is_short === false);
-  }, [allData]);
+    return videoData.filter((v) => v.is_short === false);
+  }, [videoData]);
+
+  const filteredVideos = useMemo(() => {
+    if (activeTag === "Oldest") {
+      return [...videos].sort(
+        (a, b) =>
+          new Date(a.published_at || a.publishedAt) -
+          new Date(b.published_at || b.publishedAt),
+      );
+    }
+    const tag = TAGS.find((t) => t.label === activeTag);
+    if (!tag || tag.keywords.length === 0) return videos;
+    return videos.filter((v) => matchesTag(v.title, tag.keywords));
+  }, [videos, activeTag]);
+
+  const filteredShorts = useMemo(() => {
+    let result = shortData;
+
+    if (activeTag !== "All" && activeTag !== "Oldest") {
+      const tag = TAGS.find((t) => t.label === activeTag);
+      if (tag && tag.keywords.length > 0) {
+        const filtered = shortData.filter((v) =>
+          matchesTag(v.title, tag.keywords),
+        );
+        result = filtered.length > 0 ? filtered : shortData;
+      }
+    }
+
+    if (activeTag === "Oldest") {
+      return [...result].sort(
+        (a, b) =>
+          new Date(a.published_at || a.publishedAt) -
+          new Date(b.published_at || b.publishedAt),
+      );
+    }
+
+    return result;
+  }, [shortData, activeTag]);
 
   const visibleVideos = useMemo(() => {
-    return videos.slice(0, visibleCount);
-  }, [videos, visibleCount]);
+    return filteredVideos.slice(0, visibleCount);
+  }, [filteredVideos, visibleCount]);
 
-  const hasMore = visibleCount < videos.length;
+  const hasMore = visibleCount < filteredVideos.length;
+
+  const handleTagChange = (label) => {
+    setActiveTag(label);
+    setVisibleCount(VIDEOS_PER_PAGE);
+    window.scrollTo({ top: 0 });
+  };
 
   const handleScroll = useCallback(() => {
     if (isLoadingMore || !hasMore || loading) return;
@@ -33,16 +85,14 @@ export default function Videos() {
     const clientHeight = window.innerHeight;
     const distanceToBottom = scrollHeight - (scrollTop + clientHeight);
 
-    setShowScrollTop(scrollTop > 500);
-
     if (distanceToBottom < 500) {
       setIsLoadingMore(true);
       setVisibleCount((prev) =>
-        Math.min(prev + VIDEOS_PER_PAGE, videos.length),
+        Math.min(prev + VIDEOS_PER_PAGE, filteredVideos.length),
       );
       setTimeout(() => setIsLoadingMore(false), 300);
     }
-  }, [isLoadingMore, hasMore, loading, videos.length]);
+  }, [isLoadingMore, hasMore, loading, filteredVideos.length]);
 
   useEffect(() => {
     let timeoutId = null;
@@ -52,7 +102,6 @@ export default function Videos() {
     const throttledScroll = () => {
       const now = Date.now();
       if (timeoutId) clearTimeout(timeoutId);
-
       if (now - lastExecuted < THROTTLE_DELAY) {
         timeoutId = setTimeout(() => {
           lastExecuted = Date.now();
@@ -71,12 +120,13 @@ export default function Videos() {
     };
   }, [handleScroll]);
 
-  const metaData = useMemo(() => {
-    return {
+  const metaData = useMemo(
+    () => ({
       title: `Videos - TWICEFLIX`,
       description: `Watch the latest TWICE music videos, performances, and more. Explore our collection of ${videos.length} videos.`,
-    };
-  }, [videos.length]);
+    }),
+    [videos.length],
+  );
 
   if (loading) {
     return (
@@ -85,11 +135,23 @@ export default function Videos() {
           <title>Loading Videos - TWICEFLIX</title>
           <meta name="description" content="Loading TWICE videos..." />
         </Helmet>
-        <div className="pt-0 md:pt-18 bg-black min-h-screen pb-20">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4">
+        <div className="pt-0 md:pt-12 bg-black min-h-screen pb-20">
+          <div className="sticky top-12 md:top-12 z-10 bg-black backdrop-blur-sm">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-18 gap-2 px-4 py-3">
+              {Array.from({ length: 18 }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-8 w-full rounded-full bg-neutral-800 animate-pulse ${
+                    i >= 6 ? "hidden lg:block" : i >= 3 ? "hidden md:block" : ""
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 px-4">
             {[...Array(30)].map((_, i) => (
               <div key={i} className="space-y-2">
-                <div className="aspect-video bg-neutral-800  animate-pulse rounded-none md:rounded-lg" />
+                <div className="aspect-video bg-neutral-800 animate-pulse rounded-none md:rounded-lg" />
                 <div className="h-4 w-2/3 bg-neutral-800 rounded animate-pulse" />
                 <div className="h-3 w-1/4 bg-neutral-800 rounded animate-pulse" />
               </div>
@@ -107,7 +169,7 @@ export default function Videos() {
           <title>No Videos - TWICEFLIX</title>
           <meta name="description" content="No videos available" />
         </Helmet>
-        <div className="pt-0 md:pt-18 bg-black min-h-screen flex items-center justify-center">
+        <div className="pt-0 md:pt-12 bg-black min-h-screen flex items-center justify-center">
           <p className="text-gray-400 text-xl">No videos available</p>
         </div>
       </>
@@ -121,8 +183,22 @@ export default function Videos() {
         <meta name="description" content={metaData.description} />
       </Helmet>
 
-      <div className="pt-0 md:pt-18 bg-black min-h-screen pb-2">
-        <VideoGrid videos={visibleVideos} />
+      <div className="pt-0 md:pt-12 bg-black min-h-screen pb-2">
+        <VideoFilterBar activeTag={activeTag} onTagChange={handleTagChange} />
+
+        <VideoGrid
+          videos={visibleVideos}
+          shorts={filteredShorts}
+          shortsLoading={loadingShorts}
+        />
+
+        {filteredVideos.length === 0 && (
+          <div className="flex items-center justify-center py-20">
+            <p className="text-gray-400 text-lg">
+              No videos found for "{activeTag}"
+            </p>
+          </div>
+        )}
 
         {isLoadingMore && hasMore && (
           <div className="w-full py-8 flex justify-center">

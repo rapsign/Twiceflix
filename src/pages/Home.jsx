@@ -23,6 +23,7 @@ const Home = () => {
 
       <div className="-mt-24 md:-mt-48 px-0 md:px-4 relative z-10">
         <VideoSwiper />
+
         <PlaylistSwiper />
       </div>
     </div>

@@ -5,11 +5,12 @@ import "swiper/css";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import PlaylistCard from "./Playlist/PlaylistCard";
 import VideoCard from "./Videos/VideoCard";
+import ShortsCard from "./Short/ShortsCard";
 
 export default function CustomSwiper({
   items,
   title,
-  type = "video",
+  type = "video", // "video" | "playlist" | "shorts"
   playlistId,
 }) {
   const prevRef = useRef(null);
@@ -27,11 +28,35 @@ export default function CustomSwiper({
     swiperInstance.navigation.update();
   }, [swiperInstance]);
 
+  // Shorts pakai lebih banyak kolom karena portrait
+  const breakpoints =
+    type === "shorts"
+      ? {
+          480: { slidesPerView: 3 },
+          768: { slidesPerView: 4 },
+          1024: { slidesPerView: 5 },
+          1440: { slidesPerView: 6 },
+        }
+      : {
+          768: { slidesPerView: 3 },
+          1024: { slidesPerView: 3 },
+          1440: { slidesPerView: 3 },
+        };
+
+  const renderCard = (item) => {
+    if (type === "playlist") return <PlaylistCard playlist={item} />;
+    if (type === "shorts")
+      return <ShortsCard video={item} playlistId={playlistId} />;
+    return <VideoCard video={item} playlistId={playlistId} />;
+  };
+
   return (
     <div className="w-full text-white relative group">
       {title && (
         <div className="flex items-center justify-between mb-2 px-2">
-          <h2 className="text-md md:text-xl lg:text-2xl font-bold">{title}</h2>
+          <h2 className="text-md md:text-xl lg:text-2xl font-bold flex items-center gap-2">
+            {title}
+          </h2>
           <div className="flex gap-2">
             <div
               ref={prevRef}
@@ -51,24 +76,14 @@ export default function CustomSwiper({
 
       <Swiper
         modules={[Navigation, Pagination, Scrollbar, A11y]}
-        spaceBetween={0}
-        slidesPerView={1}
+        spaceBetween="0"
+        slidesPerView="1"
         onSwiper={setSwiperInstance}
         navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
-        breakpoints={{
-          768: { slidesPerView: 3 },
-          1024: { slidesPerView: 3 },
-          1440: { slidesPerView: 3 },
-        }}
+        breakpoints={breakpoints}
       >
         {items.map((item) => (
-          <SwiperSlide key={item.id}>
-            {type === "playlist" ? (
-              <PlaylistCard playlist={item} />
-            ) : (
-              <VideoCard video={item} playlistId={playlistId} />
-            )}
-          </SwiperSlide>
+          <SwiperSlide key={item.id}>{renderCard(item)}</SwiperSlide>
         ))}
       </Swiper>
     </div>

@@ -1,16 +1,54 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
-import Footer from "@/components/Footer";
 import BottomNav from "@/components/Navbar/BottomNav";
+import Sidebar from "@/components/Navbar/Sidebar";
 import { Helmet } from "react-helmet";
+
+const HIDE_NAVBAR_PATHS = ["/login", "/video-player"];
+const HIDE_SIDEBAR_PATHS = ["/login", "/video-player"];
+const HIDE_BOTTOMNAV_PATHS = ["/shorts"];
+
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
+  return isMobile;
+};
 
 const PublicLayout = ({ title, description, keywords, author }) => {
   const location = useLocation();
+  const isMobile = useIsMobile();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const isShortsPage = location.pathname.startsWith("/shorts");
+  const isWatchPage = location.pathname.startsWith("/watch");
+
+  // Auto collapse saat masuk watch page
+  useEffect(() => {
+    if (isWatchPage) {
+      setSidebarCollapsed(true);
+    }
+  }, [isWatchPage]);
 
   const hideNavbar =
-    location.pathname === "/login" || location.pathname === "/video-player";
+    HIDE_NAVBAR_PATHS.some((p) => location.pathname.startsWith(p)) ||
+    (isShortsPage && isMobile);
+
+  const hideSidebar =
+    HIDE_SIDEBAR_PATHS.some((p) => location.pathname.startsWith(p)) ||
+    (isShortsPage && isMobile);
+
+  const hideBottomNav = HIDE_BOTTOMNAV_PATHS.some((p) =>
+    location.pathname.startsWith(p),
+  );
 
   return (
     <>
@@ -30,18 +68,37 @@ const PublicLayout = ({ title, description, keywords, author }) => {
             "TWICE, TWICEFLIX, K-pop, music, performances, videos, TWICE members"
           }
         />
-        <meta name="author" content={author || "Rinaldi Prayuda"} />
+        <meta name="author" content={author || "Rinaldi A Prayuda"} />
       </Helmet>
 
-      <div className="min-h-screen flex flex-col text-white">
-        {!hideNavbar && <Navbar />}
+      <div className="min-h-screen flex flex-col text-white bg-black">
+        {!hideNavbar && (
+          <Navbar
+            onToggleSidebar={() => setSidebarCollapsed((prev) => !prev)}
+          />
+        )}
 
-        <main className="flex-1 pt-12 py-0  lg:pt-0 lg:pb-0 ">
-          <Outlet />
-        </main>
+        <div className="flex flex-1">
+          {!hideSidebar && (
+            <aside className="hidden md:flex sticky top-0 h-screen shrink-0">
+              <Sidebar isCollapsed={sidebarCollapsed} />
+            </aside>
+          )}
 
-        <Footer className="hidden lg:block" />
-        <BottomNav />
+          <main
+            className={`flex-1 flex flex-col min-w-0 ${
+              isShortsPage || isWatchPage
+                ? ""
+                : !hideNavbar
+                  ? "pt-14 lg:pt-0 pb-16 lg:pb-0"
+                  : ""
+            }`}
+          >
+            <Outlet />
+          </main>
+        </div>
+
+        {!hideBottomNav && <BottomNav />}
       </div>
     </>
   );
