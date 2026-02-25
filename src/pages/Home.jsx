@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import HeroSection from "../components/Hero/HeroSection";
-
 import PlaylistSwiper from "../components/Playlist/PlaylistSwiper";
 import LoadingSpinner from "../components/LoadingSpinner";
 import VideoSwiper from "../components/Videos/VideoSwiper";
@@ -20,10 +19,8 @@ const Home = () => {
   return (
     <div className="relative">
       <HeroSection />
-
       <div className="-mt-24 md:-mt-48 px-0 md:px-4 relative z-10">
         <VideoSwiper />
-
         <PlaylistSwiper />
       </div>
     </div>
