@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Search, X } from "lucide-react";
+import { ArrowLeft, ChevronLeft, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function SearchBox({ onMobileOpenChange }) {
@@ -86,9 +86,12 @@ export default function SearchBox({ onMobileOpenChange }) {
           variant="ghost"
           size="icon"
           onClick={handleMobileClose}
-          className="shrink-0 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-full"
+          className="shrink-0 text-neutral-400 hover:text-white hover:bg-neutral-800
+             rounded-full
+             h-12 w-12
+             [&>svg]:!h-7 [&>svg]:!w-7"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ChevronLeft />
         </Button>
       )}
       <div
@@ -99,9 +102,12 @@ export default function SearchBox({ onMobileOpenChange }) {
             variant="ghost"
             size="icon"
             onClick={handleMobileClose}
-            className=" text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-full"
+            className="shrink-0 text-white hover:text-white/90 hover:bg-neutral-800
+             rounded-full
+             h-12 w-12
+             [&>svg]:!h-7 [&>svg]:!w-7"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ChevronLeft />
           </Button>
         )}
         <div className="flex flex-1 items-center">
@@ -115,7 +121,7 @@ export default function SearchBox({ onMobileOpenChange }) {
                 if (e.key === "Enter") handleSubmit();
                 if (e.key === "Escape" && isMobile) handleMobileClose();
               }}
-              className="flex-1 border-0 bg-transparent lg:w-96 focus-visible:ring-0 focus-visible:ring-offset-0 text-white placeholder:text-neutral-500 text-sm p-0 h-auto"
+              className="flex-1 border-0 bg-transparent md:w-56  lg:w-96 focus-visible:ring-0 focus-visible:ring-offset-0 text-white placeholder:text-neutral-500 text-sm p-0 h-auto"
             />
             {query && (
               <Button

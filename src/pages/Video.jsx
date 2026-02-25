@@ -11,6 +11,16 @@ import { Helmet } from "react-helmet";
 import { Loader2 } from "lucide-react";
 
 const VIDEOS_PER_PAGE = 30;
+const STORAGE_KEY = "twiceflix_shorted_shorts_order";
+
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 export default function Videos() {
   const { data: videoData = [], loading: loadingVideos } =
@@ -28,6 +38,35 @@ export default function Videos() {
     return videoData.filter((v) => v.is_short === false);
   }, [videoData]);
 
+  // === SHORTS ORDER FROM LOCAL STORAGE ===
+  const shuffledShorts = useMemo(() => {
+    if (typeof window === "undefined") return shortData;
+    if (!shortData.length) return shortData;
+
+    const savedOrder = localStorage.getItem(STORAGE_KEY);
+
+    if (savedOrder) {
+      try {
+        const parsedIds = JSON.parse(savedOrder);
+
+        const ordered = parsedIds
+          .map((id) => shortData.find((s) => s.id === id))
+          .filter(Boolean);
+
+        const newItems = shortData.filter((s) => !parsedIds.includes(s.id));
+
+        return [...ordered, ...newItems];
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+
+    const shuffled = shuffleArray(shortData);
+    const idsOnly = shuffled.map((s) => s.id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(idsOnly));
+    return shuffled;
+  }, [shortData]);
+
   const filteredVideos = useMemo(() => {
     if (activeTag === "Oldest") {
       return [...videos].sort(
@@ -36,21 +75,23 @@ export default function Videos() {
           new Date(b.published_at || b.publishedAt),
       );
     }
+
     const tag = TAGS.find((t) => t.label === activeTag);
     if (!tag || tag.keywords.length === 0) return videos;
+
     return videos.filter((v) => matchesTag(v.title, tag.keywords));
   }, [videos, activeTag]);
 
   const filteredShorts = useMemo(() => {
-    let result = shortData;
+    let result = shuffledShorts;
 
     if (activeTag !== "All" && activeTag !== "Oldest") {
       const tag = TAGS.find((t) => t.label === activeTag);
       if (tag && tag.keywords.length > 0) {
-        const filtered = shortData.filter((v) =>
+        const filtered = shuffledShorts.filter((v) =>
           matchesTag(v.title, tag.keywords),
         );
-        result = filtered.length > 0 ? filtered : shortData;
+        result = filtered.length > 0 ? filtered : shuffledShorts;
       }
     }
 
@@ -63,7 +104,7 @@ export default function Videos() {
     }
 
     return result;
-  }, [shortData, activeTag]);
+  }, [shuffledShorts, activeTag]);
 
   const visibleVideos = useMemo(() => {
     return filteredVideos.slice(0, visibleCount);
@@ -102,6 +143,7 @@ export default function Videos() {
     const throttledScroll = () => {
       const now = Date.now();
       if (timeoutId) clearTimeout(timeoutId);
+
       if (now - lastExecuted < THROTTLE_DELAY) {
         timeoutId = setTimeout(() => {
           lastExecuted = Date.now();
@@ -135,20 +177,9 @@ export default function Videos() {
           <title>Loading Videos - TWICEFLIX</title>
           <meta name="description" content="Loading TWICE videos..." />
         </Helmet>
-        <div className=" bg-black min-h-screen lg:pt-18">
-          <div className="sticky z-10 bg-black backdrop-blur-sm">
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-18 gap-2 px-4 ">
-              {Array.from({ length: 18 }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-8 w-full rounded-lg bg-neutral-800 animate-pulse ${
-                    i >= 6 ? "hidden lg:block" : i >= 3 ? "hidden md:block" : ""
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 lg:px-4 pt-6">
+
+        <div className="bg-black min-h-screen md:pt-6 lg:pt-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 lg:px-2 pt-8">
             {[...Array(30)].map((_, i) => (
               <div key={i} className="space-y-2">
                 <div className="aspect-video bg-neutral-800 animate-pulse rounded-none md:rounded-lg" />
@@ -169,7 +200,8 @@ export default function Videos() {
           <title>No Videos - TWICEFLIX</title>
           <meta name="description" content="No videos available" />
         </Helmet>
-        <div className="pt-12 bg-black min-h-screen flex items-center justify-center">
+
+        <div className="pt-14 bg-black min-h-screen flex items-center justify-center">
           <p className="text-gray-400 text-xl">No videos available</p>
         </div>
       </>
@@ -183,7 +215,7 @@ export default function Videos() {
         <meta name="description" content={metaData.description} />
       </Helmet>
 
-      <div className="pt-0 md:pt-12 bg-black min-h-screen pb-2">
+      <div className="bg-black min-h-screen lg:pt-14">
         <VideoFilterBar activeTag={activeTag} onTagChange={handleTagChange} />
 
         <VideoGrid

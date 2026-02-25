@@ -44,7 +44,6 @@ export function matchesTag(title = "", keywords = []) {
 
 export { TAGS };
 
-// Hook untuk mendeteksi arah scroll
 function useScrollDirection(threshold = 10) {
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
@@ -58,7 +57,6 @@ function useScrollDirection(threshold = 10) {
           const diff = currentScrollY - lastScrollY.current;
 
           if (Math.abs(diff) >= threshold) {
-            // Scroll ke bawah → hidden, scroll ke atas → tampil
             setVisible(diff < 0 || currentScrollY < threshold);
             lastScrollY.current = currentScrollY;
           }
@@ -76,6 +74,44 @@ function useScrollDirection(threshold = 10) {
   return visible;
 }
 
+function TagButton({ tag, activeTag, onTagChange }) {
+  const startX = useRef(0);
+  const isDragging = useRef(false);
+
+  const handlePointerDown = (e) => {
+    startX.current = e.clientX || 0;
+    isDragging.current = false;
+  };
+
+  const handlePointerMove = (e) => {
+    const currentX = e.clientX || 0;
+    if (Math.abs(currentX - startX.current) > 6) {
+      isDragging.current = true;
+    }
+  };
+
+  const handleClick = () => {
+    if (!isDragging.current) {
+      onTagChange(tag.label);
+    }
+  };
+
+  return (
+    <Button
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onClick={handleClick}
+      className={`px-4 py-1 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
+        activeTag === tag.label
+          ? "bg-white text-black hover:bg-white/80"
+          : "bg-white/10 text-white hover:bg-white/20"
+      }`}
+    >
+      {tag.label}
+    </Button>
+  );
+}
+
 export default function VideoFilterBar({ activeTag, onTagChange }) {
   const [swiperInstance, setSwiperInstance] = useState(null);
   const [isBeginning, setIsBeginning] = useState(true);
@@ -88,22 +124,27 @@ export default function VideoFilterBar({ activeTag, onTagChange }) {
   return (
     <div
       className={`sticky z-10 bg-black backdrop-blur-sm py-2 sm:py-3 flex items-center gap-1 sm:gap-2 px-1 sm:px-2
-    transition-all duration-300 ease-in-out
-    ${!isVisible ? "top-0 -translate-y-full sm:translate-y-0 sm:top-14" : "top-14 translate-y-0"}`}
+      transition-all duration-300 ease-in-out
+      ${
+        !isVisible
+          ? "top-0 -translate-y-full sm:translate-y-0 sm:top-14"
+          : "top-14 translate-y-0"
+      }`}
     >
-      {/* Tombol Prev */}
-      <Button
-        variant="icon"
-        size="lg"
-        onClick={handlePrev}
-        disabled={isBeginning}
-        className={`hidden sm:flex shrink-0 z-20 p-4 sm:p-6 rounded-full hover:bg-neutral-700
-    ${isBeginning ? "invisible" : ""}`}
-      >
-        <IconChevronLeft className="w-5 h-5 sm:w-7 sm:h-7" />
-      </Button>
+      {!isBeginning && (
+        <Button
+          variant="icon"
+          size="lg"
+          onClick={handlePrev}
+          className="hidden sm:flex shrink-0 z-20
+             h-14 w-14 p-0
+             rounded-full hover:bg-neutral-700
+             [&>svg]:!h-8 [&>svg]:!w-8"
+        >
+          <IconChevronLeft className="w-5 h-5 sm:w-7 sm:h-7" />
+        </Button>
+      )}
 
-      {/* Swiper */}
       <div className="flex-1 overflow-hidden">
         <Swiper
           onSwiper={setSwiperInstance}
@@ -125,32 +166,28 @@ export default function VideoFilterBar({ activeTag, onTagChange }) {
               key={`${tag.label}-${index}`}
               style={{ width: "auto" }}
             >
-              <Button
-                onClick={() => onTagChange(tag.label)}
-                className={`px-4 py-1  rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeTag === tag.label
-                    ? "bg-white text-black hover:bg-white/80"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                }`}
-              >
-                {tag.label}
-              </Button>
+              <TagButton
+                tag={tag}
+                activeTag={activeTag}
+                onTagChange={onTagChange}
+              />
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
 
-      {/* Tombol Next */}
-      <Button
-        variant="icon"
-        size="lg"
-        onClick={handleNext}
-        disabled={isEnd}
-        className={`hidden sm:flex shrink-0 z-20 p-4 sm:p-6 rounded-full hover:bg-neutral-700
-    ${isEnd ? "invisible" : ""}`}
-      >
-        <ChevronRight className="w-5 h-5 sm:w-10 sm:h-10" />
-      </Button>
+      {!isEnd && (
+        <Button
+          variant="ghost"
+          onClick={handleNext}
+          className="hidden sm:flex shrink-0 z-20
+             h-14 w-14 p-0
+             rounded-full hover:bg-neutral-700
+             [&>svg]:!h-8 [&>svg]:!w-8"
+        >
+          <ChevronRight />
+        </Button>
+      )}
     </div>
   );
 }

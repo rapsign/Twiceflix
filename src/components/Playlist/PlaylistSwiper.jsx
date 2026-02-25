@@ -90,7 +90,7 @@ const PlaylistSwiper = () => {
             </div>
 
             {/* Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0 md:gap-2 lg:gap-4">
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}

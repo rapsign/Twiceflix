@@ -48,8 +48,8 @@ export default function Sidebar({ isCollapsed = false }) {
 
   return (
     <div
-      className={`flex flex-col h-screen bg-black px-2 pt-3.5 shrink-0 transition-all duration-300 ease-in-out overflow-hidden ${
-        isCollapsed ? "w-0 px-0 opacity-0" : "w-56 opacity-100"
+      className={`flex flex-col h-screen bg-black shrink-0 transition-all duration-300 ease-in-out overflow-hidden ${
+        isCollapsed ? "w-0 opacity-0" : "w-56 px-2 pt-3.5 opacity-100"
       }`}
     >
       <nav className="flex flex-col gap-1 flex-1 mt-12">

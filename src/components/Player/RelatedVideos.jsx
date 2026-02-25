@@ -40,7 +40,7 @@ export default function RelatedVideos({ relatedVideos, playlistId = null }) {
   }, [handleScroll]);
 
   return (
-    <div className="grid grid-cols-1 gap-3 px-0 md:grid-cols-3 md:px-4 lg:grid-cols-1 lg:px-0 pb-2">
+    <div className="grid grid-cols-1 gap-3 px-0 md:grid-cols-3 md:px-4 lg:grid-cols-1 lg:px-0 pb-20 lg:pb-2">
       {relatedVideos.slice(0, visibleCount).map((v) => (
         <div
           key={v.id}

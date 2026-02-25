@@ -62,7 +62,7 @@ const Navbar = ({ onToggleSidebar }) => {
         </div>
 
         {/* Search */}
-        <div className="md:absolute md:left-1/2 md:-translate-x-1/2 pr-2 md:pr-0">
+        <div className="md:ml-auto pr-2 md:pr-3 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:pr-0">
           <SearchBox onMobileOpenChange={setMobileSearchOpen} />
         </div>
       </div>

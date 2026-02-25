@@ -239,12 +239,22 @@ export default function Watch() {
       </Helmet>
 
       <div className="bg-black px-0 pt-14">
-        {isMobile && <VideoPlayer iframeRef={iframeRef} isMobile={isMobile} />}
+        {isMobile && (
+          <VideoPlayer
+            iframeRef={iframeRef}
+            isMobile={isMobile}
+            title={video.title}
+          />
+        )}
 
         <div className="grid grid-cols-1 gap-4 px-0 lg:grid-cols-12 lg:px-2">
-          <div className="lg:col-span-9 self-start space-y-4">
+          <div className="lg:col-span-9 self-start space-y-4 ">
             {!isMobile && (
-              <VideoPlayer iframeRef={iframeRef} isMobile={isMobile} />
+              <VideoPlayer
+                iframeRef={iframeRef}
+                isMobile={isMobile}
+                title={video.title}
+              />
             )}
             <VideoInfo video={video} />
           </div>

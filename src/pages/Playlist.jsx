@@ -104,7 +104,7 @@ const Playlist = () => {
         </Helmet>
         <div className="lg:pt-12 bg-black min-h-screen">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-2">
-            {[...Array(12)].map((_, i) => (
+            {[...Array(30)].map((_, i) => (
               <PlaylistSkeleton key={i} />
             ))}
           </div>
