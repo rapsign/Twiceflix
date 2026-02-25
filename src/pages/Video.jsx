@@ -7,7 +7,7 @@ import VideoFilterBar, {
   matchesTag,
 } from "../components/Videos/VideoFilterBar";
 import useDataManager from "../../hooks/useDataManager";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { Loader2 } from "lucide-react";
 
 const VIDEOS_PER_PAGE = 30;

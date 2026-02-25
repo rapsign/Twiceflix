@@ -10,7 +10,7 @@ import {
   Play,
   Pause,
 } from "lucide-react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { useLocation, useNavigate } from "react-router-dom";
 import YouTube from "react-youtube";
 import { cn } from "@/lib/utils";

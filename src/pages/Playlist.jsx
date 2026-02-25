@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import PlaylistGrid from "@/components/Playlist/PlaylistGrid";
 import useDataManager from "../../hooks/useDataManager";
 import { Loader2 } from "lucide-react";

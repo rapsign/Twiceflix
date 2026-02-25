@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { FaInstagram } from "react-icons/fa";
 import LoadingSpinner from "../components/LoadingSpinner";
 import membersData from "@/data/twiceMembers.json";

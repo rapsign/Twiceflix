@@ -5,7 +5,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import BottomNav from "@/components/Navbar/BottomNav";
 import Sidebar from "@/components/Navbar/Sidebar";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 const HIDE_NAVBAR_PATHS = ["/login", "/video-player"];
 const HIDE_SIDEBAR_PATHS = ["/login", "/video-player"];
@@ -68,7 +68,7 @@ const PublicLayout = ({ title, description, keywords, author }) => {
           name="keywords"
           content={
             keywords ||
-            "TWICE, TWICEFLIX, K-pop, music, performances, videos, TWICE members"
+            "TWICE, TWICEFLIX, K-pop, music, performances, videos, TWICE members,Nayeon, Jeongyeon, Momo, Sana, Jihyo, Mina, Dahyun, Chaeyoung, Tzuyu"
           }
         />
         <meta name="author" content={author || "Rinaldi A Prayuda"} />
