@@ -42,25 +42,28 @@ const VideoSwiper = () => {
 
   if (loading) {
     return (
-      <div className="bg-transparent text-white py-2 w-full z-50 ">
-        <div className="px-4 mb-4 flex justify-between">
-          <div className="h-6 w-48 bg-neutral-800 rounded animate-pulse" />
+      <div className="bg-transparent text-white py-2 w-full z-50">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-2 px-2">
+          <div className="h-7 w-36 md:w-52 bg-neutral-800 rounded animate-pulse" />
           <div className="flex gap-2">
             <div className="h-8 w-8 bg-neutral-800 rounded-full animate-pulse" />
             <div className="h-8 w-8 bg-neutral-800 rounded-full animate-pulse" />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 lg:px-4">
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0">
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className={`space-y-2 ${i > 0 ? "hidden sm:block" : ""}`}
+              className={`space-y-2 ${i === 1 ? "hidden sm:block" : ""} ${i === 2 ? "hidden md:block" : ""}`}
             >
               <div className="aspect-video bg-neutral-800 lg:rounded-lg rounded-none animate-pulse" />
               <div className="px-2 space-y-2">
-                <div className="h-4 w-2/3 bg-neutral-800 rounded animate-pulse" />
-                <div className="h-3 w-1/4 bg-neutral-800 rounded animate-pulse" />
+                {/* Judul video */}
+                <div className="h-4 w-3/4 bg-neutral-800 rounded animate-pulse" />
+                <div className="h-4 w-1/4 bg-neutral-800 rounded animate-pulse" />
               </div>
             </div>
           ))}

@@ -49,7 +49,7 @@ export default function VideoInfo({ video }) {
           className="p-0 cursor-pointer"
           onClick={() => isOverflowing && setExpanded((p) => !p)}
         >
-          <CardContent className="space-y-1 px-4 py-3 md:py-4">
+          <CardContent className="space-y-1 px-4 py-4">
             <p className="text-[11px] md:text-sm font-medium text-muted-foreground">
               {formatPublishedDistance(video.published_at)}
             </p>

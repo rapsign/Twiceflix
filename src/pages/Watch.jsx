@@ -38,7 +38,6 @@ export default function Watch() {
   const { getNextLabel, getNextVideoTitle, getVideoIndex } =
     usePlaylistHelpers();
 
-  // Tandai video yang sedang ditonton sebagai sudah ditonton
   useEffect(() => {
     if (videoId) {
       setWatchedIds((prev) => new Set(prev).add(videoId));
@@ -239,7 +238,7 @@ export default function Watch() {
         )}
       </Helmet>
 
-      <div className="bg-black px-0 md:pt-12 lg:px-2 lg:pt-14">
+      <div className="bg-black px-0 pt-14">
         {isMobile && <VideoPlayer iframeRef={iframeRef} isMobile={isMobile} />}
 
         <div className="grid grid-cols-1 gap-4 px-0 lg:grid-cols-12 lg:px-2">

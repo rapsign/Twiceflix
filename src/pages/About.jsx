@@ -88,14 +88,14 @@ const About = () => {
             Follow TWICE Members on Instagram
           </h2>
 
-          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5">
+          <div className="grid  grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5">
             {members.map((member) => {
               const imageUrl = toDirectWikiaImage(member.images?.[0]);
 
               return (
                 <div
                   key={member.stageName}
-                  className="relative w-42 sm:w-44 md:w-59 lg:w-60 aspect-5/7 rounded-xl overflow-hidden cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
+                  className="relative w-50 sm:w-44 md:w-59 lg:w-60 aspect-5/7 rounded-xl overflow-hidden cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
                 >
                   {/* Gambar full card */}
                   <img

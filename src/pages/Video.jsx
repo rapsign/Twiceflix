@@ -135,20 +135,20 @@ export default function Videos() {
           <title>Loading Videos - TWICEFLIX</title>
           <meta name="description" content="Loading TWICE videos..." />
         </Helmet>
-        <div className="pt-0 md:pt-12 bg-black min-h-screen pb-20">
-          <div className="sticky top-12 md:top-12 z-10 bg-black backdrop-blur-sm">
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-18 gap-2 px-4 py-3">
+        <div className=" bg-black min-h-screen lg:pt-18">
+          <div className="sticky z-10 bg-black backdrop-blur-sm">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-18 gap-2 px-4 ">
               {Array.from({ length: 18 }).map((_, i) => (
                 <div
                   key={i}
-                  className={`h-8 w-full rounded-full bg-neutral-800 animate-pulse ${
+                  className={`h-8 w-full rounded-lg bg-neutral-800 animate-pulse ${
                     i >= 6 ? "hidden lg:block" : i >= 3 ? "hidden md:block" : ""
                   }`}
                 />
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 lg:px-4 pt-6">
             {[...Array(30)].map((_, i) => (
               <div key={i} className="space-y-2">
                 <div className="aspect-video bg-neutral-800 animate-pulse rounded-none md:rounded-lg" />
@@ -169,7 +169,7 @@ export default function Videos() {
           <title>No Videos - TWICEFLIX</title>
           <meta name="description" content="No videos available" />
         </Helmet>
-        <div className="pt-0 md:pt-12 bg-black min-h-screen flex items-center justify-center">
+        <div className="pt-12 bg-black min-h-screen flex items-center justify-center">
           <p className="text-gray-400 text-xl">No videos available</p>
         </div>
       </>

@@ -7,7 +7,7 @@ export default function WatchSkeleton() {
         <title>Loading Video - TWICEFLIX</title>
         <meta name="description" content="Loading TWICE video..." />
       </Helmet>
-      <div className="mb-2 bg-black px-0 md:pt-12 lg:px-2 lg:pt-18">
+      <div className="mb-2 bg-black px-0 pt-14">
         <div className="grid grid-cols-1 gap-4 px-0 lg:grid-cols-12 lg:px-2">
           {/* Video + Info skeleton */}
           <div className="lg:col-span-9 self-start space-y-6">

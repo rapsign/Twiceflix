@@ -13,7 +13,7 @@ function useResponsiveCount() {
       if (w >= 1024) setCount(6);
       else if (w >= 768) setCount(5);
       else if (w >= 640) setCount(4);
-      else setCount(6);
+      else setCount(4);
     };
     update();
     window.addEventListener("resize", update);
