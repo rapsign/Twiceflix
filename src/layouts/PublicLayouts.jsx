@@ -53,12 +53,15 @@ const PublicLayout = ({ title, description, keywords, author }) => {
   return (
     <>
       <Helmet>
-        <title>{title || "TWICEFLIX"}</title>
+        <title>
+          {title ||
+            "TWICEFLIX — Your Ultimate Source for TWICE Videos & Content"}
+        </title>
         <meta
           name="description"
           content={
             description ||
-            "TWICEFLIX is your ultimate source for everything TWICE! Watch their latest music videos, performances, and behind-the-scenes content."
+            "Everything TWICE in one place — music videos, live performances, and behind-the-scenes content."
           }
         />
         <meta
@@ -79,12 +82,18 @@ const PublicLayout = ({ title, description, keywords, author }) => {
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="TWICEFLIX" />
-        <meta property="og:title" content={title || "TWICEFLIX"} />
+        <meta
+          property="og:title"
+          content={
+            title ||
+            "TWICEFLIX — Your Ultimate Source for TWICE Videos & Content"
+          }
+        />
         <meta
           property="og:description"
           content={
             description ||
-            "TWICEFLIX is your ultimate source for everything TWICE! Watch their latest music videos, performances, and behind-the-scenes content."
+            "Everything TWICE in one place — music videos, live performances, and behind-the-scenes content."
           }
         />
         <meta
@@ -95,15 +104,21 @@ const PublicLayout = ({ title, description, keywords, author }) => {
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={title || "TWICEFLIX"} />
+        <meta
+          name="twitter:title"
+          content={
+            title ||
+            "TWICEFLIX — Your Ultimate Source for TWICE Videos & Content"
+          }
+        />
         <meta
           name="twitter:description"
           content={
             description ||
-            "TWICEFLIX is your ultimate source for everything TWICE! Watch their latest music videos, performances, and behind-the-scenes content."
+            "Everything TWICE in one place — music videos, live performances, and behind-the-scenes content."
           }
         />
-        <meta name="twitter:image" content="/og-image.webp" />
+        <meta name="twitter:image" content="/og.webp" />
       </Helmet>
 
       <div className="min-h-screen flex flex-col text-white bg-black">
