@@ -58,6 +58,13 @@ const PublicLayout = ({ title, description, keywords, author }) => {
             "TWICEFLIX — Your Ultimate Source for TWICE Videos & Content"}
         </title>
         <meta
+          name="title"
+          content={
+            title ||
+            "TWICEFLIX — Your Ultimate Source for TWICE Videos & Content"
+          }
+        />
+        <meta
           name="description"
           content={
             description ||
@@ -68,7 +75,7 @@ const PublicLayout = ({ title, description, keywords, author }) => {
           name="keywords"
           content={
             keywords ||
-            "TWICE, TWICEFLIX, K-pop, music, performances, videos, TWICE members,Nayeon, Jeongyeon, Momo, Sana, Jihyo, Mina, Dahyun, Chaeyoung, Tzuyu"
+            "TWICE, TWICEFLIX, K-pop, music, performances, videos, TWICE members, Nayeon, Jeongyeon, Momo, Sana, Jihyo, Mina, Dahyun, Chaeyoung, Tzuyu"
           }
         />
         <meta name="author" content={author || "Rinaldi A Prayuda"} />
@@ -79,9 +86,17 @@ const PublicLayout = ({ title, description, keywords, author }) => {
           href={typeof window !== "undefined" ? window.location.href : ""}
         />
 
-        {/* Open Graph */}
+        {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="TWICEFLIX" />
+        <meta
+          property="og:url"
+          content={
+            typeof window !== "undefined"
+              ? window.location.href
+              : "https://twiceflix.vercel.app/"
+          }
+        />
         <meta
           property="og:title"
           content={
@@ -97,28 +112,38 @@ const PublicLayout = ({ title, description, keywords, author }) => {
           }
         />
         <meta
-          property="og:url"
-          content={typeof window !== "undefined" ? window.location.href : ""}
+          property="og:image"
+          content="https://twiceflix.vercel.app/og.webp"
         />
-        <meta property="og:image" content="/og-image.png" />
 
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
+        {/* X (Twitter) */}
+        <meta property="twitter:card" content="summary_large_image" />
         <meta
-          name="twitter:title"
+          property="twitter:url"
+          content={
+            typeof window !== "undefined"
+              ? window.location.href
+              : "https://twiceflix.vercel.app/"
+          }
+        />
+        <meta
+          property="twitter:title"
           content={
             title ||
             "TWICEFLIX — Your Ultimate Source for TWICE Videos & Content"
           }
         />
         <meta
-          name="twitter:description"
+          property="twitter:description"
           content={
             description ||
             "Everything TWICE in one place — music videos, live performances, and behind-the-scenes content."
           }
         />
-        <meta name="twitter:image" content="/og.webp" />
+        <meta
+          property="twitter:image"
+          content="https://twiceflix.vercel.app/og.webp"
+        />
       </Helmet>
 
       <div className="min-h-screen flex flex-col text-white bg-black">
