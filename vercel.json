@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/watch/:id",
+      "destination": "/api/og"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
