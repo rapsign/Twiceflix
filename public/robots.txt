@@ -1,4 +1,4 @@
 User-agent: *
-Disallow:
+Allow: /
 
-Sitemap: https://twiceflix-f10d7.web.app/sitemap.xml
+Sitemap: https://twiceflix.vercel.app/sitemap.xml
