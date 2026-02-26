@@ -1,12 +1,14 @@
 {
   "rewrites": [
     {
-      "source": "/watch/:id",
-      "destination": "/api/og"
-    },
-    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/og",
+      "headers": [{ "key": "Cache-Control", "value": "public, s-maxage=3600" }]
     }
   ]
 }

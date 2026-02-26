@@ -13,20 +13,6 @@ const DEFAULT_META = {
   image: `${BASE_URL}/og.webp`,
 };
 
-const INDEX_HTML = `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/twice.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    __OG_TAGS__
-    <link href="https://fonts.cdnfonts.com/css/helvetica-neue-55" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
-</html>`;
-
 async function fetchVideo(videoId) {
   try {
     const res = await fetch(`${API_BASE_URL}/api/videos/${videoId}`, {
@@ -47,24 +33,6 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
-}
-
-function buildOgTags(meta) {
-  return `
-    <title>${escapeHtml(meta.title)}</title>
-    <meta name="description" content="${escapeHtml(meta.description)}" />
-    <meta property="og:type" content="video.other" />
-    <meta property="og:site_name" content="TWICEFLIX" />
-    <meta property="og:url" content="${escapeHtml(meta.url)}" />
-    <meta property="og:title" content="${escapeHtml(meta.title)}" />
-    <meta property="og:description" content="${escapeHtml(meta.description)}" />
-    <meta property="og:image" content="${escapeHtml(meta.image)}" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="720" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${escapeHtml(meta.title)}" />
-    <meta name="twitter:description" content="${escapeHtml(meta.description)}" />
-    <meta name="twitter:image" content="${escapeHtml(meta.image)}" />`;
 }
 
 function isBot(userAgent) {
@@ -91,21 +59,17 @@ export default async function handler(req) {
   const match = url.pathname.match(/^\/watch\/([^/]+)/);
   const videoId = match?.[1];
 
-  // Bukan bot → serve index.html langsung dari string (tidak fetch lagi)
+  // Bukan bot → fetch index.html ASLI dari public Vercel (bukan dari req URL)
   if (!videoId || !isBot(userAgent)) {
-    return new Response(
-      INDEX_HTML.replace(
-        "__OG_TAGS__",
-        buildOgTags({
-          ...DEFAULT_META,
-          url: `${BASE_URL}${url.pathname}`,
-        }),
-      ),
-      { headers: { "Content-Type": "text/html; charset=utf-8" } },
-    );
+    const indexRes = await fetch(`${BASE_URL}/index.html`, {
+      headers: { "x-vercel-skip-toolbar": "1" },
+    });
+    return new Response(await indexRes.text(), {
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
   }
 
-  // Bot → fetch video data lalu inject OG tags spesifik
+  // Bot → fetch video data lalu inject OG tags
   const video = await fetchVideo(videoId);
 
   const meta = video
@@ -119,7 +83,27 @@ export default async function handler(req) {
       }
     : { ...DEFAULT_META, url: `${BASE_URL}/watch/${videoId}` };
 
-  const html = INDEX_HTML.replace("__OG_TAGS__", buildOgTags(meta));
+  // Fetch index.html asli lalu inject OG tags
+  const indexRes = await fetch(`${BASE_URL}/index.html`, {
+    headers: { "x-vercel-skip-toolbar": "1" },
+  });
+  const html = (await indexRes.text()).replace(
+    /<title>.*?<\/title>/,
+    `<title>${escapeHtml(meta.title)}</title>
+    <meta name="description" content="${escapeHtml(meta.description)}" />
+    <meta property="og:type" content="video.other" />
+    <meta property="og:site_name" content="TWICEFLIX" />
+    <meta property="og:url" content="${escapeHtml(meta.url)}" />
+    <meta property="og:title" content="${escapeHtml(meta.title)}" />
+    <meta property="og:description" content="${escapeHtml(meta.description)}" />
+    <meta property="og:image" content="${escapeHtml(meta.image)}" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="720" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(meta.title)}" />
+    <meta name="twitter:description" content="${escapeHtml(meta.description)}" />
+    <meta name="twitter:image" content="${escapeHtml(meta.image)}" />`,
+  );
 
   return new Response(html, {
     headers: {
