@@ -30,8 +30,11 @@ const About = () => {
     return (
       <>
         <Helmet>
-          <title>Loading About - TWICEFLIX</title>
-          <meta name="description" content="Loading TWICE information..." />
+          <title>About — TWICEFLIX</title>
+          <meta
+            name="description"
+            content="Loading TWICE member information..."
+          />
         </Helmet>
         <LoadingSpinner />
       </>
@@ -50,10 +53,7 @@ const About = () => {
           alt={member.stageName}
           className="w-full h-full object-cover"
         />
-        {/* Gradient background */}
         <div className="absolute bottom-0 left-0 w-full h-36 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none" />
-
-        {/* Instagram: selalu fixed di bottom */}
         {member.instagram?.length > 0 && (
           <a
             href={member.instagram[0]}
@@ -64,8 +64,6 @@ const About = () => {
             <FaInstagram className="w-4 h-4" /> Instagram
           </a>
         )}
-
-        {/* Nama + Posisi: selalu tepat di atas Instagram */}
         <div className="absolute bottom-8 left-0 w-full flex flex-col items-center gap-0.5 text-center px-2">
           <p className="font-extrabold text-red-600 text-sm leading-tight">
             {member.stageName}
@@ -80,13 +78,39 @@ const About = () => {
     );
   };
 
+  const memberNames = members.map((m) => m.stageName).join(", ");
+
   return (
     <>
       <Helmet>
-        <title>About - TWICEFLIX</title>
+        <title>About — TWICEFLIX</title>
         <meta
           name="description"
-          content="Learn about TWICE, the sensational K-pop girl group. Explore member profiles, Instagram accounts, and stay updated with their latest content on TWICEFLIX."
+          content="Learn about TWICE, the sensational K-pop girl group from JYP Entertainment. Explore member profiles, positions, and Instagram accounts on TWICEFLIX."
+        />
+        <meta
+          name="keywords"
+          content={`TWICE, TWICEFLIX, K-pop, about, members, ${memberNames}`}
+        />
+        <meta property="og:title" content="About TWICE — TWICEFLIX" />
+        <meta
+          property="og:description"
+          content="Meet the 9 members of TWICE — one of the biggest K-pop girl groups in the world. Explore profiles and Instagram accounts on TWICEFLIX."
+        />
+        <meta
+          property="og:image"
+          content="https://twiceflix.vercel.app/og.webp"
+        />
+        <meta property="og:url" content="https://twiceflix.vercel.app/about" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="About TWICE — TWICEFLIX" />
+        <meta
+          name="twitter:description"
+          content="Meet the 9 members of TWICE — one of the biggest K-pop girl groups in the world."
+        />
+        <meta
+          name="twitter:image"
+          content="https://twiceflix.vercel.app/og.webp"
         />
       </Helmet>
 
@@ -95,7 +119,6 @@ const About = () => {
           <h1 className="text-center text-red-600 font-extrabold text-2xl md:text-4xl">
             About TWICEFLIX
           </h1>
-
           <p className="text-sm md:text-lg text-justify md:text-center">
             Welcome to TWICEFLIX! We are your ultimate source for all things
             related to the sensational K-pop girl group, TWICE. Here, you can
@@ -104,7 +127,6 @@ const About = () => {
             up-to-date with all the latest TWICE content and never miss a moment
             of their incredible performances and activities.
           </p>
-
           <div>
             <a
               href="https://www.youtube.com/c/TWICE"
@@ -123,26 +145,19 @@ const About = () => {
               TWICE Japan Official YouTube Channel
             </a>
           </div>
-
           <h2 className="text-center text-white font-extrabold text-xl md:text-2xl">
             Follow TWICE Members on Instagram
           </h2>
-
-          {/* Mobile: 1 kolom */}
           <div className="grid grid-cols-2 gap-4 md:hidden">
             {members.map((member) => (
               <MemberCard key={member.stageName} member={member} />
             ))}
           </div>
-
-          {/* Tablet: 3 kolom, card w-full mengisi kolom */}
           <div className="hidden md:grid md:grid-cols-3 gap-4 lg:hidden">
             {members.map((member) => (
               <MemberCard key={member.stageName} member={member} />
             ))}
           </div>
-
-          {/* Desktop: baris 5 + baris 4 center */}
           <div className="hidden lg:flex flex-col items-center gap-4">
             <div className="flex justify-center gap-4">
               {firstRow.map((member) => (

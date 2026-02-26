@@ -16,6 +16,7 @@ import YouTube from "react-youtube";
 import { cn } from "@/lib/utils";
 import { formatPublishedDistance } from "@/utils/time";
 import useDataManager from "../../hooks/useDataManager";
+import useYouTubeEndListener from "../../hooks/useYouTubeEndListener";
 import NProgress from "nprogress";
 import Linkify from "linkify-react";
 import "linkify-plugin-hashtag";
@@ -43,7 +44,6 @@ const shimmerStyle = `
   }
 `;
 
-/* ─── Skeleton ────────────────────────────────────────────────────────────── */
 const SkeletonPulse = ({ className }) => (
   <div
     className={cn("rounded bg-neutral-800", className)}
@@ -89,7 +89,6 @@ const MobileSkeletonLoader = () => (
   </div>
 );
 
-// ✅ Skeleton desktop tanpa sidebar lokal — sidebar sudah dari PublicLayout
 const DesktopSkeletonLoader = () => (
   <div className="flex h-dvh bg-black text-white overflow-hidden pt-12">
     <style>{shimmerStyle}</style>
@@ -103,7 +102,6 @@ const DesktopSkeletonLoader = () => (
   </div>
 );
 
-/* ─── LazyShuffler ────────────────────────────────────────────────────────── */
 class LazyShuffler {
   constructor(length) {
     this.length = length;
@@ -130,7 +128,6 @@ class LazyShuffler {
   }
 }
 
-/* ─── useLazyShuffledShorts ──────────────────────────────────────────────── */
 function useLazyShuffledShorts(shorts, initialId) {
   const shufflerRef = useRef(null);
   const prevLengthRef = useRef(0);
@@ -144,7 +141,6 @@ function useLazyShuffledShorts(shorts, initialId) {
       thumbnail: s.thumbnail,
       published_at: s.published_at,
     }));
-
     if (initialId) {
       const targetIdx = arr.findIndex((s) => s.id === initialId);
       if (targetIdx >= 0) {
@@ -154,7 +150,6 @@ function useLazyShuffledShorts(shorts, initialId) {
     } else {
       pinnedShortRef.current = null;
     }
-
     minimalShorts.current = arr;
     shufflerRef.current = new LazyShuffler(arr.length);
     prevLengthRef.current = shorts.length;
@@ -178,7 +173,6 @@ function useLazyShuffledShorts(shorts, initialId) {
   return { getShort, total: shorts?.length ?? 0 };
 }
 
-/* ─── useVirtualSlots ─────────────────────────────────────────────────────── */
 function useVirtualSlots(total, onNavigate) {
   const indexRef = useRef(0);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -220,7 +214,6 @@ function useVirtualSlots(total, onNavigate) {
   };
 }
 
-/* ─── useSlotPool ─────────────────────────────────────────────────────────── */
 function useSlotPool(getShort, total, onNavigate, isMobile) {
   const slots = useVirtualSlots(total, onNavigate);
   const { currentIndex } = slots;
@@ -256,7 +249,6 @@ function useSlotPool(getShort, total, onNavigate, isMobile) {
   return { slotData, ...slots };
 }
 
-/* ─── ShortPlayer ─────────────────────────────────────────────────────────── */
 const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
   const [muted, setMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -272,11 +264,9 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
     setImgLoaded(false);
     setResolvedThumb(null);
     isReadyRef.current = false;
-
     const primarySrc =
       short.thumbnail || `https://i.ytimg.com/vi/${short.id}/maxresdefault.jpg`;
     const fallbackSrc = `https://i.ytimg.com/vi/${short.id}/hqdefault.jpg`;
-
     const img = new Image();
     imgRef.current = img;
     img.onload = () => {
@@ -421,7 +411,6 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
           style={{ width: "100%", height: "100%" }}
         />
       </div>
-
       {resolvedThumb && (
         <img
           src={resolvedThumb}
@@ -434,7 +423,6 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
           }}
         />
       )}
-
       {!isPlaying && (
         <div
           className="absolute inset-0 pointer-events-none"
@@ -467,7 +455,6 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
         </div>
       )}
-
       <div
         className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none"
         style={{ zIndex: 10 }}
@@ -504,7 +491,6 @@ const ShortPlayer = ({ short, isActive, isMobile, onPlayerReady }) => {
   );
 };
 
-/* ─── PersistentSlotContainer ─────────────────────────────────────────────── */
 const PersistentSlotContainer = ({
   slotData,
   visualOffset,
@@ -523,7 +509,6 @@ const PersistentSlotContainer = ({
         return "-200%";
     }
   };
-
   return (
     <>
       {slotData.map((slot, i) => (
@@ -558,7 +543,6 @@ const PersistentSlotContainer = ({
   );
 };
 
-/* ─── MobileSlotContainer ─────────────────────────────────────────────────── */
 const MobileSlotContainer = ({
   slotData,
   visualOffset,
@@ -590,16 +574,13 @@ const MobileSlotContainer = ({
   );
 };
 
-/* ─── MobileShorts ────────────────────────────────────────────────────────── */
-const MobileShorts = ({ getShort, total }) => {
+const MobileShorts = ({ getShort, total, currentShort }) => {
   const navigate = useNavigate();
   const [paused, setPaused] = useState(false);
   const activePlayerRef = useRef(null);
   const handleNavigate = useCallback(() => setPaused(false), []);
-
   const { slotData, goNext, goPrev, visualOffset, isNoAnim, isFirst, isLast } =
     useSlotPool(getShort, total, handleNavigate, true);
-
   const touchStartY = useRef(0);
   const touchDeltaY = useRef(0);
   const isDragging = useRef(false);
@@ -666,12 +647,10 @@ const MobileShorts = ({ getShort, total }) => {
   );
 };
 
-/* ─── DesktopShorts ───────────────────────────────────────────────────────── */
 const DesktopShorts = ({ getShort, total }) => {
   const [paused, setPaused] = useState(false);
   const activePlayerRef = useRef(null);
   const handleNavigate = useCallback(() => setPaused(false), []);
-
   const { slotData, goNext, goPrev, visualOffset, isNoAnim, isFirst, isLast } =
     useSlotPool(getShort, total, handleNavigate, false);
 
@@ -701,8 +680,7 @@ const DesktopShorts = ({ getShort, total }) => {
   };
 
   return (
-    // ✅ Tidak ada Sidebar lokal — sudah dihandle PublicLayout
-    <div className="flex h-dvh bg-black text-white overflow-hidden pt-12 ">
+    <div className="flex h-dvh bg-black text-white overflow-hidden pt-12">
       <div className="flex flex-1 justify-center items-center">
         <div className="relative h-full py-2">
           <div className="relative rounded-2xl overflow-hidden bg-black h-full aspect-9/16">
@@ -747,7 +725,6 @@ const DesktopShorts = ({ getShort, total }) => {
   );
 };
 
-/* ─── Main Page ───────────────────────────────────────────────────────────── */
 export default function Short() {
   const location = useLocation();
   const id = location.state?.id ?? null;
@@ -757,6 +734,12 @@ export default function Short() {
   );
   const { data: shorts, loading } = useDataManager("youtube_short");
   const { getShort, total } = useLazyShuffledShorts(shorts, id);
+
+  // Track short yang sedang aktif untuk Helmet
+  const [currentShort, setCurrentShort] = useState(null);
+  useEffect(() => {
+    if (!loading && total > 0) setCurrentShort(getShort(0));
+  }, [loading, total]);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
@@ -772,8 +755,52 @@ export default function Short() {
   return (
     <>
       <Helmet>
-        <title>Shorts | TWICEFLIX</title>
-        <meta name="description" content="Watch TWICE Shorts videos" />
+        <title>
+          {currentShort?.title
+            ? `${currentShort.title} — TWICEFLIX Shorts`
+            : "Shorts — TWICEFLIX"}
+        </title>
+        <meta
+          name="description"
+          content={
+            currentShort?.title
+              ? `Watch "${currentShort.title}" and more TWICE Shorts on TWICEFLIX.`
+              : "Watch TWICE Shorts — quick clips, teasers, and fun moments on TWICEFLIX."
+          }
+        />
+        <meta
+          property="og:title"
+          content={
+            currentShort?.title
+              ? `${currentShort.title} — TWICEFLIX`
+              : "TWICE Shorts — TWICEFLIX"
+          }
+        />
+        <meta
+          property="og:description"
+          content="Watch TWICE Shorts on TWICEFLIX."
+        />
+        <meta
+          property="og:image"
+          content={
+            currentShort?.thumbnail ?? "https://twiceflix.vercel.app/og.webp"
+          }
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content={
+            currentShort?.title
+              ? `${currentShort.title} — TWICEFLIX`
+              : "TWICE Shorts — TWICEFLIX"
+          }
+        />
+        <meta
+          name="twitter:image"
+          content={
+            currentShort?.thumbnail ?? "https://twiceflix.vercel.app/og.webp"
+          }
+        />
       </Helmet>
       {loading ? (
         isMobile ? (

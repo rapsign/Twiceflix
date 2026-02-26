@@ -34,27 +34,23 @@ export default function Videos() {
   const [visibleCount, setVisibleCount] = useState(VIDEOS_PER_PAGE);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const videos = useMemo(() => {
-    return videoData.filter((v) => v.is_short === false);
-  }, [videoData]);
+  const videos = useMemo(
+    () => videoData.filter((v) => v.is_short === false),
+    [videoData],
+  );
 
-  // === SHORTS ORDER FROM LOCAL STORAGE ===
   const shuffledShorts = useMemo(() => {
     if (typeof window === "undefined") return shortData;
     if (!shortData.length) return shortData;
 
     const savedOrder = localStorage.getItem(STORAGE_KEY);
-
     if (savedOrder) {
       try {
         const parsedIds = JSON.parse(savedOrder);
-
         const ordered = parsedIds
           .map((id) => shortData.find((s) => s.id === id))
           .filter(Boolean);
-
         const newItems = shortData.filter((s) => !parsedIds.includes(s.id));
-
         return [...ordered, ...newItems];
       } catch {
         localStorage.removeItem(STORAGE_KEY);
@@ -62,8 +58,10 @@ export default function Videos() {
     }
 
     const shuffled = shuffleArray(shortData);
-    const idsOnly = shuffled.map((s) => s.id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(idsOnly));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(shuffled.map((s) => s.id)),
+    );
     return shuffled;
   }, [shortData]);
 
@@ -75,16 +73,13 @@ export default function Videos() {
           new Date(b.published_at || b.publishedAt),
       );
     }
-
     const tag = TAGS.find((t) => t.label === activeTag);
     if (!tag || tag.keywords.length === 0) return videos;
-
     return videos.filter((v) => matchesTag(v.title, tag.keywords));
   }, [videos, activeTag]);
 
   const filteredShorts = useMemo(() => {
     let result = shuffledShorts;
-
     if (activeTag !== "All" && activeTag !== "Oldest") {
       const tag = TAGS.find((t) => t.label === activeTag);
       if (tag && tag.keywords.length > 0) {
@@ -94,7 +89,6 @@ export default function Videos() {
         result = filtered.length > 0 ? filtered : shuffledShorts;
       }
     }
-
     if (activeTag === "Oldest") {
       return [...result].sort(
         (a, b) =>
@@ -102,14 +96,13 @@ export default function Videos() {
           new Date(b.published_at || b.publishedAt),
       );
     }
-
     return result;
   }, [shuffledShorts, activeTag]);
 
-  const visibleVideos = useMemo(() => {
-    return filteredVideos.slice(0, visibleCount);
-  }, [filteredVideos, visibleCount]);
-
+  const visibleVideos = useMemo(
+    () => filteredVideos.slice(0, visibleCount),
+    [filteredVideos, visibleCount],
+  );
   const hasMore = visibleCount < filteredVideos.length;
 
   const handleTagChange = (label) => {
@@ -120,13 +113,10 @@ export default function Videos() {
 
   const handleScroll = useCallback(() => {
     if (isLoadingMore || !hasMore || loading) return;
-
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const scrollHeight = document.documentElement.scrollHeight;
     const clientHeight = window.innerHeight;
-    const distanceToBottom = scrollHeight - (scrollTop + clientHeight);
-
-    if (distanceToBottom < 500) {
+    if (scrollHeight - (scrollTop + clientHeight) < 500) {
       setIsLoadingMore(true);
       setVisibleCount((prev) =>
         Math.min(prev + VIDEOS_PER_PAGE, filteredVideos.length),
@@ -143,7 +133,6 @@ export default function Videos() {
     const throttledScroll = () => {
       const now = Date.now();
       if (timeoutId) clearTimeout(timeoutId);
-
       if (now - lastExecuted < THROTTLE_DELAY) {
         timeoutId = setTimeout(() => {
           lastExecuted = Date.now();
@@ -162,22 +151,16 @@ export default function Videos() {
     };
   }, [handleScroll]);
 
-  const metaData = useMemo(
-    () => ({
-      title: `Videos - TWICEFLIX`,
-      description: `Watch the latest TWICE music videos, performances, and more. Explore our collection of ${videos.length} videos.`,
-    }),
-    [videos.length],
-  );
-
   if (loading) {
     return (
       <>
         <Helmet>
-          <title>Loading Videos - TWICEFLIX</title>
-          <meta name="description" content="Loading TWICE videos..." />
+          <title>Videos — TWICEFLIX</title>
+          <meta
+            name="description"
+            content="Browse TWICE music videos, performances, and more on TWICEFLIX."
+          />
         </Helmet>
-
         <div className="bg-black min-h-screen md:pt-6 lg:pt-20">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 lg:px-2 pt-8">
             {[...Array(30)].map((_, i) => (
@@ -197,10 +180,12 @@ export default function Videos() {
     return (
       <>
         <Helmet>
-          <title>No Videos - TWICEFLIX</title>
-          <meta name="description" content="No videos available" />
+          <title>Videos — TWICEFLIX</title>
+          <meta
+            name="description"
+            content="No videos available at this time."
+          />
         </Helmet>
-
         <div className="pt-14 bg-black min-h-screen flex items-center justify-center">
           <p className="text-gray-400 text-xl">No videos available</p>
         </div>
@@ -211,13 +196,57 @@ export default function Videos() {
   return (
     <>
       <Helmet>
-        <title>{metaData.title}</title>
-        <meta name="description" content={metaData.description} />
+        <title>
+          {activeTag !== "All"
+            ? `${activeTag} Videos — TWICEFLIX`
+            : "Videos — TWICEFLIX"}
+        </title>
+        <meta
+          name="description"
+          content={`Watch ${videos.length}+ TWICE music videos, live performances, and more on TWICEFLIX.${activeTag !== "All" ? ` Currently showing: ${activeTag}.` : ""}`}
+        />
+        <meta
+          name="keywords"
+          content="TWICE videos, TWICEFLIX, K-pop, music videos, live performances, TWICE MV"
+        />
+        <meta
+          property="og:title"
+          content={
+            activeTag !== "All"
+              ? `${activeTag} — TWICEFLIX`
+              : "TWICE Videos — TWICEFLIX"
+          }
+        />
+        <meta
+          property="og:description"
+          content={`Watch ${videos.length}+ TWICE music videos and performances on TWICEFLIX.`}
+        />
+        <meta
+          property="og:image"
+          content="https://twiceflix.vercel.app/og.webp"
+        />
+        <meta property="og:url" content="https://twiceflix.vercel.app/videos" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content={
+            activeTag !== "All"
+              ? `${activeTag} — TWICEFLIX`
+              : "TWICE Videos — TWICEFLIX"
+          }
+        />
+        <meta
+          name="twitter:description"
+          content={`Watch ${videos.length}+ TWICE music videos and performances on TWICEFLIX.`}
+        />
+        <meta
+          name="twitter:image"
+          content="https://twiceflix.vercel.app/og.webp"
+        />
       </Helmet>
 
       <div className="bg-black min-h-screen lg:pt-14">
         <VideoFilterBar activeTag={activeTag} onTagChange={handleTagChange} />
-
         <VideoGrid
           videos={visibleVideos}
           shorts={filteredShorts}

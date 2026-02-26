@@ -21,7 +21,6 @@ export default function SearchPage() {
 
   const { search } = useDataManager("youtube_video");
 
-  // Extract query dari URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get("q") ?? "";
@@ -29,13 +28,11 @@ export default function SearchPage() {
     setDisplayCount(ITEMS_PER_PAGE);
   }, [location.search]);
 
-  // Fetch hasil search saat queryTerm berubah
   useEffect(() => {
     if (!queryTerm) {
       setResults([]);
       return;
     }
-
     let cancelled = false;
     setLoading(true);
     setResults([]);
@@ -64,29 +61,22 @@ export default function SearchPage() {
     () => results.slice(0, displayCount),
     [results, displayCount],
   );
-
   const hasMore = displayCount < results.length;
 
-  // Infinite scroll — pakai callback ref supaya selalu observe elemen terbaru
   const observerRef = useRef(null);
-
   const loaderCallbackRef = useCallback((node) => {
     if (observerRef.current) {
       observerRef.current.disconnect();
       observerRef.current = null;
     }
-
     if (!node) return;
-
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting)
           setDisplayCount((prev) => prev + ITEMS_PER_PAGE);
-        }
       },
       { threshold: 0.1 },
     );
-
     observerRef.current.observe(node);
   }, []);
 
@@ -94,13 +84,33 @@ export default function SearchPage() {
     <>
       <Helmet>
         <title>
-          {queryTerm
-            ? `Search: ${queryTerm} - TWICEFLIX`
-            : "Search - TWICEFLIX"}
+          {queryTerm ? `"${queryTerm}" — TWICEFLIX` : "Search — TWICEFLIX"}
         </title>
         <meta
           name="description"
-          content={`Search results for "${queryTerm}" on TWICEFLIX`}
+          content={
+            queryTerm
+              ? `${results.length} results for "${queryTerm}" on TWICEFLIX — TWICE videos, shorts, and playlists.`
+              : "Search for TWICE videos, shorts, and playlists on TWICEFLIX."
+          }
+        />
+        {/* Halaman search tidak perlu di-index Google */}
+        <meta name="robots" content="noindex, follow" />
+        <meta
+          property="og:title"
+          content={
+            queryTerm
+              ? `Search: "${queryTerm}" — TWICEFLIX`
+              : "Search — TWICEFLIX"
+          }
+        />
+        <meta
+          property="og:description"
+          content="Search for TWICE videos, shorts, and playlists on TWICEFLIX."
+        />
+        <meta
+          property="og:image"
+          content="https://twiceflix.vercel.app/og.webp"
         />
       </Helmet>
 
@@ -122,7 +132,6 @@ export default function SearchPage() {
           )}
         </h1>
 
-        {/* Loading state */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <LoadingSpinner />
@@ -130,7 +139,6 @@ export default function SearchPage() {
           </div>
         )}
 
-        {/* Results */}
         {!loading && displayedResults.length > 0 && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-0 md:gap-2">
@@ -142,8 +150,6 @@ export default function SearchPage() {
                 ),
               )}
             </div>
-
-            {/* Infinite scroll trigger */}
             {hasMore && (
               <div
                 ref={loaderCallbackRef}
@@ -152,7 +158,6 @@ export default function SearchPage() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
               </div>
             )}
-
             {!hasMore && results.length > ITEMS_PER_PAGE && (
               <p className="text-center text-muted-foreground py-8">
                 All results loaded ({results.length} total)
@@ -161,7 +166,6 @@ export default function SearchPage() {
           </>
         )}
 
-        {/* No results */}
         {!loading && queryTerm && results.length === 0 && (
           <div className="text-center mt-12">
             <p className="text-white text-lg mb-2">
@@ -173,7 +177,6 @@ export default function SearchPage() {
           </div>
         )}
 
-        {/* Empty state */}
         {!loading && !queryTerm && (
           <div className="text-center mt-12">
             <p className="text-muted-foreground text-lg">

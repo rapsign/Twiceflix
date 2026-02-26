@@ -88,19 +88,15 @@ const Playlist = () => {
     return () => setCurrentPage(1);
   }, []);
 
-  const metaData = useMemo(
-    () => ({
-      title: `Playlists - TWICEFLIX`,
-      description: `Explore ${playlists.length} curated TWICE playlists.`,
-    }),
-    [playlists.length],
-  );
-
   if (playlistsLoading && playlists.length === 0) {
     return (
       <>
         <Helmet>
-          <title>Loading Playlists - TWICEFLIX</title>
+          <title>Playlists — TWICEFLIX</title>
+          <meta
+            name="description"
+            content="Browse TWICE playlists on TWICEFLIX."
+          />
         </Helmet>
         <div className="lg:pt-12 bg-black min-h-screen">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-2">
@@ -115,17 +111,56 @@ const Playlist = () => {
 
   if (!playlistsLoading && playlists.length === 0) {
     return (
-      <div className="px-4 pt-4 min-h-screen flex items-center justify-center bg-black">
-        <p className="text-gray-400 text-xl">No playlists available</p>
-      </div>
+      <>
+        <Helmet>
+          <title>Playlists — TWICEFLIX</title>
+          <meta
+            name="description"
+            content="No playlists available at this time."
+          />
+        </Helmet>
+        <div className="px-4 pt-4 min-h-screen flex items-center justify-center bg-black">
+          <p className="text-gray-400 text-xl">No playlists available</p>
+        </div>
+      </>
     );
   }
 
   return (
     <>
       <Helmet>
-        <title>{metaData.title}</title>
-        <meta name="description" content={metaData.description} />
+        <title>Playlists — TWICEFLIX</title>
+        <meta
+          name="description"
+          content={`Explore ${playlists.length} curated TWICE playlists on TWICEFLIX — music videos, performances, and more.`}
+        />
+        <meta
+          name="keywords"
+          content="TWICE playlists, TWICEFLIX, K-pop, TWICE music videos, TWICE performances"
+        />
+        <meta property="og:title" content="TWICE Playlists — TWICEFLIX" />
+        <meta
+          property="og:description"
+          content={`Explore ${playlists.length} curated TWICE playlists on TWICEFLIX.`}
+        />
+        <meta
+          property="og:image"
+          content="https://twiceflix.vercel.app/og.webp"
+        />
+        <meta
+          property="og:url"
+          content="https://twiceflix.vercel.app/playlists"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="TWICE Playlists — TWICEFLIX" />
+        <meta
+          name="twitter:description"
+          content={`Explore ${playlists.length} curated TWICE playlists on TWICEFLIX.`}
+        />
+        <meta
+          name="twitter:image"
+          content="https://twiceflix.vercel.app/og.webp"
+        />
       </Helmet>
 
       <div className="bg-black min-h-screen lg:pt-12">

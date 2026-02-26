@@ -39,12 +39,9 @@ export default function Watch() {
     usePlaylistHelpers();
 
   useEffect(() => {
-    if (videoId) {
-      setWatchedIds((prev) => new Set(prev).add(videoId));
-    }
+    if (videoId) setWatchedIds((prev) => new Set(prev).add(videoId));
   }, [videoId]);
 
-  // Fetch video
   useEffect(() => {
     if (!videoId) return;
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -69,7 +66,6 @@ export default function Watch() {
       });
   }, [videoId]);
 
-  // Fetch playlist
   useEffect(() => {
     if (!playlistId) {
       setActivePlaylist(null);
@@ -85,14 +81,12 @@ export default function Watch() {
     });
   }, [playlistId]);
 
-  // Responsive check
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 1024);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // NProgress
   useEffect(() => {
     NProgress.start();
     const timeout = setTimeout(() => NProgress.done(), 400);
@@ -107,7 +101,6 @@ export default function Watch() {
   }, [loading]);
 
   const youtubeId = video?.id ?? null;
-
   const filteredRelated = relatedVideos.filter(
     (v) => !watchedIds.has(String(v.id)),
   );
@@ -118,21 +111,15 @@ export default function Watch() {
         navigate(`/watch/${filteredRelated[0].id}`);
       return;
     }
-
     const currentIndex = displayedPlaylistVideos.findIndex(
       (v) => String(v.id) === String(videoId),
     );
-
     let nextIndex = currentIndex + 1;
-
-    if (randomPlaylist) {
+    if (randomPlaylist)
       nextIndex = Math.floor(Math.random() * displayedPlaylistVideos.length);
-    } else if (loopPlaylist && nextIndex >= displayedPlaylistVideos.length) {
+    else if (loopPlaylist && nextIndex >= displayedPlaylistVideos.length)
       nextIndex = 0;
-    }
-
     const nextVideo = displayedPlaylistVideos[nextIndex];
-
     if (nextVideo) {
       navigate(`/watch/${nextVideo.id}`, {
         state: { playlistId: activePlaylist.id },
@@ -191,9 +178,15 @@ export default function Watch() {
     return null;
   }
 
+  // FIX: Potong description di 157 char untuk meta tag, sisakan ruang untuk "..."
   const metaDescription = video.description
     ? video.description.substring(0, 157) + "..."
-    : "Watch this TWICE video on TWICEFLIX";
+    : `Watch ${video.title} on TWICEFLIX — your ultimate source for TWICE videos.`;
+
+  // FIX: Jika ada playlist aktif, gabungkan di description bukan duplikat meta tag
+  const fullMetaDescription = activePlaylist
+    ? `${metaDescription} From playlist: ${activePlaylist.title}`
+    : metaDescription;
 
   const playlistProps = {
     activePlaylist,
@@ -212,30 +205,26 @@ export default function Watch() {
   return (
     <>
       <Helmet>
-        <title>{video.title} - TWICEFLIX</title>
-        <meta name="description" content={metaDescription} />
+        <title>{video.title} — TWICEFLIX</title>
+        <meta name="description" content={fullMetaDescription} />
         <meta
           name="keywords"
-          content={`TWICE, ${video.title}, K-pop, music video, performance`}
+          content={`TWICE, ${video.title}, K-pop, music video, TWICEFLIX`}
         />
-        <meta property="og:title" content={`${video.title} - TWICEFLIX`} />
-        <meta property="og:description" content={metaDescription} />
-        <meta property="og:image" content={video.thumbnail} />
+
         <meta property="og:type" content="video.other" />
+        <meta property="og:title" content={`${video.title} — TWICEFLIX`} />
+        <meta property="og:description" content={fullMetaDescription} />
+        <meta property="og:image" content={video.thumbnail} />
         <meta
           property="og:url"
-          content={`https://twiceflix.com/watch/${videoId}`}
+          content={`https://twiceflix.vercel.app/watch/${videoId}`}
         />
+
         <meta name="twitter:card" content="player" />
-        <meta name="twitter:title" content={`${video.title} - TWICEFLIX`} />
-        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:title" content={`${video.title} — TWICEFLIX`} />
+        <meta name="twitter:description" content={fullMetaDescription} />
         <meta name="twitter:image" content={video.thumbnail} />
-        {activePlaylist && (
-          <meta
-            name="description"
-            content={`${metaDescription} From playlist: ${activePlaylist.title}`}
-          />
-        )}
       </Helmet>
 
       <div className="bg-black px-0 pt-14">
@@ -248,7 +237,7 @@ export default function Watch() {
         )}
 
         <div className="grid grid-cols-1 gap-4 px-0 lg:grid-cols-12 lg:px-2">
-          <div className="lg:col-span-9 self-start space-y-4 ">
+          <div className="lg:col-span-9 self-start space-y-4">
             {!isMobile && (
               <VideoPlayer
                 iframeRef={iframeRef}
@@ -258,7 +247,6 @@ export default function Watch() {
             )}
             <VideoInfo video={video} />
           </div>
-
           <div className="lg:col-span-3">
             {activePlaylist && (
               <>
