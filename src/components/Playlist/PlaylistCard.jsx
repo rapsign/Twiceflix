@@ -1,13 +1,12 @@
-// PlaylistCard.jsx
 "use client";
 
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ListVideo } from "lucide-react";
 
 export default function PlaylistCard({ playlist, fetchPlaylist }) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [clicking, setClicking] = useState(false);
 
   if (!playlist) return null;
@@ -19,9 +18,7 @@ export default function PlaylistCard({ playlist, fetchPlaylist }) {
       const full = await fetchPlaylist(playlist.id);
       const firstVideoId = full?.videos?.[0]?.id;
       if (!firstVideoId) return;
-      navigate(`/watch/${firstVideoId}`, {
-        state: { playlistId: playlist.id },
-      });
+      router.push(`/watch?tv=${firstVideoId}&tl=${playlist.id}`);
     } catch (err) {
       console.error(err);
     } finally {
@@ -39,7 +36,6 @@ export default function PlaylistCard({ playlist, fetchPlaylist }) {
       <div className="relative aspect-video w-full">
         <div className="absolute -top-2 left-2 right-2 h-full rounded-xl bg-gray-500 z-0" />
         <div className="absolute -top-1 left-1 right-1 h-full rounded-xl bg-neutral-800/60 z-0" />
-
         <div className="relative w-full h-full rounded-xl overflow-hidden bg-black">
           <img
             src={playlist.thumbnail}
@@ -47,18 +43,15 @@ export default function PlaylistCard({ playlist, fetchPlaylist }) {
             className="w-full h-full object-cover"
             loading="lazy"
           />
-
           <Badge className="absolute top-2 right-2 text-sm px-2 py-0.5 bg-red-500">
             Playlist
           </Badge>
-
           <span className="absolute bottom-2 right-2 flex items-center gap-1 text-xs px-2 py-1 bg-black/80 text-white rounded">
             <ListVideo className="w-4 h-4" />
             {playlist.count ?? 0} videos
           </span>
         </div>
       </div>
-
       <div className="px-2 mt-2 min-h-10 md:min-h-12">
         <p className="text-sm font-medium line-clamp-2">{playlist.title}</p>
         <p className="text-xs text-muted-foreground">Watch playlist</p>

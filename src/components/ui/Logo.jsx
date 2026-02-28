@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export const TextLogo = ({ Width }) => {
   return (
-    <Link to="/" className="flex items-center leading-none">
+    <Link href="/" className="flex items-center leading-none">
       <img
         src="/twiceflix.svg"
         alt="logo"

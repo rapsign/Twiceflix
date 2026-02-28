@@ -1,25 +1,24 @@
+"use client";
+
 import { Play, Info } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 const HeroContent = ({ video }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handlePlayClick = () => {
-    navigate(`/watch/${video.id}`);
+    router.push(`/watch?tv=${video.id}`);
   };
 
   return (
     <div className="absolute top-1/2 left-0 -translate-y-1/2 max-w-[clamp(90%,50vw,45%)] z-20 px-4">
-      {/* Title */}
       <h1
         className="text-[clamp(1.75rem,3.5vw,3.5rem)] w-full xl:w-1/2 font-extrabold leading-tight text-white"
         style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
       >
         {video.title}
       </h1>
-
-      {/* Actions */}
       <div className="mt-5 flex flex-wrap gap-3">
         <Button
           onClick={handlePlayClick}
@@ -29,7 +28,6 @@ const HeroContent = ({ video }) => {
           <Play size={16} />
           Play
         </Button>
-
         <Button
           onClick={handlePlayClick}
           variant="outline"

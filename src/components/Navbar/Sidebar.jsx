@@ -1,6 +1,7 @@
 "use client";
 
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   IconHome,
@@ -43,8 +44,8 @@ const navLinks = [
 ];
 
 export default function Sidebar({ isCollapsed = false }) {
-  const location = useLocation();
-  const isActive = (path) => location.pathname === path;
+  const pathname = usePathname();
+  const isActive = (path) => pathname === path;
 
   return (
     <div
@@ -59,7 +60,7 @@ export default function Sidebar({ isCollapsed = false }) {
           return (
             <Link
               key={item.name}
-              to={item.path}
+              href={item.path}
               className={cn(
                 "flex items-center justify-start gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap",
                 active

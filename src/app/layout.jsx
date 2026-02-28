@@ -1,0 +1,43 @@
+import "../index.css";
+import { Toaster } from "sonner";
+
+export const metadata = {
+  title: "TWICEFLIX — Your Ultimate Source for TWICE Videos & Content",
+  description:
+    "Everything TWICE in one place — music videos, live performances, and behind-the-scenes content.",
+  robots: "index, follow",
+
+  manifest: "/site.webmanifest",
+
+  appleWebApp: {
+    title: "TWICEFLIX",
+    capable: true,
+    statusBarStyle: "default",
+  },
+
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+
+  openGraph: {
+    siteName: "TWICEFLIX",
+    images: ["https://twiceflix.vercel.app/og.webp"],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    images: ["https://twiceflix.vercel.app/og.webp"],
+  },
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <Toaster richColors position="top-right" />
+        {children}
+      </body>
+    </html>
+  );
+}

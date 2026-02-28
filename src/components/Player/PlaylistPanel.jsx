@@ -90,7 +90,7 @@ export default function PlaylistPanel({
             </Button>
           </div>
 
-          <div className="max-h-[calc((62vw-1rem)*9/16)] overflow-y-auto">
+          <div className="max-h-[calc((64vw-1rem)*9/16)] overflow-y-auto">
             {displayedPlaylistVideos.map((v) => {
               const isActive = String(v.id) === String(videoId);
               return (

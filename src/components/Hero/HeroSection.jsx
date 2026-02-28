@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import useDataManager from "../../../hooks/useDataManager";
+import useDataManager from "@/hooks/useDataManager";
 import HeroBackground from "./HeroBackground";
 import HeroContent from "./HeroContent";
 

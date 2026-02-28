@@ -29,11 +29,18 @@ export default function PlaylistDrawer({
   getNextLabel,
   getNextVideoTitle,
   getVideoIndex,
+  videoScrolledUp = false,
 }) {
+  // Saat scroll down: video naik ke top-0, berarti tinggi video = 100vw*9/16
+  // Saat scroll up: video di top-12 (48px), berarti ada offset navbar
+  const drawerHeight = videoScrolledUp
+    ? "h-[calc(100vh-(100vw*9/16))]"
+    : "h-[calc(100vh-(100vw*9/16)-56px)]";
+
   return (
     <div className="fixed bottom-16 left-0 right-0 z-50 flex justify-center lg:hidden">
       <Drawer>
-        <DrawerTrigger className="mx-auto w-[calc(100vw-2rem)] flex items-center justify-between bg-neutral-800/95 hover:bg-neutral-700 h-15 px-4 rounded-md">
+        <DrawerTrigger className="mx-auto w-[calc(100vw-2rem)] flex items-center justify-between bg-neutral-800/95 hover:bg-neutral-700 h-14 px-4 rounded-md">
           <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 w-full">
             <ListVideo size={24} />
             <div className="grid grid-rows-2 leading-none overflow-hidden">
@@ -66,10 +73,13 @@ export default function PlaylistDrawer({
 
         <DrawerContent
           side="bottom"
-          className="h-[calc(100vh-(100vw*9/16)-2.8rem)]"
+          className={`${drawerHeight} flex flex-col transition-all duration-300`}
+          aria-label="Playlist drawer"
+          aria-describedby={undefined}
         >
-          <div className="flex items-center justify-between px-4 py-1 H-12">
-            <DrawerTitle className="text-xl font-semibold">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-1 h-14">
+            <DrawerTitle className="text-xl font-semibold mt-2">
               {activePlaylist.title} <br />
               <span className="text-xs text-muted-foreground truncate">
                 {getVideoIndex(videoId, displayedPlaylistVideos) + 1}/
@@ -81,14 +91,17 @@ export default function PlaylistDrawer({
             </DrawerClose>
           </div>
 
-          <div className="flex gap-2 px-2 border-b">
+          {/* Controls */}
+          <div className="flex gap-2 px-2 border-b h-12">
             <Button
               variant="ghost"
               className="rounded-full w-10 h-10"
               onClick={onToggleLoop}
             >
               <Repeat2
-                className={`w-8 h-8 transition-colors ${loopPlaylist ? "text-green-500" : "text-white"}`}
+                className={`w-8 h-8 transition-colors ${
+                  loopPlaylist ? "text-green-500" : "text-white"
+                }`}
               />
             </Button>
             <Button
@@ -107,13 +120,16 @@ export default function PlaylistDrawer({
             </Button>
           </div>
 
-          <ScrollArea className="h-[calc(100vh-24rem)]">
+          {/* Scrollable playlist */}
+          <ScrollArea className="flex-1 overflow-y-auto">
             {displayedPlaylistVideos.map((v) => {
               const isActive = String(v.id) === String(videoId);
               return (
                 <div
                   key={v.id}
-                  className={`flex cursor-pointer gap-2 p-2 ${isActive ? "bg-red-950" : "hover:bg-neutral-800"}`}
+                  className={`flex cursor-pointer gap-2 p-2 ${
+                    isActive ? "bg-red-950" : "hover:bg-neutral-800"
+                  }`}
                   onClick={() => onVideoClick(v.id)}
                 >
                   <img

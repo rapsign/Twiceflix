@@ -1,6 +1,7 @@
 "use client";
 
-import { useLocation, Link } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   IconHome,
   IconHomeFilled,
@@ -43,9 +44,8 @@ const links = [
 ];
 
 const BottomNav = () => {
-  const location = useLocation();
-
-  const isActive = (path) => location.pathname === path;
+  const pathname = usePathname();
+  const isActive = (path) => pathname === path;
 
   return (
     <nav
@@ -59,7 +59,7 @@ const BottomNav = () => {
           return (
             <Link
               key={item.name}
-              to={item.path}
+              href={item.path}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors",
                 active ? "text-white" : "text-neutral-400 hover:text-white",

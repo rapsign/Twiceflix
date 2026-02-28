@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo, useState, useEffect } from "react";
 import VideoCard from "./VideoCard";
 import ShortsGrid from "../Short/ShortsGrid";
@@ -10,21 +12,26 @@ function useResponsiveCount() {
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
+
       if (w >= 1024) setCount(6);
       else if (w >= 768) setCount(5);
       else if (w >= 640) setCount(4);
       else setCount(4);
     };
+
     update();
     window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+
+    return () => {
+      window.removeEventListener("resize", update);
+    };
   }, []);
 
   return count;
 }
 
 export default function VideoGrid({
-  videos,
+  videos = [],
   onVideoClick,
   shorts = [],
   shortsLoading = false,
@@ -33,9 +40,11 @@ export default function VideoGrid({
 
   const chunks = useMemo(() => {
     const result = [];
+
     for (let i = 0; i < videos.length; i += CHUNK_SIZE) {
       result.push(videos.slice(i, i + CHUNK_SIZE));
     }
+
     return result;
   }, [videos]);
 

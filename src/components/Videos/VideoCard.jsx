@@ -2,11 +2,11 @@
 
 import { formatDistanceStrict } from "date-fns";
 import { enUS } from "date-fns/locale";
-import { useNavigate } from "react-router-dom";
-import { parseDuration } from "../../utils/videoHelpers";
+import { useRouter } from "next/navigation";
+import { parseDuration } from "@/utils/videoHelpers";
 
 export default function VideoCard({ video, playlistId }) {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const publishedDate = video?.published_at?.seconds
     ? new Date(video.published_at.seconds * 1000)
@@ -15,9 +15,10 @@ export default function VideoCard({ video, playlistId }) {
       : null;
 
   const handleClick = () => {
-    navigate(`/watch/${video.id}`, {
-      state: { playlistId: playlistId ?? null },
-    });
+    const url = playlistId
+      ? `/watch?tv=${video.id}&tl=${playlistId}`
+      : `/watch?tv=${video.id}`;
+    router.push(url);
   };
 
   const durationFormatted = parseDuration(video.duration);
@@ -33,14 +34,12 @@ export default function VideoCard({ video, playlistId }) {
           alt={video.title}
           className="w-full h-full object-cover"
         />
-
         {durationFormatted && (
           <span className="absolute bottom-2 right-2 flex items-center gap-1 text-xs px-2 py-1 bg-black/80 text-white rounded">
             {durationFormatted}
           </span>
         )}
       </div>
-
       <div className="px-2 mt-2 min-h-18 md:min-h-12 flex flex-col">
         <h3
           className="text-sm font-medium leading-snug line-clamp-2"
@@ -48,7 +47,6 @@ export default function VideoCard({ video, playlistId }) {
         >
           {video.title}
         </h3>
-
         <div className="text-xs text-neutral-400 mt-1 flex flex-wrap items-center gap-1">
           {publishedDate && (
             <span>

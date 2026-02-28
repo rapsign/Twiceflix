@@ -3,9 +3,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
 import "swiper/css";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import PlaylistCard from "./Playlist/PlaylistCard";
-import VideoCard from "./Videos/VideoCard";
-import ShortsCard from "./Short/ShortsCard";
+import PlaylistCard from "../Playlist/PlaylistCard";
+import VideoCard from "../Videos/VideoCard";
+import ShortsCard from "../Short/ShortsCard";
 
 export default function CustomSwiper({
   items,

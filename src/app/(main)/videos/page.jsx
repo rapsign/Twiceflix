@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import VideoGrid from "../components/Videos/VideoGrid";
+import VideoGrid from "@/components/Videos/VideoGrid";
 import VideoFilterBar, {
   TAGS,
   matchesTag,
-} from "../components/Videos/VideoFilterBar";
-import useDataManager from "../../hooks/useDataManager";
-import { Helmet } from "react-helmet-async";
+} from "@/components/Videos/VideoFilterBar";
+import useDataManager from "@/hooks/useDataManager";
 import { Loader2 } from "lucide-react";
 
 const VIDEOS_PER_PAGE = 30;
@@ -153,120 +152,50 @@ export default function Videos() {
 
   if (loading) {
     return (
-      <>
-        <Helmet>
-          <title>Videos — TWICEFLIX</title>
-          <meta
-            name="description"
-            content="Browse TWICE music videos, performances, and more on TWICEFLIX."
-          />
-        </Helmet>
-        <div className="bg-black min-h-screen md:pt-6 lg:pt-20">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 lg:px-2 pt-8">
-            {[...Array(30)].map((_, i) => (
-              <div key={i} className="space-y-2">
-                <div className="aspect-video bg-neutral-800 animate-pulse rounded-none md:rounded-lg" />
-                <div className="h-4 w-2/3 bg-neutral-800 rounded animate-pulse" />
-                <div className="h-3 w-1/4 bg-neutral-800 rounded animate-pulse" />
-              </div>
-            ))}
-          </div>
+      <div className="bg-black min-h-screen md:pt-6 lg:pt-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 lg:px-2 pt-8">
+          {[...Array(30)].map((_, i) => (
+            <div key={i} className="space-y-2">
+              <div className="aspect-video bg-neutral-800 animate-pulse rounded-none md:rounded-lg" />
+              <div className="h-4 w-2/3 bg-neutral-800 rounded animate-pulse" />
+              <div className="h-3 w-1/4 bg-neutral-800 rounded animate-pulse" />
+            </div>
+          ))}
         </div>
-      </>
+      </div>
     );
   }
 
   if (videos.length === 0) {
     return (
-      <>
-        <Helmet>
-          <title>Videos — TWICEFLIX</title>
-          <meta
-            name="description"
-            content="No videos available at this time."
-          />
-        </Helmet>
-        <div className="pt-14 bg-black min-h-screen flex items-center justify-center">
-          <p className="text-gray-400 text-xl">No videos available</p>
-        </div>
-      </>
+      <div className="pt-14 bg-black min-h-screen flex items-center justify-center">
+        <p className="text-gray-400 text-xl">No videos available</p>
+      </div>
     );
   }
 
   return (
-    <>
-      <Helmet>
-        <title>
-          {activeTag !== "All"
-            ? `${activeTag} Videos — TWICEFLIX`
-            : "Videos — TWICEFLIX"}
-        </title>
-        <meta
-          name="description"
-          content={`Watch ${videos.length}+ TWICE music videos, live performances, and more on TWICEFLIX.${activeTag !== "All" ? ` Currently showing: ${activeTag}.` : ""}`}
-        />
-        <meta
-          name="keywords"
-          content="TWICE videos, TWICEFLIX, K-pop, music videos, live performances, TWICE MV"
-        />
-        <meta
-          property="og:title"
-          content={
-            activeTag !== "All"
-              ? `${activeTag} — TWICEFLIX`
-              : "TWICE Videos — TWICEFLIX"
-          }
-        />
-        <meta
-          property="og:description"
-          content={`Watch ${videos.length}+ TWICE music videos and performances on TWICEFLIX.`}
-        />
-        <meta
-          property="og:image"
-          content="https://twiceflix.vercel.app/og.webp"
-        />
-        <meta property="og:url" content="https://twiceflix.vercel.app/videos" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content={
-            activeTag !== "All"
-              ? `${activeTag} — TWICEFLIX`
-              : "TWICE Videos — TWICEFLIX"
-          }
-        />
-        <meta
-          name="twitter:description"
-          content={`Watch ${videos.length}+ TWICE music videos and performances on TWICEFLIX.`}
-        />
-        <meta
-          name="twitter:image"
-          content="https://twiceflix.vercel.app/og.webp"
-        />
-      </Helmet>
+    <div className="bg-black min-h-screen lg:pt-14">
+      <VideoFilterBar activeTag={activeTag} onTagChange={handleTagChange} />
+      <VideoGrid
+        videos={visibleVideos}
+        shorts={filteredShorts}
+        shortsLoading={loadingShorts}
+      />
 
-      <div className="bg-black min-h-screen lg:pt-14">
-        <VideoFilterBar activeTag={activeTag} onTagChange={handleTagChange} />
-        <VideoGrid
-          videos={visibleVideos}
-          shorts={filteredShorts}
-          shortsLoading={loadingShorts}
-        />
+      {filteredVideos.length === 0 && (
+        <div className="flex items-center justify-center py-20">
+          <p className="text-gray-400 text-lg">
+            No videos found for "{activeTag}"
+          </p>
+        </div>
+      )}
 
-        {filteredVideos.length === 0 && (
-          <div className="flex items-center justify-center py-20">
-            <p className="text-gray-400 text-lg">
-              No videos found for "{activeTag}"
-            </p>
-          </div>
-        )}
-
-        {isLoadingMore && hasMore && (
-          <div className="w-full py-8 flex justify-center">
-            <Loader2 className="h-10 w-10 animate-spin text-red-600" />
-          </div>
-        )}
-      </div>
-    </>
+      {isLoadingMore && hasMore && (
+        <div className="w-full py-8 flex justify-center">
+          <Loader2 className="h-10 w-10 animate-spin text-red-600" />
+        </div>
+      )}
+    </div>
   );
 }

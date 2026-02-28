@@ -1,0 +1,16 @@
+{
+  "entry": [
+    "src/app/**/{page,layout,not-found,error}.{js,jsx,ts,tsx}",
+    "src/app/**/route.{js,ts}"
+  ],
+  "project": ["src/**/*.{js,jsx,ts,tsx}"],
+  "paths": {
+    "@/*": ["./src/*"]
+  },
+  "ignore": [
+    "src/components/ui/**",
+    "postcss.config.*",
+    "tailwind.config.*",
+    "next.config.*"
+  ]
+}

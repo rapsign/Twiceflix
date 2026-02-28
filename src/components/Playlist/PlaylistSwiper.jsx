@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState, useRef, useEffect, useCallback } from "react";
-import CustomSwiper from "../CustomSwiper";
-import useDataManager from "../../../hooks/useDataManager";
+import CustomSwiper from "../ui/CustomSwiper";
+import useDataManager from "@/hooks/useDataManager";
 
 const PlaylistSwiper = () => {
   const { data: playlists = [], loading: playlistsLoading } =
