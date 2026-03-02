@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import VideoCard from "@/components/Videos/VideoCard";
 import PlaylistCard from "@/components/Playlist/PlaylistCard";
 import ShortsCard from "@/components/Short/ShortsCard";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 import useDataManager from "@/hooks/useDataManager";
 
 const BATCH_SIZE = 6;
