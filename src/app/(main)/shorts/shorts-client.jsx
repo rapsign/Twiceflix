@@ -22,7 +22,7 @@ import useDataManager from "@/hooks/useDataManager";
 import NProgress from "nprogress";
 import Linkify from "linkify-react";
 import "linkify-plugin-hashtag";
-import { ShareDialog } from "@/components/ui/ShareDialog";
+import { ShareDialog } from "@/components/ui/share-dialog";
 // import { ReportDialog } from "@/components/report-dialog";
 
 const linkifyOptions = {

@@ -14,7 +14,7 @@ import VideoInfo from "@/components/Player/VideoInfo";
 import PlaylistPanel from "@/components/Player/PlaylistPanel";
 import PlaylistDrawer from "@/components/Player/PlaylistDrawer";
 import RelatedVideos from "@/components/Player/RelatedVideos";
-import { ShareDialog } from "@/components/ui/ShareDialog";
+import { ShareDialog } from "@/components/ui/share-dialog";
 // import { ReportDialog } from "@/components/report-dialog";
 
 function WatchContent() {
@@ -265,8 +265,8 @@ function WatchContent() {
             onScrollChange={setVideoScrolledUp}
           />
         )}
-        <div className="grid grid-cols-1 gap-4 px-0 xl:grid-cols-12 xl:px-2">
-          <div className="xl:col-span-9 space-y-4">
+        <div className="grid grid-cols-1 gap-4 px-0 xl:grid-cols-[minmax(0,1fr)_440px] xl:px-4">
+          <div className="space-y-4">
             {!isMobile && (
               <VideoPlayer
                 videoId={videoId}
@@ -280,7 +280,7 @@ function WatchContent() {
               onReport={undefined}
             />
           </div>
-          <div className="xl:col-span-3 flex flex-col h-full">
+          <div className="flex flex-col h-full">
             {activePlaylist && (
               <>
                 <div className="px-4 md:px-0">

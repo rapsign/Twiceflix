@@ -1,6 +1,6 @@
 // src/app/(main)/playlists/page.jsx
 // Server component wrapper — metadata bisa di-export di sini
-import PlaylistsClient from "./Playlists-client";
+import PlaylistsClient from "./playlists-client";
 
 export const metadata = {
   title: "Playlists | TWICEFLIX",

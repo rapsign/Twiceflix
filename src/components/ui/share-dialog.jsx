@@ -42,7 +42,7 @@ export function ShareDialog({ open, onClose, id, title, type = "watch" }) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-sm rounded-2xl"
+        className="max-w-sm rounded-2xl border-neutral-900"
         aria-describedby={undefined}
       >
         <DialogHeader>

@@ -66,9 +66,6 @@ body {
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
 
-  /* ==============================
-     SIDEBAR (shadcn)
-  ============================== */
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -128,47 +125,52 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+
   ::-webkit-scrollbar {
-    width: 8px; /* Atur ketipisan di sini */
-  }
-  Button {
-    cursor: pointer;
+    width: 8px;
   }
 
-  /* 2. Mengatur track (jalur scroll) */
   ::-webkit-scrollbar-track {
     background: #1a1a1a;
     border-radius: 0 0 18px 0;
-    -webkit-border-radius: 0 0 18px 0;
-    -moz-border-radius: 0 0 18px 0;
-    -ms-border-radius: 0 0 18px 0;
-    -o-border-radius: 0 0 18px 0;
   }
 
-  /* 3. Mengatur thumb (batang geser) */
   ::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 10px;
     border: 2px solid #1a1a1a;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    -ms-border-radius: 10px;
-    -o-border-radius: 10px;
   }
 
-  /* 4. Efek saat kursor diarahkan (hover) */
   ::-webkit-scrollbar-thumb:hover {
-    background: #555; /* Warna sedikit lebih gelap saat di-hover */
+    background: #555;
   }
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
 }
 
+/* ==============================
+   CURSOR GLOBAL
+============================== */
+@layer utilities {
+  button,
+  a,
+  [role="button"],
+  select,
+  label {
+    cursor: pointer !important;
+  }
+}
+
+/* ==============================
+   DARK THEME
+============================== */
 .dark {
   --sidebar: hsl(240 5.9% 10%);
   --sidebar-foreground: hsl(240 4.8% 95.9%);
@@ -180,6 +182,9 @@ body {
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
+/* ==============================
+   NPROGRESS
+============================== */
 #nprogress {
   pointer-events: none;
 }

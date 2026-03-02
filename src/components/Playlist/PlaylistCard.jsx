@@ -13,8 +13,9 @@ export default function PlaylistCard({ playlist, fetchPlaylist }) {
 
   const handleClick = async () => {
     if (clicking) return;
+    setClicking(true);
+
     try {
-      setClicking(true);
       const full = await fetchPlaylist(playlist.id);
       const firstVideoId = full?.videos?.[0]?.id;
       if (!firstVideoId) return;

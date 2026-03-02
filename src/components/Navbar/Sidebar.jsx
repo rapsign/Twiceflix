@@ -43,7 +43,7 @@ const navLinks = [
   },
 ];
 
-export default function Sidebar({ isCollapsed = false }) {
+export default function Sidebar({ isCollapsed = true }) {
   const pathname = usePathname();
   const isActive = (path) => pathname === path;
 

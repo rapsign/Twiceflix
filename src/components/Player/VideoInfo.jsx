@@ -7,8 +7,8 @@ import { formatPublishedDistance } from "@/utils/time";
 import Linkify from "linkify-react";
 import "linkify-plugin-hashtag";
 import { Share2, MoreVertical, Flag } from "lucide-react";
-import { ShareDialog } from "../ui/ShareDialog";
-import { ReportDialog } from "../ui/ReportDialog";
+import { ShareDialog } from "../ui/share-dialog";
+import { ReportDialog } from "../ui/report-dialog";
 
 const COLLAPSED_HEIGHT = 40;
 
@@ -117,7 +117,7 @@ export default function VideoInfo({ video }) {
 
       <div className="px-2 md:px-4 xl:px-0">
         <Card
-          className="p-0 cursor-pointer"
+          className="p-0 border-neutral-900"
           onClick={() => isOverflowing && setExpanded((p) => !p)}
         >
           <CardContent className="space-y-1 px-4 py-4">

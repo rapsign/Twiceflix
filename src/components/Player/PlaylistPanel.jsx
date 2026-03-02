@@ -37,7 +37,7 @@ export default function PlaylistPanel({
         >
           <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 w-full">
             <div className="grid grid-rows-2 leading-none overflow-hidden">
-              <p className="text-sm truncate font-normal">
+              <p className="text-lg truncate font-normal">
                 <span className="font-medium">
                   {getNextLabel(
                     displayedPlaylistVideos,
@@ -107,7 +107,7 @@ export default function PlaylistPanel({
                       />
                     )}
                   </div>
-                  <div className="relative w-32 shrink-0">
+                  <div className="relative w-24 h-14 shrink-0">
                     <img
                       src={v.thumbnail}
                       className="w-full aspect-video rounded-lg object-cover"
@@ -119,7 +119,7 @@ export default function PlaylistPanel({
                     </div>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <p className="line-clamp-2 text-xs font-medium">
+                    <p className="line-clamp-2 text-sm font-medium">
                       {v.title}
                     </p>
                     <p className="text-xs text-muted-foreground">
