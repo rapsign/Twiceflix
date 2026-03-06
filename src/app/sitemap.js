@@ -1,12 +1,18 @@
-import { API_BASE, defaultHeaders } from "@/api/config";
-
 const BASE_URL = "https://twiceflix.vercel.app";
 
 async function fetchAPI(path) {
   try {
-    const res = await fetch(`${API_BASE}${path}`, { headers: defaultHeaders });
+    const base = process.env.NEXT_PUBLIC_API_BASE;
+    if (!base) return [];
+    const res = await fetch(`${base}${path}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
+      },
+    });
     if (!res.ok) return [];
-    return res.json();
+    const json = await res.json();
+    return Array.isArray(json) ? json : (json.data ?? json.items ?? []);
   } catch {
     return [];
   }
@@ -18,7 +24,6 @@ export default async function sitemap() {
     fetchAPI("/youtube_short"),
   ]);
 
-  // Static routes
   const staticRoutes = [
     {
       url: `${BASE_URL}`,
@@ -52,7 +57,6 @@ export default async function sitemap() {
     },
   ];
 
-  // /watch?tv=VIDEO_ID
   const videoRoutes = (videos ?? []).map((video) => ({
     url: `${BASE_URL}/watch?tv=${video.id}`,
     lastModified: video.updated_at ? new Date(video.updated_at) : new Date(),
@@ -60,7 +64,6 @@ export default async function sitemap() {
     priority: 0.8,
   }));
 
-  // /shorts?id=SHORT_ID
   const shortRoutes = (shorts ?? []).map((short) => ({
     url: `${BASE_URL}/shorts?id=${short.id}`,
     lastModified: short.updated_at ? new Date(short.updated_at) : new Date(),
