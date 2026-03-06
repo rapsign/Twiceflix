@@ -20,7 +20,7 @@ function seededShuffle(arr, masterSeed) {
 }
 
 const ShortsSkeleton = ({ count }) => (
-  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 py-2">
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-2 py-2">
     {[...Array(count)].map((_, i) => (
       <div
         key={i}
@@ -76,7 +76,7 @@ export default function ShortsGrid({
   if (randomShorts.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-0 px-2 md:px-0  py-2">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-0 px-2 md:px-0  py-2">
       {randomShorts.map((short) => (
         <ShortsCard key={short.id} video={short} />
       ))}

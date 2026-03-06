@@ -14,7 +14,7 @@ function useResponsiveCount() {
       const w = window.innerWidth;
 
       if (w >= 1024) setCount(6);
-      else if (w >= 768) setCount(5);
+      else if (w >= 768) setCount(3);
       else if (w >= 640) setCount(4);
       else setCount(4);
     };
@@ -52,7 +52,7 @@ export default function VideoGrid({
     <div>
       {chunks.map((chunk, chunkIndex) => (
         <div key={chunkIndex}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3">
             {chunk.map((video) => (
               <VideoCard key={video.id} video={video} onClick={onVideoClick} />
             ))}

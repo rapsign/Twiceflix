@@ -7,10 +7,25 @@ import { useSearchParams } from "next/navigation";
 import VideoCard from "@/components/Videos/VideoCard";
 import PlaylistCard from "@/components/Playlist/PlaylistCard";
 import ShortsCard from "@/components/Short/ShortsCard";
-import LoadingSpinner from "@/components/ui/loading-spinner";
 import useDataManager from "@/hooks/useDataManager";
 
-const BATCH_SIZE = 6;
+const BATCH_MOBILE = 4;
+const BATCH_DESKTOP = 6;
+
+function useBatchSize() {
+  const [batchSize, setBatchSize] = useState(BATCH_DESKTOP);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 767px)");
+    const update = (e) =>
+      setBatchSize(e.matches ? BATCH_MOBILE : BATCH_DESKTOP);
+    update(mql);
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
+
+  return batchSize;
+}
 
 function chunkArray(array, size) {
   const chunks = [];
@@ -26,11 +41,12 @@ function SearchContent() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const batchSize = useBatchSize();
   const { search } = useDataManager("youtube_video");
 
   useEffect(() => {
     const q = searchParams.get("q") ?? "";
-    setQueryTerm(q.trim());
+    setQueryTerm(q.trim().replace(/\s+/g, " "));
   }, [searchParams]);
 
   useEffect(() => {
@@ -61,23 +77,23 @@ function SearchContent() {
     () =>
       chunkArray(
         results.filter((i) => !i.is_short),
-        BATCH_SIZE,
+        batchSize,
       ),
-    [results],
+    [results, batchSize],
   );
   const shortChunks = useMemo(
     () =>
       chunkArray(
         results.filter((i) => i.is_short),
-        BATCH_SIZE,
+        batchSize,
       ),
-    [results],
+    [results, batchSize],
   );
   const maxChunks = Math.max(videoChunks.length, shortChunks.length);
 
   return (
-    <div className="p-0 md:p-4 min-h-screen">
-      <h1 className="text-base md:text-xl font-semibold text-white mb-3 md:pt-16 px-2">
+    <div className="p-0 md:p-2 min-h-screen">
+      <h1 className="text-base md:text-xl font-semibold text-white px-2 my-2 lg:pt-12 ">
         {queryTerm ? (
           <>
             Search Results for:{" "}
@@ -95,7 +111,6 @@ function SearchContent() {
 
       {loading && (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
-          <LoadingSpinner />
           <p className="text-neutral-400 text-sm">Searching...</p>
         </div>
       )}
@@ -104,7 +119,7 @@ function SearchContent() {
         Array.from({ length: maxChunks }).map((_, idx) => (
           <div key={idx}>
             {videoChunks[idx] && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
                 {videoChunks[idx].map((item) =>
                   item.type === "playlist" ? (
                     <PlaylistCard key={`playlist-${item.id}`} playlist={item} />
@@ -116,7 +131,7 @@ function SearchContent() {
             )}
 
             {shortChunks[idx] && (
-              <div className="grid grid-cols-1 md:grid-cols-6 gap-2 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2  px-2 lg:px-0">
                 {shortChunks[idx].map((item) => (
                   <ShortsCard key={`short-${item.id}`} video={item} />
                 ))}
@@ -149,7 +164,7 @@ function SearchContent() {
 
 export default function SearchClient() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense>
       <SearchContent />
     </Suspense>
   );

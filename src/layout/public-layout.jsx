@@ -24,7 +24,7 @@ const useIsMobile = () => {
 const PublicLayout = ({ children }) => {
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   const isShortsPage = pathname.startsWith("/shorts");
   const isWatchPage = pathname.startsWith("/watch");

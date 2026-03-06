@@ -38,7 +38,7 @@ export default function CustomSwiper({
           1440: { slidesPerView: 6 },
         }
       : {
-          768: { slidesPerView: 3 },
+          768: { slidesPerView: 2 },
           1024: { slidesPerView: 3 },
           1440: { slidesPerView: 3 },
         };

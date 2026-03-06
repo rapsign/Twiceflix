@@ -90,13 +90,13 @@ const PlaylistSwiper = () => {
             </div>
 
             {/* Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0 md:gap-2 lg:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2  lg:grid-cols-3 gap-0 md:gap-4 ">
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}
-                  className={`space-y-2 ${i === 1 ? "hidden sm:block" : ""} ${i === 2 ? "hidden md:block" : ""}`}
+                  className={`space-y-2 ${i === 1 ? "hidden md:block" : ""} ${i === 2 ? "hidden lg:block" : ""}`}
                 >
-                  <div className="aspect-video bg-neutral-800 lg:rounded-lg rounded-none animate-pulse" />
+                  <div className="aspect-video bg-neutral-800 md:rounded-lg rounded-none animate-pulse" />
                   <div className="px-2 space-y-2">
                     <div className="h-4 w-3/4 bg-neutral-800 rounded animate-pulse" />
                     <div className="h-4 w-1/4 bg-neutral-800 rounded animate-pulse" />

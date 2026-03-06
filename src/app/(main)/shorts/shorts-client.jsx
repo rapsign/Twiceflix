@@ -311,9 +311,9 @@ const ShortPlayer = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
-  // const [reportOpen, setReportOpen] = useState(false);
   const playerRef = useRef(null);
   const isReadyRef = useRef(false);
+  const showVideoTimerRef = useRef(null);
   const thumbnail = short?.id
     ? `https://i.ytimg.com/vi/${short.id}/maxresdefault.jpg`
     : null;
@@ -323,6 +323,7 @@ const ShortPlayer = ({
     setIsPlaying(false);
     setShowVideo(false);
     isReadyRef.current = false;
+    clearTimeout(showVideoTimerRef.current);
   }, [short?.id]);
 
   useEffect(() => {
@@ -342,6 +343,7 @@ const ShortPlayer = ({
 
   useEffect(() => {
     return () => {
+      clearTimeout(showVideoTimerRef.current);
       try {
         playerRef.current?.destroy?.();
       } catch (_) {}
@@ -404,7 +406,10 @@ const ShortPlayer = ({
     }
     if (state === 1) {
       setIsPlaying(true);
-      setTimeout(() => setShowVideo(true), 800);
+      // 250ms cukup untuk buffer frame pertama, lebih reliable dari double rAF
+      // terutama untuk video pertama yang cold load
+      clearTimeout(showVideoTimerRef.current);
+      showVideoTimerRef.current = setTimeout(() => setShowVideo(true), 250);
     }
     if (state === 2 && isActive) setIsPlaying(false);
   };
@@ -420,7 +425,6 @@ const ShortPlayer = ({
         title={short.title}
         type="short"
       />
-      {/* <ReportDialog open={reportOpen} onClose={setReportOpen} id={short.id} type="short" /> */}
 
       <div
         className="relative w-full h-full overflow-hidden"
@@ -466,7 +470,9 @@ const ShortPlayer = ({
             style={{
               zIndex: 2,
               opacity: showVideo && isActive ? 0 : 1,
-              transition: showVideo && isActive ? "opacity 0.3s ease" : "none",
+              // Transisi lebih cepat: 150ms (dari 300ms)
+              transition: showVideo && isActive ? "opacity 0.15s ease" : "none",
+              pointerEvents: "none",
             }}
           />
         )}
@@ -505,10 +511,6 @@ const ShortPlayer = ({
                 >
                   <Share2 className="w-4 h-4 text-white" />
                 </button>
-                {/* Report button — dinonaktifkan sementara */}
-                {/* <button onClick={(e) => { e.stopPropagation(); setReportOpen(true); }} className="w-9 h-9 rounded-full bg-white/10 backdrop-blur flex items-center justify-center hover:bg-white/20 transition">
-                  <Flag className="w-4 h-4 text-white" />
-                </button> */}
               </div>
             )}
           </div>
@@ -748,7 +750,6 @@ const MobileShorts = ({ getShort, total }) => {
 const DesktopShorts = ({ getShort, total }) => {
   const [paused, setPaused] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
-  // const [reportOpen, setReportOpen] = useState(false);
   const [activeShort, setActiveShort] = useState(null);
   const activePlayerRef = useRef(null);
   const handleNavigate = useCallback(() => setPaused(false), []);
@@ -788,16 +789,13 @@ const DesktopShorts = ({ getShort, total }) => {
   return (
     <>
       {activeShort && (
-        <>
-          <ShareDialog
-            open={shareOpen}
-            onClose={setShareOpen}
-            id={activeShort.id}
-            title={activeShort.title}
-            type="short"
-          />
-          {/* <ReportDialog open={reportOpen} onClose={setReportOpen} id={activeShort.id} type="short" /> */}
-        </>
+        <ShareDialog
+          open={shareOpen}
+          onClose={setShareOpen}
+          id={activeShort.id}
+          title={activeShort.title}
+          type="short"
+        />
       )}
 
       <div className="flex h-dvh bg-black text-white overflow-hidden pt-12">

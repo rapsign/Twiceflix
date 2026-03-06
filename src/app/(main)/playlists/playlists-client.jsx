@@ -89,7 +89,7 @@ export default function PlaylistsClient() {
   if (playlistsLoading && playlists.length === 0) {
     return (
       <div className="lg:pt-12 bg-black min-h-screen">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3 gap-2">
           {[...Array(30)].map((_, i) => (
             <PlaylistSkeleton key={i} />
           ))}

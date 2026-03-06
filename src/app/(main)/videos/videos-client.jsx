@@ -154,7 +154,7 @@ export default function VideosClient() {
   if (loading) {
     return (
       <div className="bg-black min-h-screen md:pt-6 lg:pt-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 lg:px-2 pt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3 gap-4 md:px-2 pt-8">
           {[...Array(30)].map((_, i) => (
             <div key={i} className="space-y-2">
               <div className="aspect-video bg-neutral-800 animate-pulse rounded-none md:rounded-lg" />

@@ -288,7 +288,7 @@ const Navbar = ({ onToggleSidebar }) => {
           transition-transform duration-300 ease-in-out
           ${!isVisible ? "-translate-y-full md:translate-y-0" : "translate-y-0"}`}
       >
-        <div className="relative flex items-center justify-between h-14">
+        <div className="relative flex items-center justify-between md:h-15 h-14 lg:h-12">
           {/* Kiri: hamburger + logo */}
           <div
             className={`flex items-center gap-1 pl-2 lg:pl-3 transition-all duration-200 ${
@@ -309,21 +309,19 @@ const Navbar = ({ onToggleSidebar }) => {
             <SearchBox onMobileOpenChange={setMobileSearchOpen} />
           </div>
 
-          {/* Kanan: mobile search icon + add button */}
-          <div
-            className={`flex items-center gap-1 pr-2 lg:pr-3 transition-all duration-200 ${
-              mobileSearchOpen ? "opacity-0 pointer-events-none" : "opacity-100"
-            }`}
-          >
-            {/* Mobile: search icon only */}
+          {/* Kanan: mobile search + add button */}
+          <div className="flex items-center gap-1 pr-2 lg:pr-3">
+            {/* Mobile SearchBox — TIDAK ikut di-hide, selalu bisa diklik */}
             <div className="md:hidden">
               <SearchBox onMobileOpenChange={setMobileSearchOpen} />
             </div>
 
-            {/* Add button */}
+            {/* Add button — sembunyikan saat mobile search terbuka */}
             {/* <button
               onClick={() => setAddOpen(true)}
-              className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-neutral-800 hover:bg-neutral-600 transition-colors text-sm"
+              className={`flex items-center gap-1.5 h-9 px-3 rounded-lg bg-neutral-800 hover:bg-neutral-600 transition-colors text-sm transition-all duration-200 ${
+                mobileSearchOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+              }`}
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Add Video</span>
