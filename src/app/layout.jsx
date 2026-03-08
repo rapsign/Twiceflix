@@ -21,11 +21,13 @@ export const metadata = {
   },
 
   openGraph: {
+    title: "TWICEFLIX — Your Ultimate Source for TWICE Videos & Content",
     siteName: "TWICEFLIX",
     images: ["https://twiceflix.vercel.app/og.webp"],
   },
 
   twitter: {
+    title: "TWICEFLIX — Your Ultimate Source for TWICE Videos & Content",
     card: "summary_large_image",
     images: ["https://twiceflix.vercel.app/og.webp"],
   },

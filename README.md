@@ -1,6 +1,6 @@
 # TWICEFLIX
 
-TWICEFLIX is a fan-made streaming platform that archives all TWICE YouTube content — videos, shorts, and playlists — in one place. Built with a Netflix-like interface for an immersive browsing experience.
+TWICEFLIX is a fan-made streaming platform that archives all TWICE YouTube content — videos, shorts, and playlists — in one place. Built with Next.js, Supabase, and Redis, it features a custom sync pipeline that pulls data directly from the YouTube API and serves it with edge-cached endpoints for fast, global performance.
 
 ## Features
 
