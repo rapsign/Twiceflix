@@ -4,6 +4,7 @@ import { formatDistanceStrict } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { parseDuration } from "@/utils/videoHelpers";
+import { Badge } from "../ui/badge";
 
 export default function VideoCard({ video, playlistId }) {
   const router = useRouter();
@@ -13,6 +14,10 @@ export default function VideoCard({ video, playlistId }) {
     : video?.published_at
       ? new Date(video.published_at)
       : null;
+
+  const isNew = publishedDate
+    ? (new Date() - publishedDate) / (1000 * 60 * 60 * 24) <= 7
+    : false;
 
   const handleClick = () => {
     const url = playlistId
@@ -34,6 +39,11 @@ export default function VideoCard({ video, playlistId }) {
           alt={video.title}
           className="w-full h-full object-cover"
         />
+        {isNew && (
+          <Badge className="absolute top-2 left-2 rounded-sm bg-black/60 text-white hover:bg-black/60">
+            NEW
+          </Badge>
+        )}
         {durationFormatted && (
           <span className="absolute bottom-2 right-2 flex items-center gap-1 text-xs px-2 py-1 bg-black/80 text-white rounded">
             {durationFormatted}

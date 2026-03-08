@@ -101,10 +101,10 @@ function TagButton({ tag, activeTag, onTagChange }) {
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onClick={handleClick}
-      className={`px-4 py-1 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
+      className={`px-3 py-1 sm:px-4 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
         activeTag === tag.label
           ? "bg-white text-black hover:bg-white/80"
-          : "bg-white/10 text-white hover:bg-white/20"
+          : "bg-neutral-700 text-white hover:bg-neutral-600"
       }`}
     >
       {tag.label}
@@ -159,7 +159,11 @@ export default function VideoFilterBar({ activeTag, onTagChange }) {
             setIsEnd(swiper.isEnd);
           }}
           slidesPerView="auto"
-          spaceBetween={6}
+          spaceBetween={4}
+          breakpoints={{
+            640: { spaceBetween: 6 },
+            1024: { spaceBetween: 8 },
+          }}
         >
           {TAGS.map((tag, index) => (
             <SwiperSlide

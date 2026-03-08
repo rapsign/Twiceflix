@@ -288,7 +288,7 @@ const Navbar = ({ onToggleSidebar }) => {
           transition-transform duration-300 ease-in-out
           ${!isVisible ? "-translate-y-full md:translate-y-0" : "translate-y-0"}`}
       >
-        <div className="relative flex items-center justify-between md:h-15 h-14 lg:h-12">
+        <div className="relative flex items-center justify-between h-14">
           {/* Kiri: hamburger + logo */}
           <div
             className={`flex items-center gap-1 pl-2 lg:pl-3 transition-all duration-200 ${

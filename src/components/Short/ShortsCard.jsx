@@ -3,8 +3,9 @@
 import { formatDistanceStrict } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { useRouter } from "next/navigation";
+import { Badge } from "../ui/badge";
 
-export default function ShortsCard({ video, playlistId }) {
+export default function ShortsCard({ video }) {
   const router = useRouter();
 
   const publishedDate = video?.published_at?.seconds
@@ -12,6 +13,10 @@ export default function ShortsCard({ video, playlistId }) {
     : video?.published_at
       ? new Date(video.published_at)
       : null;
+
+  const isNew = publishedDate
+    ? (new Date() - publishedDate) / (1000 * 60 * 60 * 24) <= 7
+    : false;
 
   const handleClick = () => {
     router.push(`/shorts?id=${video.id}`);
@@ -31,6 +36,13 @@ export default function ShortsCard({ video, playlistId }) {
           alt={video.title}
           className="w-full h-full object-cover"
         />
+
+        {isNew && (
+          <Badge className="absolute top-2 left-2 rounded-sm bg-black/60 text-white hover:bg-black/60">
+            NEW
+          </Badge>
+        )}
+
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-3">
           <h3 className="text-sm font-medium leading-snug line-clamp-2 text-white">
             {video.title}

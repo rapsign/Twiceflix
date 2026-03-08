@@ -26,15 +26,7 @@ const HeroContent = ({ video }) => {
           className="flex items-center gap-2 bg-white text-black hover:bg-gray-200 px-[clamp(1rem,2vw,1.5rem)] py-[clamp(0.6rem,1vw,0.8rem)] text-[clamp(0.75rem,1vw,0.9rem)] rounded-xl font-medium cursor-pointer"
         >
           <Play size={16} />
-          Play
-        </Button>
-        <Button
-          onClick={handlePlayClick}
-          variant="outline"
-          className="flex items-center gap-2 border border-white/70 bg-transparent text-white hover:bg-white/20 hover:text-white px-[clamp(1rem,2vw,1.5rem)] py-[clamp(0.6rem,1vw,0.8rem)] text-[clamp(0.75rem,1vw,0.9rem)] rounded-xl font-medium cursor-pointer"
-        >
-          <Info size={16} />
-          More Info
+          Watch Now
         </Button>
       </div>
     </div>
