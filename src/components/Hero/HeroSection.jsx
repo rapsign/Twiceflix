@@ -8,7 +8,15 @@ const HeroSection = () => {
 
   const latestVideo = useMemo(() => {
     if (videos.length === 0) return null;
-    return videos.find((v) => v.is_short === false) ?? null;
+    return (
+      videos
+        .filter((v) => !v.is_short)
+        .sort(
+          (a, b) =>
+            new Date(b.published_at ?? 0).getTime() -
+            new Date(a.published_at ?? 0).getTime(),
+        )[0] ?? null
+    );
   }, [videos]);
 
   if (loading) {
