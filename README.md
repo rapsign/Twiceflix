@@ -75,6 +75,6 @@ This project is licensed under the [MIT License](https://choosealicense.com/lice
 Have questions, suggestions, or want to contribute? Feel free to reach out!
 
 - 🌐 Portfolio: [rinaldi-a-prayuda.vercel.app](https://rinaldi-a-prayuda.vercel.app/)
-- 💻 GitHub: [@username](https://github.com/rapsign)
+- 💻 GitHub: [@rapsign](https://github.com/rapsign)
 
 > This project is a fan-made platform and is not affiliated with or endorsed by JYP Entertainment or TWICE.
