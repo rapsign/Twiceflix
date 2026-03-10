@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -23,6 +24,22 @@ export default function PlaylistPanel({
   getNextVideoTitle,
   getVideoIndex,
 }) {
+  const triggerRef = useRef(null);
+  const controlsRef = useRef(null);
+  const [offsetHeight, setOffsetHeight] = useState(156);
+
+  useEffect(() => {
+    const update = () => {
+      const triggerH = triggerRef.current?.offsetHeight ?? 0;
+      const controlsH = controlsRef.current?.offsetHeight ?? 0;
+      setOffsetHeight(triggerH + controlsH + 13);
+    };
+
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   return (
     <Accordion
       type="single"
@@ -32,12 +49,13 @@ export default function PlaylistPanel({
     >
       <AccordionItem value="playlist">
         <AccordionTrigger
-          className="bg-neutral-900 px-4 text-sm font-semibold data-[state=open]:rounded-none data-[state=open]:rounded-t-xl cursor-pointer"
+          ref={triggerRef}
+          className="bg-neutral-900 px-4 text-sm font-semibold data-[state=open]:rounded-none data-[state=open]:rounded-t-xl cursor-pointer overflow-hidden"
           style={{ textDecoration: "none" }}
         >
-          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 w-full">
-            <div className="grid grid-rows-2 leading-none overflow-hidden">
-              <p className="text-lg truncate font-normal">
+          <div className="flex items-center w-full overflow-hidden min-w-0">
+            <div className="flex flex-col gap-0.5 overflow-hidden min-w-0 flex-1">
+              <p className="text-sm truncate font-normal w-full">
                 <span className="font-medium">
                   {getNextLabel(
                     displayedPlaylistVideos,
@@ -54,7 +72,7 @@ export default function PlaylistPanel({
                   activePlaylist.title,
                 )}
               </p>
-              <span className="text-xs text-muted-foreground font-normal truncate text-left">
+              <span className="text-xs text-muted-foreground font-normal truncate w-full">
                 {activePlaylist.title} •{" "}
                 {getVideoIndex(videoId, displayedPlaylistVideos) + 1}/
                 {displayedPlaylistVideos.length}
@@ -64,7 +82,7 @@ export default function PlaylistPanel({
         </AccordionTrigger>
 
         <AccordionContent className="p-0">
-          <div className="flex gap-2 p-2 bg-neutral-900">
+          <div ref={controlsRef} className="flex gap-2 p-2 bg-neutral-900">
             <Button
               variant="ghost"
               className="rounded-full w-10 h-10 cursor-pointer"
@@ -90,7 +108,12 @@ export default function PlaylistPanel({
             </Button>
           </div>
 
-          <div className="max-h-[calc((64vw-1rem)*9/16)] overflow-y-auto">
+          <div
+            style={{
+              maxHeight: `calc((100vw - 440px - 32px) * 9 / 16 - ${offsetHeight}px)`,
+            }}
+            className="overflow-y-auto"
+          >
             {displayedPlaylistVideos.map((v) => {
               const isActive = String(v.id) === String(videoId);
               return (

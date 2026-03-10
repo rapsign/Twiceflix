@@ -81,7 +81,7 @@ export default function VideoPlayer({
     return (
       <div
         className={`sticky z-50 bg-black aspect-video transition-all duration-300 ${
-          scrollingDown ? "top-0 md:top-12" : "top-12"
+          scrollingDown ? "top-0 md:top-14" : "top-14"
         }`}
       >
         {player}

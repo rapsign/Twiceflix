@@ -12,7 +12,6 @@ function useResponsiveCount() {
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-
       if (w >= 1024) setCount(6);
       else if (w >= 768) setCount(3);
       else if (w >= 640) setCount(4);
@@ -21,10 +20,7 @@ function useResponsiveCount() {
 
     update();
     window.addEventListener("resize", update);
-
-    return () => {
-      window.removeEventListener("resize", update);
-    };
+    return () => window.removeEventListener("resize", update);
   }, []);
 
   return count;
@@ -35,26 +31,43 @@ export default function VideoGrid({
   onVideoClick,
   shorts = [],
   shortsLoading = false,
+  isShorts = false,
 }) {
   const shortsCount = useResponsiveCount();
 
   const chunks = useMemo(() => {
     const result = [];
-
     for (let i = 0; i < videos.length; i += CHUNK_SIZE) {
       result.push(videos.slice(i, i + CHUNK_SIZE));
     }
-
     return result;
   }, [videos]);
+
+  if (isShorts) {
+    return (
+      <div className="py-4">
+        <ShortsGrid
+          shorts={videos}
+          seed={0}
+          count={videos.length}
+          loading={shortsLoading}
+          disableShuffle={true}
+        />
+      </div>
+    );
+  }
 
   return (
     <div>
       {chunks.map((chunk, chunkIndex) => (
         <div key={chunkIndex}>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-3">
-            {chunk.map((video) => (
-              <VideoCard key={video.id} video={video} onClick={onVideoClick} />
+            {chunk.map((video, index) => (
+              <VideoCard
+                key={`${video.id}-${index}`}
+                video={video}
+                onClick={onVideoClick}
+              />
             ))}
           </div>
 

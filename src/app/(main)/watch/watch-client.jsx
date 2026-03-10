@@ -1,7 +1,7 @@
 "use client";
 
 // src/app/(main)/watch/WatchClient.jsx
-import { useEffect, useState, useCallback, Suspense } from "react";
+import { useEffect, useState, useCallback, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import NProgress from "nprogress";
 
@@ -15,7 +15,6 @@ import PlaylistPanel from "@/components/Player/PlaylistPanel";
 import PlaylistDrawer from "@/components/Player/PlaylistDrawer";
 import RelatedVideos from "@/components/Player/RelatedVideos";
 import { ShareDialog } from "@/components/ui/share-dialog";
-// import { ReportDialog } from "@/components/report-dialog";
 
 function WatchContent() {
   const router = useRouter();
@@ -36,9 +35,7 @@ function WatchContent() {
   const [isMobile, setIsMobile] = useState(false);
   const [videoScrolledUp, setVideoScrolledUp] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
-
   const [shareOpen, setShareOpen] = useState(false);
-  // const [reportOpen, setReportOpen] = useState(false);
 
   const { fetchByIdFull: fetchVideo, data: allVideos } =
     useDataManager("youtube_video");
@@ -47,76 +44,66 @@ function WatchContent() {
   const { getNextLabel, getNextVideoTitle, getVideoIndex } =
     usePlaylistHelpers();
 
+  // Cek mobile
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => setIsMobile(window.innerWidth < 1024);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  // Track watched
   useEffect(() => {
     if (!videoId) return;
-    setWatchedIds((prev) => {
-      const next = new Set(prev);
-      next.add(String(videoId));
-      return next;
-    });
+    setWatchedIds((prev) => new Set([...prev, String(videoId)]));
   }, [videoId]);
 
+  // Fetch video
   useEffect(() => {
     if (!videoId) return;
     window.scrollTo({ top: 0 });
     setLoading(true);
     setIsNotFound(false);
-    setVideo(null);
+
+    const tryShort = () =>
+      fetchShort(videoId)
+        .then((shortData) => {
+          if (shortData?.id && shortData?.status !== "error") {
+            setVideo({ ...shortData, is_short: true });
+            setRelatedVideos([]);
+          } else {
+            setIsNotFound(true);
+          }
+          setLoading(false);
+        })
+        .catch(() => {
+          setIsNotFound(true);
+          setLoading(false);
+        });
 
     fetchVideo(videoId)
       .then((data) => {
-        if (data && data.id && data.status !== "error") {
+        if (data?.id && data?.status !== "error") {
           setVideo(data);
           setRelatedVideos(data.related ?? []);
           setLoading(false);
-          return;
+        } else {
+          return tryShort();
         }
-        return fetchShort(videoId).then((shortData) => {
-          if (shortData && shortData.id && shortData.status !== "error") {
-            setVideo({ ...shortData, is_short: true });
-            setLoading(false);
-          } else {
-            setIsNotFound(true);
-            setLoading(false);
-          }
-        });
       })
-      .catch(() => {
-        fetchShort(videoId)
-          .then((shortData) => {
-            if (shortData && shortData.id && shortData.status !== "error") {
-              setVideo({ ...shortData, is_short: true });
-              setLoading(false);
-            } else {
-              setIsNotFound(true);
-              setLoading(false);
-            }
-          })
-          .catch(() => {
-            setIsNotFound(true);
-            setLoading(false);
-          });
-      });
+      .catch(() => tryShort());
   }, [videoId]);
 
-  // Saat video adalah short, set related dari youtube_video secara random
-  useEffect(() => {
-    if (!video?.is_short) return;
-    if (!allVideos?.length) return;
-    const shuffled = [...allVideos]
+  // Related untuk short — hitung sekali pakai useMemo
+  const shortRelated = useMemo(() => {
+    if (!video?.is_short || !allVideos?.length) return [];
+    return [...allVideos]
       .filter((v) => !v.is_short)
       .sort(() => Math.random() - 0.5)
       .slice(0, 12);
-    setRelatedVideos(shuffled);
-  }, [video?.is_short, video?.id, allVideos]);
+  }, [video?.id, allVideos]);
 
+  // Fetch playlist
   useEffect(() => {
     if (!playlistId) {
       setActivePlaylist(null);
@@ -132,23 +119,20 @@ function WatchContent() {
     });
   }, [playlistId]);
 
+  // NProgress ikut loading lokal
   useEffect(() => {
-    if (!videoId) return;
-    NProgress.start();
-    const t = setTimeout(() => NProgress.done(), 400);
-    return () => {
-      clearTimeout(t);
+    if (loading) {
+      NProgress.start();
+    } else {
       NProgress.done();
-    };
-  }, [videoId]);
-
-  useEffect(() => {
-    if (!loading) NProgress.done();
+    }
   }, [loading]);
 
-  const filteredRelated = relatedVideos.filter(
-    (v) => !watchedIds.has(String(v.id)),
-  );
+  // Gabungkan related + filter watched
+  const filteredRelated = useMemo(() => {
+    const source = video?.is_short ? shortRelated : relatedVideos;
+    return source.filter((v) => !watchedIds.has(String(v.id)));
+  }, [video?.is_short, shortRelated, relatedVideos, watchedIds]);
 
   const handleVideoEnd = useCallback(() => {
     if (!activePlaylist || !displayedPlaylistVideos.length) {
@@ -162,11 +146,11 @@ function WatchContent() {
       (v) => String(v.id) === String(videoId),
     );
 
-    let nextIndex = currentIndex + 1;
+    let nextIndex = randomPlaylist
+      ? Math.floor(Math.random() * displayedPlaylistVideos.length)
+      : currentIndex + 1;
 
-    if (randomPlaylist) {
-      nextIndex = Math.floor(Math.random() * displayedPlaylistVideos.length);
-    } else if (loopPlaylist && nextIndex >= displayedPlaylistVideos.length) {
+    if (loopPlaylist && nextIndex >= displayedPlaylistVideos.length) {
       nextIndex = 0;
     }
 
@@ -249,13 +233,6 @@ function WatchContent() {
         title={video.title}
         type="watch"
       />
-      {/* <ReportDialog
-        open={reportOpen}
-        onClose={setReportOpen}
-        id={video.id}
-        type="watch"
-      /> */}
-
       <div className="bg-black px-0 pt-14">
         {isMobile && (
           <VideoPlayer

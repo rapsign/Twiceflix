@@ -8,12 +8,17 @@ import { IconChevronLeft } from "@tabler/icons-react";
 const TAGS = [
   { label: "All", keywords: [] },
   { label: "Oldest", keywords: ["__OLDEST__"] },
+  { label: "Shorts", keywords: ["Shorts", "#Shorts"] },
   { label: "Music Video", keywords: ["MV", "Music Video", "M/V"] },
-  { label: "Live Performance", keywords: ["Live", "Concert", "Tour", "Stage"] },
+  { label: "Live Performance", keywords: ["Live", "Concert", "Stage"] },
   {
     label: "Dance Practice",
     keywords: ["Dance Practice", "Dance Ver", "Choreography"],
   },
+  { label: "World Tour", keywords: ["World Tour", "WORLD TOUR"] },
+  { label: "MISAMO", keywords: ["MISAMO"] },
+  { label: "Vlog", keywords: ["log", "Log", "Vlog"] },
+  { label: "MV Reaction", keywords: ["Reaction", "Reviews by"] },
   { label: "Nayeon", keywords: ["Nayeon", "나연"] },
   { label: "Jeongyeon", keywords: ["Jeongyeon", "정연"] },
   { label: "Momo", keywords: ["Momo", "모모"] },
@@ -31,9 +36,12 @@ const TAGS = [
     label: "Variety / Reality",
     keywords: ["TWICE TV", "Variety", "Reality", "Episode"],
   },
-  { label: "Teaser", keywords: ["Teaser", "Highlight", "Spoiler"] },
+  { label: "Teaser", keywords: ["Teaser", "Spoiler"] },
   { label: "Challenge", keywords: ["Challenge"] },
   { label: "Japan", keywords: ["Japan", "Japanese", "JP Ver", "JP.ver"] },
+  { label: "Cover", keywords: ["Cover"] },
+  { label: "Interview", keywords: ["Interview"] },
+  { label: "Award", keywords: ["Award", "Golden Globe", "MAMA", "Mnet"] },
 ];
 
 export function matchesTag(title = "", keywords = []) {
@@ -145,7 +153,12 @@ export default function VideoFilterBar({ activeTag, onTagChange }) {
         </Button>
       )}
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative">
+        {/* Gradient kiri */}
+        {!isBeginning && (
+          <div className="hidden sm:block absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
+        )}
+
         <Swiper
           onSwiper={setSwiperInstance}
           onSlideChange={(swiper) => {
@@ -178,6 +191,11 @@ export default function VideoFilterBar({ activeTag, onTagChange }) {
             </SwiperSlide>
           ))}
         </Swiper>
+
+        {/* Gradient kanan */}
+        {!isEnd && (
+          <div className="hidden sm:block absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
+        )}
       </div>
 
       {!isEnd && (

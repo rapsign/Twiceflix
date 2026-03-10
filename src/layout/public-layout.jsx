@@ -63,7 +63,7 @@ const PublicLayout = ({ children }) => {
             isShortsPage || isWatchPage
               ? ""
               : !hideNavbar
-                ? "pt-14 lg:pt-0 pb-16 lg:pb-0"
+                ? "pt-14 lg:pt-0 pb-16 md:pb-0"
                 : ""
           }`}
         >

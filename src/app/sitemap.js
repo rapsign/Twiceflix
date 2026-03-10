@@ -1,3 +1,5 @@
+export const revalidate = 3600;
+
 const BASE_URL = "https://twiceflix.vercel.app";
 
 async function fetchAPI(path) {

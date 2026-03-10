@@ -35,10 +35,10 @@ export default function PlaylistDrawer({
   // Saat scroll up: video di top-12 (48px), berarti ada offset navbar
   const drawerHeight = videoScrolledUp
     ? "h-[calc(100vh-(100vw*9/16))]"
-    : "h-[calc(100vh-(100vw*9/16)-47px)]";
+    : "h-[calc(100vh-(100vw*9/16)-56px)]";
 
   return (
-    <div className="fixed bottom-16 left-0 right-0 z-50 flex justify-center lg:hidden">
+    <div className="fixed bottom-16 md:bottom-2 left-0 right-0 z-50 flex justify-center lg:hidden">
       <Drawer>
         <DrawerTrigger className="mx-auto w-[calc(100vw-2rem)] flex items-center justify-between bg-neutral-800/95 hover:bg-neutral-700 h-14 px-4 rounded-md">
           <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 w-full">

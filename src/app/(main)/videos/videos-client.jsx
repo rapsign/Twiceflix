@@ -66,6 +66,9 @@ export default function VideosClient() {
   }, [shortData]);
 
   const filteredVideos = useMemo(() => {
+    if (activeTag === "Shorts") {
+      return shortData; // ← pakai shortData langsung
+    }
     if (activeTag === "Oldest") {
       return [...videos].sort(
         (a, b) =>
@@ -76,7 +79,7 @@ export default function VideosClient() {
     const tag = TAGS.find((t) => t.label === activeTag);
     if (!tag || tag.keywords.length === 0) return videos;
     return videos.filter((v) => matchesTag(v.title, tag.keywords));
-  }, [videos, activeTag]);
+  }, [videos, shortData, activeTag]);
 
   const filteredShorts = useMemo(() => {
     let result = shuffledShorts;
@@ -182,6 +185,7 @@ export default function VideosClient() {
         videos={visibleVideos}
         shorts={filteredShorts}
         shortsLoading={loadingShorts}
+        isShorts={activeTag === "Shorts"}
       />
 
       {filteredVideos.length === 0 && (

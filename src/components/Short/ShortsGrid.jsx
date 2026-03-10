@@ -27,7 +27,6 @@ const ShortsSkeleton = ({ count }) => (
         className="w-full rounded-xl overflow-hidden bg-neutral-800 animate-pulse relative"
         style={{ aspectRatio: "9/16" }}
       >
-        {/* Gradient shimmer */}
         <div
           className="absolute inset-0"
           style={{
@@ -37,7 +36,6 @@ const ShortsSkeleton = ({ count }) => (
             animation: "shimmer 1.5s infinite",
           }}
         />
-        {/* Fake title bar di bawah */}
         <div className="absolute bottom-0 left-0 right-0 p-3 space-y-1.5">
           <div className="h-2 w-16 bg-neutral-700 rounded-full" />
           <div className="h-3 w-full bg-neutral-700 rounded-full" />
@@ -59,9 +57,11 @@ export default function ShortsGrid({
   seed = 0,
   count = 10,
   loading = false,
+  disableShuffle = false,
 }) {
   const randomShorts = useMemo(() => {
     if (shorts.length === 0) return [];
+    if (disableShuffle) return shorts.slice(0, count);
     const shuffled = seededShuffle(shorts, MASTER_SEED);
     const start = (seed * count) % shuffled.length;
     const result = [];
@@ -69,16 +69,16 @@ export default function ShortsGrid({
       result.push(shuffled[(start + i) % shuffled.length]);
     }
     return result;
-  }, [shorts, seed, count]);
+  }, [shorts, seed, count, disableShuffle]);
 
   if (loading) return <ShortsSkeleton count={count} />;
   if (shorts.length === 0) return null;
   if (randomShorts.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-0 px-2 md:px-0  py-2">
-      {randomShorts.map((short) => (
-        <ShortsCard key={short.id} video={short} />
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-0 px-2 md:px-0 py-2">
+      {randomShorts.map((short, index) => (
+        <ShortsCard key={`${short.id}-${index}`} video={short} />
       ))}
     </div>
   );
