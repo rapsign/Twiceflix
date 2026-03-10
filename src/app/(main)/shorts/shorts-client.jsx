@@ -12,7 +12,6 @@ import {
   Play,
   Pause,
   Share2,
-  // Flag,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import YouTube from "react-youtube";
@@ -23,7 +22,6 @@ import NProgress from "nprogress";
 import Linkify from "linkify-react";
 import "linkify-plugin-hashtag";
 import { ShareDialog } from "@/components/ui/share-dialog";
-// import { ReportDialog } from "@/components/report-dialog";
 
 const linkifyOptions = {
   formatHref: { hashtag: (href) => `/search?q=${href.substring(1)}` },
@@ -388,12 +386,14 @@ const ShortPlayer = ({
     e.target.mute();
     e.target.playVideo();
     if (isActive) {
-      try {
-        e.target.unMute();
-        setMuted(false);
-      } catch (_) {
-        setMuted(true);
-      }
+      setTimeout(() => {
+        try {
+          e.target.unMute();
+          setMuted(false);
+        } catch (_) {
+          setMuted(true);
+        }
+      }, 300);
     }
   };
 
@@ -406,10 +406,8 @@ const ShortPlayer = ({
     }
     if (state === 1) {
       setIsPlaying(true);
-      // 250ms cukup untuk buffer frame pertama, lebih reliable dari double rAF
-      // terutama untuk video pertama yang cold load
       clearTimeout(showVideoTimerRef.current);
-      showVideoTimerRef.current = setTimeout(() => setShowVideo(true), 250);
+      showVideoTimerRef.current = setTimeout(() => setShowVideo(true), 0);
     }
     if (state === 2 && isActive) setIsPlaying(false);
   };
@@ -470,8 +468,7 @@ const ShortPlayer = ({
             style={{
               zIndex: 2,
               opacity: showVideo && isActive ? 0 : 1,
-              // Transisi lebih cepat: 150ms (dari 300ms)
-              transition: showVideo && isActive ? "opacity 0.15s ease" : "none",
+              transition: showVideo && isActive ? "opacity 0.05s ease" : "none",
               pointerEvents: "none",
             }}
           />
