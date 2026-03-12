@@ -836,7 +836,7 @@ function ShortContent() {
   const id = searchParams.get("id") ?? null;
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { data: shorts, loading } = useDataManager("youtube_short");
+  const { data: shorts, loading } = useDataManager("youtube-short");
   const { getShort, total } = useLazyShuffledShorts(shorts, id);
 
   useEffect(() => {

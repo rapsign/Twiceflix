@@ -24,9 +24,9 @@ function shuffleArray(array) {
 
 export default function VideosClient() {
   const { data: videoData = [], loading: loadingVideos } =
-    useDataManager("youtube_video");
+    useDataManager("youtube-video");
   const { data: shortData = [], loading: loadingShorts } =
-    useDataManager("youtube_short");
+    useDataManager("youtube-short");
 
   const loading = loadingVideos || loadingShorts;
 

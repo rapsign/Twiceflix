@@ -42,7 +42,7 @@ function SearchContent() {
   const [loading, setLoading] = useState(false);
 
   const batchSize = useBatchSize();
-  const { search } = useDataManager("youtube_video");
+  const { search } = useDataManager("youtube-video");
 
   useEffect(() => {
     const q = searchParams.get("q") ?? "";

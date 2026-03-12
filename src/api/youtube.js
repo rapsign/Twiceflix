@@ -9,26 +9,26 @@ async function fetchCache(url) {
 /* ===============================
    VIDEO
 ================================ */
-export const fetchVideos = () => fetchCache(`${API_BASE}/youtube_video`);
+export const fetchVideos = () => fetchCache(`${API_BASE}/youtube-video`);
 
 export const fetchVideoById = (id) =>
-  fetchCache(`${API_BASE}/youtube_video/${id}`);
+  fetchCache(`${API_BASE}/youtube-video/${id}`);
 
 /* ===============================
    SHORT
 ================================ */
-export const fetchShorts = () => fetchCache(`${API_BASE}/youtube_short`);
+export const fetchShorts = () => fetchCache(`${API_BASE}/youtube-short`);
 
 export const fetchShortById = (id) =>
-  fetchCache(`${API_BASE}/youtube_short/${id}`);
+  fetchCache(`${API_BASE}/youtube-short/${id}`);
 
 /* ===============================
    PLAYLIST
 ================================ */
-export const fetchPlaylists = () => fetchCache(`${API_BASE}/youtube_playlist`);
+export const fetchPlaylists = () => fetchCache(`${API_BASE}/youtube-playlist`);
 
 export const fetchPlaylistById = (id) =>
-  fetchCache(`${API_BASE}/youtube_playlist/${id}`);
+  fetchCache(`${API_BASE}/youtube-playlist/${id}`);
 
 /* ===============================
    SEARCH

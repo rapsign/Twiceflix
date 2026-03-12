@@ -29,7 +29,7 @@ export default function PlaylistsClient() {
     data: playlists = [],
     loading: playlistsLoading,
     fetchPlaylist,
-  } = useDataManager("youtube_playlist");
+  } = useDataManager("youtube-playlist");
 
   const displayedPlaylists = useMemo(
     () => playlists.slice(0, currentPage * PLAYLISTS_PER_PAGE),

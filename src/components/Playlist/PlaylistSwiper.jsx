@@ -6,10 +6,10 @@ import useDataManager from "@/hooks/useDataManager";
 
 const PlaylistSwiper = () => {
   const { data: playlists = [], loading: playlistsLoading } =
-    useDataManager("youtube_playlist");
+    useDataManager("youtube-playlist");
 
   const { data: videos = [], loading: videosLoading } =
-    useDataManager("youtube_video");
+    useDataManager("youtube-video");
 
   const [visibleCount, setVisibleCount] = useState(3);
   const loadMoreRef = useRef(null);

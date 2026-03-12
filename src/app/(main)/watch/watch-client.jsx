@@ -38,9 +38,9 @@ function WatchContent() {
   const [shareOpen, setShareOpen] = useState(false);
 
   const { fetchByIdFull: fetchVideo, data: allVideos } =
-    useDataManager("youtube_video");
-  const { fetchByIdFull: fetchShort } = useDataManager("youtube_short");
-  const { fetchPlaylist } = useDataManager("youtube_playlist");
+    useDataManager("youtube-video");
+  const { fetchByIdFull: fetchShort } = useDataManager("youtube-short");
+  const { fetchPlaylist } = useDataManager("youtube-playlist");
   const { getNextLabel, getNextVideoTitle, getVideoIndex } =
     usePlaylistHelpers();
 

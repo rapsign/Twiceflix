@@ -5,7 +5,7 @@ import useDataManager from "@/hooks/useDataManager";
 import CustomSwiper from "../ui/custom-swiper";
 
 const VideoSwiper = () => {
-  const { data: videos = [], loading } = useDataManager("youtube_video");
+  const { data: videos = [], loading } = useDataManager("youtube-video");
 
   const randomVideos = useMemo(() => {
     const regularVideos = videos.filter((v) => v.is_short === false);
