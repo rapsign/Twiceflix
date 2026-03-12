@@ -7,8 +7,8 @@ import { formatPublishedDistance } from "@/utils/time";
 import Linkify from "linkify-react";
 import "linkify-plugin-hashtag";
 import { Share2, MoreVertical, Flag } from "lucide-react";
-import { ShareDialog } from "../../../../components/ui/share-dialog";
-import { ReportDialog } from "../../../../components/ui/report-dialog";
+import { ShareDialog } from "@/components/ShareDialog";
+import { ReportDialog } from "@/components/ReportDialog";
 
 const COLLAPSED_HEIGHT = 40;
 
