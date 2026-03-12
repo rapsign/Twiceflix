@@ -5,8 +5,8 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FaInstagram } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
-import membersData from "@/data/twiceMembers.json";
-import ProfileCard from "@/components/ProfileCard";
+import membersData from "./_data/twiceMembers.json";
+import ProfileCard from "@/app/(main)/about/_components/ProfileCard";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -184,7 +184,7 @@ const About = () => {
         </p>
         <img
           ref={titleRef}
-          src="/twiceflix.svg"
+          src="/logo/twiceflix.svg"
           alt="TWICEFLIX"
           className="h-16 md:h-24 w-auto my-4"
         />
@@ -288,7 +288,7 @@ const About = () => {
               avatarUrl="/rapsign.webp"
               showUserInfo={true}
               enableTilt={true}
-              iconUrl="/twice.svg"
+              iconUrl="/logo/twice.svg"
               enableMobileTilt={false}
               onContactClick={() =>
                 window.open("https://rinaldi-a-prayuda.vercel.app/", "_blank")

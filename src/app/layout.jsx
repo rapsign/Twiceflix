@@ -6,8 +6,11 @@ export const metadata = {
   description:
     "Everything TWICE in one place — music videos, live performances, and behind-the-scenes content.",
   robots: "index, follow",
-
   manifest: "/site.webmanifest",
+
+  verification: {
+    google: "oey4hxhG8X7Lebq5pDwDOiy5kFrRYsUan0Mdhmnc7jM",
+  },
 
   appleWebApp: {
     title: "TWICEFLIX",

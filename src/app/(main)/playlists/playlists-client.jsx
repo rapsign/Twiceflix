@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import PlaylistGrid from "@/components/Playlist/PlaylistGrid";
+import PlaylistGrid from "@/app/(main)/playlists/_components/PlaylistGrid";
 import useDataManager from "@/hooks/useDataManager";
 import { Loader2 } from "lucide-react";
 

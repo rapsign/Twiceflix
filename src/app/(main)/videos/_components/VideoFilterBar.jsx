@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import { Button } from "../ui/button";
+import { Button } from "../../../../components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { IconChevronLeft } from "@tabler/icons-react";
 

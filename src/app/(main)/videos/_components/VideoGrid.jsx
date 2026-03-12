@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import VideoCard from "./VideoCard";
-import ShortsGrid from "../Short/ShortsGrid";
+import ShortsGrid from "../../shorts/_components/ShortsGrid";
 
 const CHUNK_SIZE = 6;
 

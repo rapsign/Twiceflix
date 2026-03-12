@@ -2,11 +2,12 @@
 
 // src/app/(main)/videos/VideosClient.jsx
 import { useState, useEffect, useCallback, useMemo } from "react";
-import VideoGrid from "@/components/Videos/VideoGrid";
+import { throttle } from "lodash";
+import VideoGrid from "@/app/(main)/videos/_components/VideoGrid";
 import VideoFilterBar, {
   TAGS,
   matchesTag,
-} from "@/components/Videos/VideoFilterBar";
+} from "@/app/(main)/videos/_components/VideoFilterBar";
 import useDataManager from "@/hooks/useDataManager";
 import { Loader2 } from "lucide-react";
 
@@ -33,15 +34,22 @@ export default function VideosClient() {
   const [activeTag, setActiveTag] = useState("All");
   const [visibleCount, setVisibleCount] = useState(VIDEOS_PER_PAGE);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [shuffledShorts, setShuffledShorts] = useState([]);
 
+  /* ===============================
+     FILTER VIDEO (non-shorts)
+  ================================ */
   const videos = useMemo(
     () => videoData.filter((v) => v.is_short === false),
     [videoData],
   );
 
-  const shuffledShorts = useMemo(() => {
-    if (typeof window === "undefined") return shortData;
-    if (!shortData.length) return shortData;
+  /* ===============================
+     SHUFFLE SHORTS — pakai useEffect
+     supaya localStorage aman dari SSR
+  ================================ */
+  useEffect(() => {
+    if (!shortData.length) return;
 
     const savedOrder = localStorage.getItem(STORAGE_KEY);
     if (savedOrder) {
@@ -51,7 +59,8 @@ export default function VideosClient() {
           .map((id) => shortData.find((s) => s.id === id))
           .filter(Boolean);
         const newItems = shortData.filter((s) => !parsedIds.includes(s.id));
-        return [...ordered, ...newItems];
+        setShuffledShorts([...ordered, ...newItems]);
+        return;
       } catch {
         localStorage.removeItem(STORAGE_KEY);
       }
@@ -62,13 +71,15 @@ export default function VideosClient() {
       STORAGE_KEY,
       JSON.stringify(shuffled.map((s) => s.id)),
     );
-    return shuffled;
+    setShuffledShorts(shuffled);
   }, [shortData]);
 
+  /* ===============================
+     FILTERED VIDEOS
+     Shorts punya jalur sendiri — tidak campur di sini
+  ================================ */
   const filteredVideos = useMemo(() => {
-    if (activeTag === "Shorts") {
-      return shortData; // ← pakai shortData langsung
-    }
+    if (activeTag === "Shorts") return shortData;
     if (activeTag === "Oldest") {
       return [...videos].sort(
         (a, b) =>
@@ -81,27 +92,32 @@ export default function VideosClient() {
     return videos.filter((v) => matchesTag(v.title, tag.keywords));
   }, [videos, shortData, activeTag]);
 
+  /* ===============================
+     FILTERED SHORTS
+  ================================ */
   const filteredShorts = useMemo(() => {
-    let result = shuffledShorts;
-    if (activeTag !== "All" && activeTag !== "Oldest") {
-      const tag = TAGS.find((t) => t.label === activeTag);
-      if (tag && tag.keywords.length > 0) {
-        const filtered = shuffledShorts.filter((v) =>
-          matchesTag(v.title, tag.keywords),
-        );
-        result = filtered.length > 0 ? filtered : shuffledShorts;
-      }
-    }
     if (activeTag === "Oldest") {
-      return [...result].sort(
+      return [...shuffledShorts].sort(
         (a, b) =>
           new Date(a.published_at || a.publishedAt) -
           new Date(b.published_at || b.publishedAt),
       );
     }
-    return result;
+
+    if (activeTag === "All" || activeTag === "Shorts") return shuffledShorts;
+
+    const tag = TAGS.find((t) => t.label === activeTag);
+    if (!tag || tag.keywords.length === 0) return shuffledShorts;
+
+    const filtered = shuffledShorts.filter((v) =>
+      matchesTag(v.title, tag.keywords),
+    );
+    return filtered.length > 0 ? filtered : shuffledShorts;
   }, [shuffledShorts, activeTag]);
 
+  /* ===============================
+     INFINITE SCROLL
+  ================================ */
   const visibleVideos = useMemo(
     () => filteredVideos.slice(0, visibleCount),
     [filteredVideos, visibleCount],
@@ -129,31 +145,17 @@ export default function VideosClient() {
   }, [isLoadingMore, hasMore, loading, filteredVideos.length]);
 
   useEffect(() => {
-    let timeoutId = null;
-    let lastExecuted = 0;
-    const THROTTLE_DELAY = 300;
-
-    const throttledScroll = () => {
-      const now = Date.now();
-      if (timeoutId) clearTimeout(timeoutId);
-      if (now - lastExecuted < THROTTLE_DELAY) {
-        timeoutId = setTimeout(() => {
-          lastExecuted = Date.now();
-          handleScroll();
-        }, THROTTLE_DELAY);
-      } else {
-        lastExecuted = now;
-        handleScroll();
-      }
-    };
-
+    const throttledScroll = throttle(handleScroll, 300, { trailing: true });
     window.addEventListener("scroll", throttledScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", throttledScroll);
-      if (timeoutId) clearTimeout(timeoutId);
+      throttledScroll.cancel();
     };
   }, [handleScroll]);
 
+  /* ===============================
+     RENDER
+  ================================ */
   if (loading) {
     return (
       <div className="bg-black min-h-screen md:pt-6 lg:pt-20">
@@ -188,7 +190,7 @@ export default function VideosClient() {
         isShorts={activeTag === "Shorts"}
       />
 
-      {filteredVideos.length === 0 && (
+      {filteredVideos.length === 0 && activeTag !== "Shorts" && (
         <div className="flex items-center justify-center py-20">
           <p className="text-gray-400 text-lg">
             No videos found for "{activeTag}"

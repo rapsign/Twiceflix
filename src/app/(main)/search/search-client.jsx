@@ -4,9 +4,9 @@
 import { useEffect, useMemo, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-import VideoCard from "@/components/Videos/VideoCard";
-import PlaylistCard from "@/components/Playlist/PlaylistCard";
-import ShortsCard from "@/components/Short/ShortsCard";
+import VideoCard from "@/app/(main)/videos/_components/VideoCard";
+import PlaylistCard from "@/app/(main)/playlists/_components/PlaylistCard";
+import ShortsCard from "@/app/(main)/shorts/_components/ShortsCard";
 import useDataManager from "@/hooks/useDataManager";
 
 const BATCH_MOBILE = 4;

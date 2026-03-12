@@ -5,6 +5,9 @@ const BASE_URL = "https://twiceflix.vercel.app";
 async function fetchAPI(path) {
   try {
     const base = process.env.NEXT_PUBLIC_API_BASE;
+    console.log("BASE:", base);
+    console.log("KEY:", process.env.NEXT_PUBLIC_API_KEY);
+
     if (!base) return [];
     const res = await fetch(`${base}${path}`, {
       headers: {
@@ -12,18 +15,25 @@ async function fetchAPI(path) {
         "x-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
       },
     });
+    console.log("STATUS:", res.status, path);
     if (!res.ok) return [];
     const json = await res.json();
+    console.log(
+      "COUNT:",
+      Array.isArray(json) ? json.length : "not array",
+      path,
+    );
     return Array.isArray(json) ? json : (json.data ?? json.items ?? []);
-  } catch {
+  } catch (e) {
+    console.error("FETCH ERROR:", e);
     return [];
   }
 }
 
 export default async function sitemap() {
   const [videos, shorts] = await Promise.all([
-    fetchAPI("/youtube_video"),
-    fetchAPI("/youtube_short"),
+    fetchAPI("/youtube-video"),
+    fetchAPI("/youtube-short"),
   ]);
 
   const staticRoutes = [

@@ -1,5 +1,5 @@
 // src/app/(main)/page.jsx
-import HomeClient from "./home-client";
+import HomeClient from "./_components/home-client";
 
 export const metadata = {
   title: "TWICEFLIX — Your Ultimate Source for TWICE Videos & Content",

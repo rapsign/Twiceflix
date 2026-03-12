@@ -1,9 +1,9 @@
 "use client";
 
 // src/app/(main)/HomeClient.jsx
-import HeroSection from "../../components/Hero/HeroSection";
-import PlaylistSwiper from "../../components/Playlist/PlaylistSwiper";
-import VideoSwiper from "../../components/Videos/VideoSwiper";
+import HeroSection from "./HeroSection";
+import PlaylistSwiper from "./PlaylistSwiper";
+import VideoSwiper from "./VideoSwiper";
 
 export default function HomeClient() {
   return (

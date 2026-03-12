@@ -6,15 +6,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import NProgress from "nprogress";
 
 import useDataManager from "@/hooks/useDataManager";
-import { usePlaylistHelpers } from "@/hooks/usePlaylistHelpers";
+import { usePlaylistHelpers } from "@/app/(main)/watch/components/hooks/usePlaylistHelpers";
 
-import WatchSkeleton from "@/components/Player/WatchSkeleton";
-import VideoPlayer from "@/components/Player/VideoPlayer";
-import VideoInfo from "@/components/Player/VideoInfo";
-import PlaylistPanel from "@/components/Player/PlaylistPanel";
-import PlaylistDrawer from "@/components/Player/PlaylistDrawer";
-import RelatedVideos from "@/components/Player/RelatedVideos";
-import { ShareDialog } from "@/components/ui/share-dialog";
+import WatchSkeleton from "@/app/(main)/watch/components/WatchSkeleton";
+import VideoPlayer from "@/app/(main)/watch/components/VideoPlayer";
+import VideoInfo from "@/app/(main)/watch/components/VideoInfo";
+import PlaylistPanel from "@/app/(main)/watch/components/PlaylistPanel";
+import PlaylistDrawer from "@/app/(main)/watch/components/PlaylistDrawer";
+import RelatedVideos from "@/app/(main)/watch/components/RelatedVideos";
+import { ShareDialog } from '@/components/ShareDialog';
 
 function WatchContent() {
   const router = useRouter();

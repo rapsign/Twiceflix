@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import useDataManager from "@/hooks/useDataManager";
-import CustomSwiper from "../ui/custom-swiper";
+import CustomSwiper from "@/components/CustomSwiper";
 
 const VideoSwiper = () => {
   const { data: videos = [], loading } = useDataManager("youtube-video");

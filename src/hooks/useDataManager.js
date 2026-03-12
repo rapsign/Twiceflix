@@ -1,6 +1,7 @@
 // hooks/use-data-manager.js
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
+import useSWR from "swr";
 import {
   fetchVideos,
   fetchVideoById,
@@ -11,35 +12,36 @@ import {
   searchAll,
 } from "../api/youtube";
 
+/* ===============================
+   SWR CONFIG GLOBAL
+================================ */
+const SWR_CONFIG = {
+  revalidateOnFocus: false,
+  revalidateOnReconnect: false,
+  dedupingInterval: 1000 * 60 * 5, // 5 menit — tidak fetch ulang
+  revalidateIfStale: false, // pakai cache sampai expired
+};
+
+/* ===============================
+   FETCHERS PER COLLECTION
+================================ */
+const FETCHERS = {
+  "youtube-video": () => fetchVideos().then((res) => res?.data ?? []),
+  "youtube-short": () => fetchShorts().then((res) => res?.data ?? []),
+  "youtube-playlist": () => fetchPlaylists().then((res) => res?.data ?? []),
+};
+
+/* ===============================
+   MAIN HOOK
+================================ */
 const useDataManager = (collectionName) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const fetcher = FETCHERS[collectionName] ?? null;
 
-  /* ===============================
-     FETCH ALL
-  ================================ */
-  const fetchAll = useCallback(async () => {
-    setLoading(true);
-    let result = [];
-
-    switch (collectionName) {
-      case "youtube-video":
-        result = await fetchVideos().then((res) => res?.data ?? []);
-        break;
-      case "youtube-short":
-        result = await fetchShorts().then((res) => res?.data ?? []);
-        break;
-      case "youtube-playlist":
-        result = await fetchPlaylists().then((res) => res?.data ?? []);
-        break;
-      default:
-        result = [];
-    }
-
-    setData(result);
-    setLoading(false);
-    return result;
-  }, [collectionName]);
+  const { data, isLoading, mutate } = useSWR(
+    fetcher ? collectionName : null, // null = skip fetch kalau tidak dikenal
+    fetcher,
+    SWR_CONFIG,
+  );
 
   /* ===============================
      FETCH BY ID (basic)
@@ -125,25 +127,10 @@ const useDataManager = (collectionName) => {
     return res?.data ?? [];
   }, []);
 
-  /* ===============================
-     AUTO FETCH ON COLLECTION CHANGE
-  ================================ */
-  useEffect(() => {
-    let mounted = true;
-
-    fetchAll().then((res) => {
-      if (mounted) setData(res ?? []);
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, [fetchAll]);
-
   return {
-    data,
-    loading,
-    fetchAll,
+    data: data ?? [],
+    loading: isLoading,
+    fetchAll: mutate,
     fetchById,
     fetchByIdFull,
     fetchPlaylist,

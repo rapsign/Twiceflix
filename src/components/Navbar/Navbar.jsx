@@ -10,7 +10,7 @@ import {
   Check,
   AlertCircle,
 } from "lucide-react";
-import { TextLogo } from "../ui/Logo";
+import { TextLogo } from '../Logo';
 import SearchBox from "./SearchBox";
 import {
   Dialog,
