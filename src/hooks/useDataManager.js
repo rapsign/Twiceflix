@@ -1,4 +1,4 @@
-// hooks/useDataManager.js
+// hooks/use-data-manager.js
 
 import { useState, useEffect, useCallback } from "react";
 import {
@@ -23,13 +23,13 @@ const useDataManager = (collectionName) => {
     let result = [];
 
     switch (collectionName) {
-      case "youtube_video":
+      case "youtube-video":
         result = await fetchVideos().then((res) => res?.data ?? []);
         break;
-      case "youtube_short":
+      case "youtube-short":
         result = await fetchShorts().then((res) => res?.data ?? []);
         break;
-      case "youtube_playlist":
+      case "youtube-playlist":
         result = await fetchPlaylists().then((res) => res?.data ?? []);
         break;
       default:
@@ -49,11 +49,11 @@ const useDataManager = (collectionName) => {
       if (!id) return null;
 
       switch (collectionName) {
-        case "youtube_video":
+        case "youtube-video":
           return fetchVideoById(id).then((res) => res?.data ?? null);
-        case "youtube_short":
+        case "youtube-short":
           return fetchShortById(id).then((res) => res?.data ?? null);
-        case "youtube_playlist":
+        case "youtube-playlist":
           return fetchPlaylistById(id).then((res) => res?.data ?? null);
         default:
           return null;
@@ -72,13 +72,13 @@ const useDataManager = (collectionName) => {
       let rawRes = null;
 
       switch (collectionName) {
-        case "youtube_video":
+        case "youtube-video":
           rawRes = await fetchVideoById(id);
           break;
-        case "youtube_short":
+        case "youtube-short":
           rawRes = await fetchShortById(id);
           break;
-        case "youtube_playlist":
+        case "youtube-playlist":
           rawRes = await fetchPlaylistById(id);
           break;
         default:
